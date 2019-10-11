@@ -1,5 +1,5 @@
 from jose import jwt
-from jwks import get_keyset
+from lti.jwks import get_keyset, get_webkey
 
 class LTIPlatform(object):
 
@@ -11,4 +11,8 @@ class LTIPlatform(object):
 
     def decode(self, token:str) -> dict:
         return jwt.decode(token, get_keyset(self.jwks_uri))
+
+    def encode(self, claims: dict) -> str:
+        print(get_webkey())
+        return jwt.encode(claims, get_webkey(), algorithm='RS256')
         

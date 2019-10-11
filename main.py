@@ -64,10 +64,10 @@ def oidc_launch(state: str = Form(...), id_token: str = Form(...)):
         return deeplinking_automatic(message)
     return test_and_show_results(message)
 
-def deeplinking_automatic(message -> dict):
+def deeplinking_automatic(message: dict):
     pass
 
-def test_and_show_results(message -> dict):
+def test_and_show_results(message: dict):
     pass
 
 @app.get("/test/jwks")
@@ -75,3 +75,8 @@ def test_jwks(jwks_uri: str, kid: str):
     if get_public_key(jwks_uri, kid):
         return "Yo!"
     return "Nope!"
+
+@app.get("/test/enc")
+def test_enc():
+    lti_platform = LTIPlatform("tt", "eee", "ttt", "fff");
+    return lti_platform.encode({"rrr":333})
