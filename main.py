@@ -8,7 +8,7 @@ from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List
 from datetime import datetime
 
-from lti import LTIPlatform, get_public_key
+from lti import LTIPlatform, LTIMessage, get_public_keyset
 
 app = FastAPI()
 
@@ -16,6 +16,9 @@ app = FastAPI()
 def read_root():
     return {"Hello": "World"}
 
+@app.get("/.well-known/jwks.json")
+def jwks():
+    return get_public_keyset()
 
 @app.get("/items/{item_id}")
 def read_item(item_id: int, q: str = None):
@@ -59,24 +62,15 @@ def oidc_init(request: Request,
 @app.post("/oidc/launch")
 def oidc_launch(state: str = Form(...), id_token: str = Form(...)):
     platform = LTIPlatform(**json.loads(state))
-    message = platform.decode(id_token)
+    message = LTIMessage(platform.decode(id_token))
     if message['https://../'] == '':
         return deeplinking_automatic(message)
     return test_and_show_results(message)
 
-def deeplinking_automatic(message: dict):
+def deeplinking_automatic(message: LTIMessage):
+
     pass
 
 def test_and_show_results(message: dict):
     pass
 
-@app.get("/test/jwks")
-def test_jwks(jwks_uri: str, kid: str):
-    if get_public_key(jwks_uri, kid):
-        return "Yo!"
-    return "Nope!"
-
-@app.get("/test/enc")
-def test_enc():
-    lti_platform = LTIPlatform("tt", "eee", "ttt", "fff");
-    return lti_platform.encode({"rrr":333})

@@ -43,7 +43,7 @@ def get_webkey() -> dict:
     return webkey
 
 
-def get_keyset(jwks_uri:str) -> dict:
+def get_remote_keyset(jwks_uri:str) -> dict:
     keyset = json.loads(requests.get(jwks_uri).text)
     for k in keyset[ 'keys' ]:
         if not 'alg' in k:
@@ -51,7 +51,7 @@ def get_keyset(jwks_uri:str) -> dict:
     return keyset
 
 
-def get_public_key(jwks_uri: str, kid: str) -> Key:
+def get_remote_public_key(jwks_uri: str, kid: str) -> Key:
     keyset = get_keyset(jwks_uri)
     keys = [ k for k in keyset[ 'keys' ] if k['kid'] == kid ]
     if len(keys) == 1:
