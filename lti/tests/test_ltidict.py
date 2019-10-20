@@ -1,12 +1,13 @@
 import unittest
 
-from lti.messages import LTIMessage
+from lti.utils import LTIDict
 
 class LTIPlatformTest(unittest.TestCase):
 
     def setUp(self):
         d = {
             "https://purl.imsglobal.org/spec/lti/claim/version": "1.3.0",
+            "https://purl.imsglobal.org/spec/lti/claim/message_type": "LtiResourceLinkRequest",
             "sub": "33232",
             "https://purl.imsglobal.org/spec/lti/claim/resource_link": {
                 "id": "200d101f",
@@ -30,15 +31,18 @@ class LTIPlatformTest(unittest.TestCase):
                     }
                 }]
         }
-        self.message = LTIMessage(d)
+        self.message = LTIDict(**d)
 
     def test_get(self):
         self.assertEqual(self.message['version'], "1.3.0")
         self.assertEqual(self.message['content_items'][0]["type"], "link")
-        self.assertEqual(self.message['resource_link.id'], "200d101f")
+        self.assertEqual(self.message['resource_link']['id'], "200d101f")
+        self.assertEqual(self.message.resource_link.id, "200d101f")
+        self.assertEqual(self.message.message_type, 'LtiResourceLinkRequest')
+        self.assertEqual(self.message['https://purl.imsglobal.org/spec/lti/claim/message_type'], 'LtiResourceLinkRequest')
 
     def test_str(self):
-        m = LTIMessage([])
+        m = LTIDict([])
         m['version']='1.3.0'
         self.assertEqual('{\'https://purl.imsglobal.org/spec/lti/claim/version\': \'1.3.0\'}', str(m))
 
