@@ -9,4 +9,5 @@ const = _const()
 const.dl = _const()
 const.dl.request_msg_type = 'LTIDeepLinkingRequest'
 const.dl.response_msg_type = 'LTIDeepLinkingResponse'
+const.dl.content_items = ''
 

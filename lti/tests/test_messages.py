@@ -1,6 +1,6 @@
 import unittest
 
-from lti.utils import LTIDict
+from lti.messages import LTIMessageDict
 
 class LTIPlatformTest(unittest.TestCase):
 
@@ -31,18 +31,23 @@ class LTIPlatformTest(unittest.TestCase):
                     }
                 }]
         }
-        self.message = LTIDict(**d)
+        self.assertEqual(self.message.message_type, 'LtiResourceLinkRequest')
+        self.message = LTIMessageDict(**d)
 
     def test_get(self):
         self.assertEqual(self.message['version'], "1.3.0")
         self.assertEqual(self.message['content_items'][0]["type"], "link")
         self.assertEqual(self.message['resource_link']['id'], "200d101f")
-        self.assertEqual(self.message.resource_link.id, "200d101f")
-        self.assertEqual(self.message.message_type, 'LtiResourceLinkRequest')
         self.assertEqual(self.message['https://purl.imsglobal.org/spec/lti/claim/message_type'], 'LtiResourceLinkRequest')
 
     def test_str(self):
-        m = LTIDict([])
+        m = LTIMessageDict([])
         m['version']='1.3.0'
         self.assertEqual('{\'https://purl.imsglobal.org/spec/lti/claim/version\': \'1.3.0\'}', str(m))
+        m['bla']=2
+        self.assertEqual(m['bla'], 2)
+        self.message['version']='changed'
+        self.assertEqual(self.message['version'], "changed")
+        self.message['newfield']='new'
+        self.assertEqual(self.message['newfield'], "new")
 

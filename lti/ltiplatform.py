@@ -1,7 +1,7 @@
 from jose import jwt
 from lti.jwks import get_remote_keyset, get_webkey
 
-class LTIPlatform(object):
+class ToolRegistration(object):
 
     def __init__(self, iss: str, client_id: str, token_uri: str, jwks_uri: str):
         self.iss = iss

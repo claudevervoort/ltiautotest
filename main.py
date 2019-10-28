@@ -8,7 +8,7 @@ from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List
 from datetime import datetime
 
-from lti import LTIPlatform, LTIMessage, get_public_keyset, const
+from lti import ToolRegistration, LTIMessageDict, LTIResourceLink, get_public_keyset, const
 
 app = FastAPI()
 
@@ -35,7 +35,6 @@ def oidc_init(request: Request,
               jwks_uri: str,
               login_hint: str = None,
               lti_message_hint: str = None):
-    print(request.url)
     state = {
         'iss': iss,
         'client_id': client_id,
@@ -61,14 +60,17 @@ def oidc_init(request: Request,
 
 @app.post("/oidc/launch")
 def oidc_launch(state: str = Form(...), id_token: str = Form(...)):
-    platform = LTIPlatform(**json.loads(state))
-    message = LTIMessage(platform.decode(id_token))
-    if message.message_type == const.dl.request_msg_type:
+    platform = ToolRegistration(**json.loads(state))
+    message = LTIMessageDict(**platform.decode(id_token))
+    if message['message_type'] == const.dl.request_msg_type:
         return deeplinking_automatic(message)
     return test_and_show_results(message)
 
 def deeplinking_automatic(message: LTIMessage):
-    
+    rl = LTIResourceLink()
+    rl.title = 'Test'
+    rl.max_points= 10.0
+    rl.url = 'https://...'
     pass
 
 def test_and_show_results(message: dict):
