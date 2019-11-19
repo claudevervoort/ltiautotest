@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <script>
+            function autopost() {
+                document.getElementById('autopostform').submit();
+            }
+        </script>
+    </head>
+    <body>
+        <form id="autopostform" action="{{ return_url }}">
+            <input type="hidden" name="JWT" value="{{ jwt }}">
+        </form>
+    </body>
+</html>

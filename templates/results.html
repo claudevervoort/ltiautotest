@@ -1,0 +1,11 @@
+<html>
+    <body>
+    <table>
+    {% for category in results %}
+        <th colspan="2">{{category.name}}</th>
+        <li><a href="{{ item.href }}">{{ item.caption }}</a></li>
+    {% endfor %}
+
+    </table>
+    </body>
+</html>

@@ -8,7 +8,17 @@ models = {
     'LaunchPresentation': {
     },
     'Custom': {},
-    'DeepLinkSettings': {},
+    'DeepLinkSettings': {
+        'deep_link_return_url': ["return_url"],
+        "accept_types": ['', 'List[str]'],
+        "accept_media_types": ['', 'List[str]'],
+        "accept_presentation_document_targets": ['', 'List[str]'],
+        "accept_multiple": ['', 'bool'],
+        "auto_create": ['', 'bool'],
+        "title": [],
+        "text": [],
+        "data": []
+    },
     'LTIMessage': {
         "iss": [],
         "sub": [],
@@ -30,7 +40,7 @@ models = {
     'LineItem': {
         'label': [],
         'scoreMaximum': ['', 'float'],
-        'tag':[],
+        'tag': [],
         'resourceId': [],
         'resourceLinkId': []
     },
@@ -39,6 +49,7 @@ models = {
         'title': [],
         'text': [],
         'url': [],
+        'custom': ['', 'Dict[str,str]'],
         'line_item': ['lineItem', 'LineItem'],
         'max_points': ['lineItem:LineItem->scoreMaximum', 'float'],
         'resource_id': ['lineItem:LineItem->resourceId', 'float']
@@ -60,6 +71,30 @@ template_class_init_val = """
 template_property = """
     @property
     def {short}(self) -> {type}:
+        return self.get('{long}')
+
+    @{short}.setter
+    def {short}(self, value: {type}):
+        self['{long}'] = value
+"""
+
+template_dict_property = """
+    @property
+    def {short}(self) -> {type}:
+        if not '{long}' in self:
+            self['{long}'] = {}
+        return self.get('{long}')
+
+    @{short}.setter
+    def {short}(self, value: {type}):
+        self['{long}'] = value
+"""
+
+template_list_property = """
+    @property
+    def {short}(self) -> {type}:
+        if not '{long}' in self:
+            self['{long}'] = []
         return self.get('{long}')
 
     @{short}.setter
@@ -92,12 +127,19 @@ def generate(name: str, spec: dict):
                 gen.append(template_class_init)
             gen.append(template_class_init_val.format(long=lk, value=v[2]))
     for (k, v) in spec.items():
-        type = 'str' if len(v) < 2  else v[1]
+        type = 'str' if len(v) < 2 else v[1]
         lk = k if len(v) == 0 or len(v[0]) == 0 else v[0]
         if '->' in lk:
-            ccl,a = lk.split('->')
+            ccl, a = lk.split('->')
             c, cl = ccl.split(':')
-            gen.append(template_nested_property.format(short=k, container=c, attr=a, container_class=cl,type=type))
+            gen.append(template_nested_property.format(
+                short=k, container=c, attr=a, container_class=cl, type=type))
+        elif type.startswith('List'):
+            gen.append(template_list_property.format(
+                short=k, long=lk, type=type))
+        elif type.startswith('Dict'):
+            gen.append(template_list_property.format(
+                short=k, long=lk, type=type))
         else:
             gen.append(template_property.format(short=k, long=lk, type=type))
 
@@ -116,7 +158,7 @@ from typing import List, Set, Dict, Tuple, Optional
 
         """
     )
-    
+
     for (k, v) in models.items():
         gen.extend(generate(k, v))
         gen.append('')

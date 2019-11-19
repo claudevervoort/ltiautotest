@@ -12,7 +12,12 @@ class ToolRegistration(object):
     def decode(self, token:str) -> dict:
         return jwt.decode(token, get_remote_keyset(self.jwks_uri))
 
-    def encode(self, claims: dict) -> str:
+    def encode(self, claims: dict, from_client: bool = True) -> str:
         print(get_webkey())
+        if from_client:
+            claims['iss'] = self.client_id
+        else:
+            claims['iss'] = self.iss
+            claims['aud'] = self.client_id
         return jwt.encode(claims, get_webkey(), algorithm='RS256')
         

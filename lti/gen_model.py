@@ -25,7 +25,93 @@ class Custom(dict):
 
 
 class DeepLinkSettings(dict):
-    pass
+
+    @property
+    def deep_link_return_url(self) -> str:
+        return self.get('return_url')
+
+    @deep_link_return_url.setter
+    def deep_link_return_url(self, value: str):
+        self['return_url'] = value
+
+
+    @property
+    def accept_types(self) -> List[str]:
+        if not 'accept_types' in self:
+            self['accept_types'] = []
+        return self.get('accept_types')
+
+    @accept_types.setter
+    def accept_types(self, value: List[str]):
+        self['accept_types'] = value
+
+
+    @property
+    def accept_media_types(self) -> List[str]:
+        if not 'accept_media_types' in self:
+            self['accept_media_types'] = []
+        return self.get('accept_media_types')
+
+    @accept_media_types.setter
+    def accept_media_types(self, value: List[str]):
+        self['accept_media_types'] = value
+
+
+    @property
+    def accept_presentation_document_targets(self) -> List[str]:
+        if not 'accept_presentation_document_targets' in self:
+            self['accept_presentation_document_targets'] = []
+        return self.get('accept_presentation_document_targets')
+
+    @accept_presentation_document_targets.setter
+    def accept_presentation_document_targets(self, value: List[str]):
+        self['accept_presentation_document_targets'] = value
+
+
+    @property
+    def accept_multiple(self) -> bool:
+        return self.get('accept_multiple')
+
+    @accept_multiple.setter
+    def accept_multiple(self, value: bool):
+        self['accept_multiple'] = value
+
+
+    @property
+    def auto_create(self) -> bool:
+        return self.get('auto_create')
+
+    @auto_create.setter
+    def auto_create(self, value: bool):
+        self['auto_create'] = value
+
+
+    @property
+    def title(self) -> str:
+        return self.get('title')
+
+    @title.setter
+    def title(self, value: str):
+        self['title'] = value
+
+
+    @property
+    def text(self) -> str:
+        return self.get('text')
+
+    @text.setter
+    def text(self, value: str):
+        self['text'] = value
+
+
+    @property
+    def data(self) -> str:
+        return self.get('data')
+
+    @data.setter
+    def data(self, value: str):
+        self['data'] = value
+
 
 
 class LTIMessage(dict):
@@ -86,6 +172,8 @@ class LTIMessage(dict):
 
     @property
     def role(self) -> List[str]:
+        if not 'https://purl.imsglobal.org/spec/lti/claim/roles' in self:
+            self['https://purl.imsglobal.org/spec/lti/claim/roles'] = []
         return self.get('https://purl.imsglobal.org/spec/lti/claim/roles')
 
     @role.setter
@@ -152,6 +240,8 @@ class DeeplinkResponse(dict):
 
     @property
     def content_items(self) -> List:
+        if not 'https://purl.imsglobal.org/spec/lti-dl/claim/content_items' in self:
+            self['https://purl.imsglobal.org/spec/lti-dl/claim/content_items'] = []
         return self.get('https://purl.imsglobal.org/spec/lti-dl/claim/content_items')
 
     @content_items.setter
@@ -252,6 +342,17 @@ class LTIResourceLink(dict):
     @url.setter
     def url(self, value: str):
         self['url'] = value
+
+
+    @property
+    def custom(self) -> Dict[str,str]:
+        if not 'custom' in self:
+            self['custom'] = []
+        return self.get('custom')
+
+    @custom.setter
+    def custom(self, value: Dict[str,str]):
+        self['custom'] = value
 
 
     @property

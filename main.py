@@ -1,29 +1,29 @@
 import json
+import random
 from fastapi import FastAPI, Form
 from starlette.responses import PlainTextResponse, RedirectResponse
 from starlette.requests import Request
-
+from starlette.staticfiles import StaticFiles
+from starlette.templating import Jinja2Templates
 from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 
 from typing import List
 from datetime import datetime
 
-from lti import ToolRegistration, LTIMessageDict, LTIResourceLink, get_public_keyset, const
+from lti import ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, get_public_keyset, const
 
 app = FastAPI()
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
+
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
+def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/.well-known/jwks.json")
 def jwks():
     return get_public_keyset()
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: str = None):
-    return {"item_id": item_id, "q": q}
-
 
 @app.get("/oidc/init")
 def oidc_init(request: Request,
@@ -35,11 +35,13 @@ def oidc_init(request: Request,
               jwks_uri: str,
               login_hint: str = None,
               lti_message_hint: str = None):
+    cookie = "LTI-" + str(random.randint(0,9999))
     state = {
         'iss': iss,
         'client_id': client_id,
         'jwks_uri': jwks_uri,
-        'token_uri': token_endpoint
+        'token_uri': token_endpoint,
+        'cookie': cookie
     }
     auth_url = urlparse(auth_endpoint)
     query_params = parse_qsl(auth_url.query)
@@ -59,22 +61,31 @@ def oidc_init(request: Request,
     return RedirectResponse(url=redirect_url)
 
 @app.post("/oidc/launch")
-def oidc_launch(state: str = Form(...), id_token: str = Form(...)):
-    platform = ToolRegistration(**json.loads(state))
-    message = LTIMessageDict(**platform.decode(id_token))
+def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(...)):
+    reg = ToolRegistration(**json.loads(state))
+    message = LTIMessage(**reg.decode(id_token))
     if message['message_type'] == const.dl.request_msg_type:
-        return deeplinking_automatic(message)
-    return test_and_show_results(message)
+        return deeplinking_automatic(request, reg, message)
+    return test_and_show_results(request, message)
 
-def deeplinking_automatic(message: LTIMessage):
+def deeplinking_automatic(request: Request, reg: ToolRegistration, message: LTIMessage):
     rl = LTIResourceLink()
     rl.title = 'Test'
     rl.max_points= 10.0
-    rl.url = 'https://...'
-    pass
+    rl.resource_id = 'rl1'
+    rl.url = 'https://.../deeplink?p1=' + rl.resource_id
+    rl.custom['resource_id'] = rl.resource_id 
+    rl.custom['multiple'] = message.accept_multiple
+    rl.custom('maxPoints', rl.max_points)
+    dlresp = DeeplinkResponse()
+    dlresp.content_items.append(rl)
+    return templates.TemplateResponse("deeplink_autopost.html", {
+        "request": request, 
+        "return_url": message.deep_linking_settings.return_url,
+        "jwt": reg.encode(dlresp)})
 
-def test_and_show_results(message: dict):
-    pass
+def test_and_show_results(request: Request, message: dict):
+    return templates.TemplateResponse("results.html", {"request": request})
 
 @app.get("/test")
 def test():
