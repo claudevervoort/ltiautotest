@@ -1,9 +1,18 @@
 <html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="static/robottest.css">
+    </head>
     <body>
-    <table>
+    <table class="results">
     {% for category in results %}
         <th colspan="2">{{category.name}}</th>
-        <li><a href="{{ item.href }}">{{ item.caption }}</a></li>
+        {% for result in category.results %}
+            <tr class="{{ 'success' if result.success }} {{ 'required' if result.required }}">
+                <td>{{ result.name }}</td>
+                <td>{{ result.comment }}</td>
+            </tr>
+        {% endfor %}
     {% endfor %}
 
     </table>

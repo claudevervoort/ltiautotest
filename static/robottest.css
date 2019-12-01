@@ -1,0 +1,47 @@
+@keyframes fade-in {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+body {
+    background-color: rgb(117, 125, 131);
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    perspective: 1000px;
+}
+
+div.centered {
+    display: flex;
+    justify-content: center;
+}
+
+table.results {
+    border: none;
+    color: yellow;
+    transform: rotateY(40deg);
+}
+
+table.results th, table.results td {
+  border-bottom: 1px solid yellow;
+}
+
+table.results tr {
+    animation: fade-in 2s ease-in ;
+    opacity: 0;
+    animation-fill-mode: forwards;
+}
+
+table.results tr:nth-child(1) {
+    animation-delay: 1s;
+}
+
+table.results tr:nth-child(2) {
+    animation-delay: 2s;
+}
+table.results tr:nth-child(3) {
+    animation-delay: 3s;
+}
+table.results tr:nth-child(4) {
+    animation-delay: 4s;
+}
+

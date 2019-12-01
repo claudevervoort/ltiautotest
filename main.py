@@ -11,15 +11,29 @@ from typing import List
 from datetime import datetime
 
 from lti import ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, get_public_keyset, const
+from robotest import TestCategory, TestResult
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/")
 def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/broken")
+def read_root(request: Request):
+    return templates.TemplateResponse("broken.html", {"request": request})
+
+@app.get("/results")
+def read_root(request: Request):
+    cat1 = TestCategory(name='category 1')
+    cat1.results.append(TestResult('res1', True, True, 'You passed this easily'))
+    cat1.results.append(TestResult('res2', True, True, 'You passed this easily'))
+    cat1.results.append(TestResult('res3', True, True, 'You passed this easily'))
+    return templates.TemplateResponse("results.html", {"request": request, "results": [cat1]})
 
 @app.get("/.well-known/jwks.json")
 def jwks():
