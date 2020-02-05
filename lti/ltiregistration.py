@@ -9,6 +9,7 @@ class ToolRegistration(object):
         self.auth_endpoint = auth_endpoint
         self.token_uri = token_uri
         self.jwks_uri = jwks_uri
+        print( 'Registered' + self.client_id)
 
     def decode(self, token:str) -> dict:
         return jwt.decode(token, get_remote_keyset(self.jwks_uri))
@@ -26,4 +27,5 @@ def registration( lms: str, iss: str, client_id: str) -> ToolRegistration:
     print(lms)
     if (lms.lower() == 'moodle'):
         return ToolRegistration(iss, client_id, iss+'/mod/lti/auth.php', iss+'mod/lti/token.php', iss+'mod/lti/certs.php')
-    
+    print('No registration')
+    return None

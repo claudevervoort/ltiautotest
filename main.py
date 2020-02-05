@@ -54,7 +54,7 @@ def oidc_init(request: Request,
     cookie = "LTI-" + str(random.randint(0,9999))
     reg = registration(lms, iss, client_id)
     state = {
-        'r': json.dumps(registration.__dict__),
+        'r': reg.__dict__,
         'cookie': cookie
     }
     auth_url = urlparse(reg.auth_endpoint)
@@ -92,7 +92,7 @@ def oidc_init_post(request: Request,
 
 @app.post("/oidc/launch")
 def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(...)):
-    reg = ToolRegistration(**json.loads(state))
+    reg = ToolRegistration(**json.loads(state)['r'])
     message = LTIMessage(**reg.decode(id_token))
     if message['message_type'] == const.dl.request_msg_type:
         return deeplinking_automatic(request, reg, message)
