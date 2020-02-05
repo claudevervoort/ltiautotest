@@ -13,6 +13,7 @@ body {
 div.centered {
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 table.results {

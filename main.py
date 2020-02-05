@@ -10,7 +10,7 @@ from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List
 from datetime import datetime
 
-from lti import ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, get_public_keyset, const
+from lti import ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, get_public_keyset, get_publickey_pem, const, registration
 from robotest import TestCategory, TestResult
 
 app = FastAPI()
@@ -39,28 +39,28 @@ def read_root(request: Request):
 def jwks():
     return get_public_keyset()
 
+@app.get("/.well-known/publickey.pem", response_class=PlainTextResponse)
+def jwks():
+    return get_publickey_pem()
+
 @app.get("/oidc/init")
 def oidc_init(request: Request,
               iss:str,
-              client_id: str,
-              target_link_uri: str, 
-              auth_endpoint: str,
-              token_endpoint: str,
-              jwks_uri: str,
               login_hint: str = None,
-              lti_message_hint: str = None):
+              lti_message_hint: str = None,
+              client_id: str = None,
+              lms: str = 'moodle',
+              target_link_uri: str = None):
     cookie = "LTI-" + str(random.randint(0,9999))
+    reg = registration(lms, iss, client_id)
     state = {
-        'iss': iss,
-        'client_id': client_id,
-        'jwks_uri': jwks_uri,
-        'token_uri': token_endpoint,
+        'r': json.dumps(registration.__dict__),
         'cookie': cookie
     }
-    auth_url = urlparse(auth_endpoint)
+    auth_url = urlparse(reg.auth_endpoint)
     query_params = parse_qsl(auth_url.query)
     query_params.append(('state', json.dumps(state,  separators=(',', ':'))))
-    query_params.append(('redirect_uri', str(request.url.replace(path='/oidc/launch', query=''))))
+    query_params.append(('redirect_uri', str(request.url.replace(path='/oidc/launch', query='', scheme='https'))))
     query_params.append(('scope','openid'))
     query_params.append(('response_type','id_token'))
     query_params.append(('client_id', client_id))
@@ -70,9 +70,25 @@ def oidc_init(request: Request,
         query_params.append(('login_hint', login_hint))
     if (lti_message_hint):
         query_params.append(('lti_message_hint', lti_message_hint))
-
-    redirect_url=urlunparse((auth_url.scheme, auth_url.netloc, auth_url.path, auth_url.params, urlencode(query_params), auth_url.fragment))
+    print(query_params)
+    print(auth_url)
+    redirect_url=urlunparse((auth_url.scheme, 
+                             auth_url.netloc, 
+                             auth_url.path, 
+                             auth_url.params, 
+                             urlencode(query_params), 
+                             auth_url.fragment))
     return RedirectResponse(url=redirect_url)
+
+@app.post("/oidc/init")
+def oidc_init_post(request: Request,
+              iss:str = Form(...),
+              client_id: str = None,
+              lms: str = 'moodle',
+              target_link_uri:str = Form(...), 
+              login_hint: str = Form(...),
+              lti_message_hint: str = Form(...)):
+    return oidc_init(request, iss, login_hint, lti_message_hint, client_id, lms, target_link_uri)
 
 @app.post("/oidc/launch")
 def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(...)):
@@ -87,7 +103,7 @@ def deeplinking_automatic(request: Request, reg: ToolRegistration, message: LTIM
     rl.title = 'Test'
     rl.max_points= 10.0
     rl.resource_id = 'rl1'
-    rl.url = 'https://.../deeplink?p1=' + rl.resource_id
+    rl.url = 'https://robotest.theedtech.dev/deeplink?p1=' + rl.resource_id
     rl.custom['resource_id'] = rl.resource_id 
     rl.custom['multiple'] = message.accept_multiple
     rl.custom('maxPoints', rl.max_points)
