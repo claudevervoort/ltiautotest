@@ -9,7 +9,7 @@ models = {
     },
     'Custom': {},
     'DeepLinkSettings': {
-        'deep_link_return_url': ["return_url"],
+        'return_url': ["deep_link_return_url"],
         "accept_types": ['', 'List[str]'],
         "accept_media_types": ['', 'List[str]'],
         "accept_presentation_document_targets": ['', 'List[str]'],
@@ -71,7 +71,13 @@ template_class_init_val = """
 template_property = """
     @property
     def {short}(self) -> {type}:
-        return self.get('{long}')
+        val = self.get('{long}')
+        if (isinstance(val, dict) and not isinstance(val, {type})):
+            typed_val = {type}( **val )
+            self['{long}'] = typed_val
+            return typed_val
+        return val
+            
 
     @{short}.setter
     def {short}(self, value: {type}):
@@ -82,7 +88,7 @@ template_dict_property = """
     @property
     def {short}(self) -> {type}:
         if not '{long}' in self:
-            self['{long}'] = {}
+            self['{long}'] = {{}}
         return self.get('{long}')
 
     @{short}.setter
@@ -138,7 +144,7 @@ def generate(name: str, spec: dict):
             gen.append(template_list_property.format(
                 short=k, long=lk, type=type))
         elif type.startswith('Dict'):
-            gen.append(template_list_property.format(
+            gen.append(template_dict_property.format(
                 short=k, long=lk, type=type))
         else:
             gen.append(template_property.format(short=k, long=lk, type=type))

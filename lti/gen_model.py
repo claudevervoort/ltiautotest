@@ -27,12 +27,18 @@ class Custom(dict):
 class DeepLinkSettings(dict):
 
     @property
-    def deep_link_return_url(self) -> str:
-        return self.get('return_url')
+    def return_url(self) -> str:
+        val = self.get('deep_link_return_url')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['deep_link_return_url'] = typed_val
+            return typed_val
+        return val
+            
 
-    @deep_link_return_url.setter
-    def deep_link_return_url(self, value: str):
-        self['return_url'] = value
+    @return_url.setter
+    def return_url(self, value: str):
+        self['deep_link_return_url'] = value
 
 
     @property
@@ -70,7 +76,13 @@ class DeepLinkSettings(dict):
 
     @property
     def accept_multiple(self) -> bool:
-        return self.get('accept_multiple')
+        val = self.get('accept_multiple')
+        if (isinstance(val, dict) and not isinstance(val, bool)):
+            typed_val = bool( **val )
+            self['accept_multiple'] = typed_val
+            return typed_val
+        return val
+            
 
     @accept_multiple.setter
     def accept_multiple(self, value: bool):
@@ -79,7 +91,13 @@ class DeepLinkSettings(dict):
 
     @property
     def auto_create(self) -> bool:
-        return self.get('auto_create')
+        val = self.get('auto_create')
+        if (isinstance(val, dict) and not isinstance(val, bool)):
+            typed_val = bool( **val )
+            self['auto_create'] = typed_val
+            return typed_val
+        return val
+            
 
     @auto_create.setter
     def auto_create(self, value: bool):
@@ -88,7 +106,13 @@ class DeepLinkSettings(dict):
 
     @property
     def title(self) -> str:
-        return self.get('title')
+        val = self.get('title')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['title'] = typed_val
+            return typed_val
+        return val
+            
 
     @title.setter
     def title(self, value: str):
@@ -97,7 +121,13 @@ class DeepLinkSettings(dict):
 
     @property
     def text(self) -> str:
-        return self.get('text')
+        val = self.get('text')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['text'] = typed_val
+            return typed_val
+        return val
+            
 
     @text.setter
     def text(self, value: str):
@@ -106,7 +136,13 @@ class DeepLinkSettings(dict):
 
     @property
     def data(self) -> str:
-        return self.get('data')
+        val = self.get('data')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['data'] = typed_val
+            return typed_val
+        return val
+            
 
     @data.setter
     def data(self, value: str):
@@ -118,7 +154,13 @@ class LTIMessage(dict):
 
     @property
     def iss(self) -> str:
-        return self.get('iss')
+        val = self.get('iss')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['iss'] = typed_val
+            return typed_val
+        return val
+            
 
     @iss.setter
     def iss(self, value: str):
@@ -127,7 +169,13 @@ class LTIMessage(dict):
 
     @property
     def sub(self) -> str:
-        return self.get('sub')
+        val = self.get('sub')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['sub'] = typed_val
+            return typed_val
+        return val
+            
 
     @sub.setter
     def sub(self, value: str):
@@ -136,7 +184,13 @@ class LTIMessage(dict):
 
     @property
     def given_name(self) -> str:
-        return self.get('given_name')
+        val = self.get('given_name')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['given_name'] = typed_val
+            return typed_val
+        return val
+            
 
     @given_name.setter
     def given_name(self, value: str):
@@ -145,7 +199,13 @@ class LTIMessage(dict):
 
     @property
     def deployment_id(self) -> str:
-        return self.get('https://purl.imsglobal.org/spec/lti/claim/deployment_id')
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/deployment_id')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/deployment_id'] = typed_val
+            return typed_val
+        return val
+            
 
     @deployment_id.setter
     def deployment_id(self, value: str):
@@ -154,7 +214,13 @@ class LTIMessage(dict):
 
     @property
     def message_type(self) -> str:
-        return self.get('https://purl.imsglobal.org/spec/lti/claim/message_type')
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/message_type')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/message_type'] = typed_val
+            return typed_val
+        return val
+            
 
     @message_type.setter
     def message_type(self, value: str):
@@ -163,7 +229,13 @@ class LTIMessage(dict):
 
     @property
     def version(self) -> str:
-        return self.get('https://purl.imsglobal.org/spec/lti/claim/version')
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/version')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/version'] = typed_val
+            return typed_val
+        return val
+            
 
     @version.setter
     def version(self, value: str):
@@ -183,7 +255,13 @@ class LTIMessage(dict):
 
     @property
     def context(self) -> Context:
-        return self.get('https://purl.imsglobal.org/spec/lti/claim/context')
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/context')
+        if (isinstance(val, dict) and not isinstance(val, Context)):
+            typed_val = Context( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/context'] = typed_val
+            return typed_val
+        return val
+            
 
     @context.setter
     def context(self, value: Context):
@@ -192,7 +270,13 @@ class LTIMessage(dict):
 
     @property
     def resource_link(self) -> ResourceLink:
-        return self.get('https://purl.imsglobal.org/spec/lti/claim/resource_link')
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/resource_link')
+        if (isinstance(val, dict) and not isinstance(val, ResourceLink)):
+            typed_val = ResourceLink( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/resource_link'] = typed_val
+            return typed_val
+        return val
+            
 
     @resource_link.setter
     def resource_link(self, value: ResourceLink):
@@ -201,7 +285,13 @@ class LTIMessage(dict):
 
     @property
     def tool_platform(self) -> ToolPlatform:
-        return self.get('https://purl.imsglobal.org/spec/lti/claim/tool_platform')
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/tool_platform')
+        if (isinstance(val, dict) and not isinstance(val, ToolPlatform)):
+            typed_val = ToolPlatform( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/tool_platform'] = typed_val
+            return typed_val
+        return val
+            
 
     @tool_platform.setter
     def tool_platform(self, value: ToolPlatform):
@@ -210,7 +300,13 @@ class LTIMessage(dict):
 
     @property
     def launch_presentation(self) -> LaunchPresentation:
-        return self.get('https://purl.imsglobal.org/spec/lti/claim/launch_presentation')
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/launch_presentation')
+        if (isinstance(val, dict) and not isinstance(val, LaunchPresentation)):
+            typed_val = LaunchPresentation( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/launch_presentation'] = typed_val
+            return typed_val
+        return val
+            
 
     @launch_presentation.setter
     def launch_presentation(self, value: LaunchPresentation):
@@ -219,7 +315,13 @@ class LTIMessage(dict):
 
     @property
     def custom(self) -> Custom:
-        return self.get('https://purl.imsglobal.org/spec/lti/claim/custom')
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/custom')
+        if (isinstance(val, dict) and not isinstance(val, Custom)):
+            typed_val = Custom( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/custom'] = typed_val
+            return typed_val
+        return val
+            
 
     @custom.setter
     def custom(self, value: Custom):
@@ -228,7 +330,13 @@ class LTIMessage(dict):
 
     @property
     def deep_linking_settings(self) -> DeepLinkSettings:
-        return self.get('https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings')
+        val = self.get('https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings')
+        if (isinstance(val, dict) and not isinstance(val, DeepLinkSettings)):
+            typed_val = DeepLinkSettings( **val )
+            self['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'] = typed_val
+            return typed_val
+        return val
+            
 
     @deep_linking_settings.setter
     def deep_linking_settings(self, value: DeepLinkSettings):
@@ -254,7 +362,13 @@ class LineItem(dict):
 
     @property
     def label(self) -> str:
-        return self.get('label')
+        val = self.get('label')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['label'] = typed_val
+            return typed_val
+        return val
+            
 
     @label.setter
     def label(self, value: str):
@@ -263,7 +377,13 @@ class LineItem(dict):
 
     @property
     def scoreMaximum(self) -> float:
-        return self.get('scoreMaximum')
+        val = self.get('scoreMaximum')
+        if (isinstance(val, dict) and not isinstance(val, float)):
+            typed_val = float( **val )
+            self['scoreMaximum'] = typed_val
+            return typed_val
+        return val
+            
 
     @scoreMaximum.setter
     def scoreMaximum(self, value: float):
@@ -272,7 +392,13 @@ class LineItem(dict):
 
     @property
     def tag(self) -> str:
-        return self.get('tag')
+        val = self.get('tag')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['tag'] = typed_val
+            return typed_val
+        return val
+            
 
     @tag.setter
     def tag(self, value: str):
@@ -281,7 +407,13 @@ class LineItem(dict):
 
     @property
     def resourceId(self) -> str:
-        return self.get('resourceId')
+        val = self.get('resourceId')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['resourceId'] = typed_val
+            return typed_val
+        return val
+            
 
     @resourceId.setter
     def resourceId(self, value: str):
@@ -290,7 +422,13 @@ class LineItem(dict):
 
     @property
     def resourceLinkId(self) -> str:
-        return self.get('resourceLinkId')
+        val = self.get('resourceLinkId')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['resourceLinkId'] = typed_val
+            return typed_val
+        return val
+            
 
     @resourceLinkId.setter
     def resourceLinkId(self, value: str):
@@ -310,7 +448,13 @@ class LTIResourceLink(dict):
 
     @property
     def type(self) -> str:
-        return self.get('type')
+        val = self.get('type')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['type'] = typed_val
+            return typed_val
+        return val
+            
 
     @type.setter
     def type(self, value: str):
@@ -319,7 +463,13 @@ class LTIResourceLink(dict):
 
     @property
     def title(self) -> str:
-        return self.get('title')
+        val = self.get('title')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['title'] = typed_val
+            return typed_val
+        return val
+            
 
     @title.setter
     def title(self, value: str):
@@ -328,7 +478,13 @@ class LTIResourceLink(dict):
 
     @property
     def text(self) -> str:
-        return self.get('text')
+        val = self.get('text')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['text'] = typed_val
+            return typed_val
+        return val
+            
 
     @text.setter
     def text(self, value: str):
@@ -337,7 +493,13 @@ class LTIResourceLink(dict):
 
     @property
     def url(self) -> str:
-        return self.get('url')
+        val = self.get('url')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['url'] = typed_val
+            return typed_val
+        return val
+            
 
     @url.setter
     def url(self, value: str):
@@ -347,7 +509,7 @@ class LTIResourceLink(dict):
     @property
     def custom(self) -> Dict[str,str]:
         if not 'custom' in self:
-            self['custom'] = []
+            self['custom'] = {}
         return self.get('custom')
 
     @custom.setter
@@ -357,7 +519,13 @@ class LTIResourceLink(dict):
 
     @property
     def line_item(self) -> LineItem:
-        return self.get('lineItem')
+        val = self.get('lineItem')
+        if (isinstance(val, dict) and not isinstance(val, LineItem)):
+            typed_val = LineItem( **val )
+            self['lineItem'] = typed_val
+            return typed_val
+        return val
+            
 
     @line_item.setter
     def line_item(self, value: LineItem):

@@ -94,19 +94,20 @@ def oidc_init_post(request: Request,
 def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(...)):
     reg = ToolRegistration(**json.loads(state)['r'])
     message = LTIMessage(**reg.decode(id_token))
-    if message['message_type'] == const.dl.request_msg_type:
-        return deeplinking_automatic(request, reg, message)
+    if message.message_type == const.dl.request_msg_type:
+        return deeplinking(request, reg, message)
     return test_and_show_results(request, message)
 
-def deeplinking_automatic(request: Request, reg: ToolRegistration, message: LTIMessage):
+def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
     rl = LTIResourceLink()
     rl.title = 'Test'
     rl.max_points= 10.0
     rl.resource_id = 'rl1'
     rl.url = 'https://robotest.theedtech.dev/deeplink?p1=' + rl.resource_id
-    rl.custom['resource_id'] = rl.resource_id 
-    rl.custom['multiple'] = message.accept_multiple
-    rl.custom('maxPoints', rl.max_points)
+    rl.custom['resource_id'] = rl.resource_id
+    print(message.deep_linking_settings)
+    rl.custom['multiple'] = message.deep_linking_settings.accept_multiple
+    rl.custom['maxPoints'] = rl.max_points
     dlresp = DeeplinkResponse()
     dlresp.content_items.append(rl)
     return templates.TemplateResponse("deeplink_autopost.html", {

@@ -7,7 +7,7 @@ class _const(object):
 
 const = _const()
 const.dl = _const()
-const.dl.request_msg_type = 'LTIDeepLinkingRequest'
-const.dl.response_msg_type = 'LTIDeepLinkingResponse'
+const.dl.request_msg_type = 'LtiDeepLinkingRequest'
+const.dl.response_msg_type = 'LtiDeepLinkingResponse'
 const.dl.content_items = ''
 

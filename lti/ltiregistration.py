@@ -12,7 +12,10 @@ class ToolRegistration(object):
         print( 'Registered' + self.client_id)
 
     def decode(self, token:str) -> dict:
-        return jwt.decode(token, get_remote_keyset(self.jwks_uri))
+        return jwt.decode(token, 
+                          get_remote_keyset(self.jwks_uri),
+                          audience = self.client_id,
+                          issuer = self.iss)
 
     def encode(self, claims: dict, from_client: bool = True) -> str:
         if from_client:
@@ -26,6 +29,6 @@ class ToolRegistration(object):
 def registration( lms: str, iss: str, client_id: str) -> ToolRegistration:
     print(lms)
     if (lms.lower() == 'moodle'):
-        return ToolRegistration(iss, client_id, iss+'/mod/lti/auth.php', iss+'mod/lti/token.php', iss+'mod/lti/certs.php')
+        return ToolRegistration(iss, client_id, iss+'/mod/lti/auth.php', iss+'/mod/lti/token.php', iss+'/mod/lti/certs.php')
     print('No registration')
     return None
