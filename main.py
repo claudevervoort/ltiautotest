@@ -10,7 +10,7 @@ from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List
 from datetime import datetime
 
-from lti import ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, get_public_keyset, get_publickey_pem, const, registration
+from lti import ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DeeplinkSettings, get_public_keyset, get_publickey_pem, const, registration
 from robotest import TestCategory, TestResult
 
 app = FastAPI()
@@ -98,22 +98,50 @@ def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(.
         return deeplinking(request, reg, message)
     return test_and_show_results(request, message)
 
-def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
+def resource_link(name: str, deep_linking_settings: DeeplinkSettings, points: float = None):
     rl = LTIResourceLink()
-    rl.title = 'Test'
-    rl.max_points= 10.0
-    rl.resource_id = 'rl1'
-    rl.url = 'https://robotest.theedtech.dev/deeplink?p1=' + rl.resource_id
-    rl.custom['resource_id'] = rl.resource_id
-    print(message.deep_linking_settings)
-    rl.custom['multiple'] = message.deep_linking_settings.accept_multiple
-    rl.custom['maxPoints'] = rl.max_points
-    dlresp = DeeplinkResponse()
-    dlresp.content_items.append(rl)
+    rl.title = name
+    resource_id = 'rl1'
+    rl.url = 'https://robotest.theedtech.dev/deeplink?p1=' + resource_id
+    rl.custom['resource_id'] = resource_id
+    rl.custom['multiple'] = deep_linking_settings.accept_multiple
+    if ( points ):
+        rl.custom['maxPoints'] = str(rl.max_points)
+        rl.max_points= 10.0
+        rl.resource_id = resource_id
+    return rl
+
+def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
+    dlresp0 = DeeplinkResponse()
+    dlresp0.data = message.deep_linking_settings.data
+    dlresp0.deployment_id = message.deployment_id
+    dlresp1 = DeeplinkResponse()
+    dlresp1.content_items.append( resource_link( "Not graded", message.deep_linking_settings ) )
+    dlresp1.data = message.deep_linking_settings.data
+    dlresp1.deployment_id = message.deployment_id
+    dlresp2 = DeeplinkResponse()
+    dlresp2.content_items.append( resource_link( "Graded", message.deep_linking_settings, 10.0 ) )
+    dlresp2.deployment_id = message.deployment_id
+    dlresp3 = DeeplinkResponse()
+    dlresp3.content_items.append( resource_link( "Graded", message.deep_linking_settings, 10.0 ) )
+    dlresp3.content_items.append( resource_link( "Not graded", message.deep_linking_settings ) )
+    dlresp3.deployment_id = message.deployment_id
+
     return templates.TemplateResponse("deeplink_autopost.html", {
         "request": request, 
         "return_url": message.deep_linking_settings.return_url,
-        "jwt": reg.encode(dlresp)})
+        "jwt_empty": reg.encode(dlresp0),
+        "jwt_single": reg.encode(dlresp1),
+        "jwt_single_graded": reg.encode(dlresp2),
+        "jwt_multiple": reg.encode(dlresp3),
+        })
+
+@app.get('/dl')
+def testdl(request: Request):
+    return templates.TemplateResponse("deeplink_autopost.html", {
+        "request": request, 
+        "return_url": '',
+        "jwt_single": ''})
 
 def test_and_show_results(request: Request, message: dict):
     return templates.TemplateResponse("results.html", {"request": request})

@@ -24,7 +24,7 @@ class Custom(dict):
     pass
 
 
-class DeepLinkSettings(dict):
+class DeeplinkSettings(dict):
 
     @property
     def return_url(self) -> str:
@@ -329,22 +329,98 @@ class LTIMessage(dict):
 
 
     @property
-    def deep_linking_settings(self) -> DeepLinkSettings:
+    def deep_linking_settings(self) -> DeeplinkSettings:
         val = self.get('https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings')
-        if (isinstance(val, dict) and not isinstance(val, DeepLinkSettings)):
-            typed_val = DeepLinkSettings( **val )
+        if (isinstance(val, dict) and not isinstance(val, DeeplinkSettings)):
+            typed_val = DeeplinkSettings( **val )
             self['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'] = typed_val
             return typed_val
         return val
             
 
     @deep_linking_settings.setter
-    def deep_linking_settings(self, value: DeepLinkSettings):
+    def deep_linking_settings(self, value: DeeplinkSettings):
         self['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'] = value
 
 
 
 class DeeplinkResponse(dict):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+        if not self.get('https://purl.imsglobal.org/spec/lti/claim/version'):
+            self['https://purl.imsglobal.org/spec/lti/claim/version'] = '1.3.0'
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+        if not self.get('https://purl.imsglobal.org/spec/lti/claim/message_type'):
+            self['https://purl.imsglobal.org/spec/lti/claim/message_type'] = 'LTIDeepLinkingResponse'
+
+
+    @property
+    def version(self) -> str:
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/version')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/version'] = typed_val
+            return typed_val
+        return val
+            
+
+    @version.setter
+    def version(self, value: str):
+        self['https://purl.imsglobal.org/spec/lti/claim/version'] = value
+
+
+    @property
+    def message_type(self) -> str:
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/message_type')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/message_type'] = typed_val
+            return typed_val
+        return val
+            
+
+    @message_type.setter
+    def message_type(self, value: str):
+        self['https://purl.imsglobal.org/spec/lti/claim/message_type'] = value
+
+
+    @property
+    def data(self) -> str:
+        val = self.get('https://purl.imsglobal.org/spec/lti-dl/claim/data')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['https://purl.imsglobal.org/spec/lti-dl/claim/data'] = typed_val
+            return typed_val
+        return val
+            
+
+    @data.setter
+    def data(self, value: str):
+        self['https://purl.imsglobal.org/spec/lti-dl/claim/data'] = value
+
+
+    @property
+    def deployment_id(self) -> str:
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/deployment_id')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/deployment_id'] = typed_val
+            return typed_val
+        return val
+            
+
+    @deployment_id.setter
+    def deployment_id(self, value: str):
+        self['https://purl.imsglobal.org/spec/lti/claim/deployment_id'] = value
+
 
     @property
     def content_items(self) -> List:

@@ -8,7 +8,7 @@ models = {
     'LaunchPresentation': {
     },
     'Custom': {},
-    'DeepLinkSettings': {
+    'DeeplinkSettings': {
         'return_url': ["deep_link_return_url"],
         "accept_types": ['', 'List[str]'],
         "accept_media_types": ['', 'List[str]'],
@@ -32,9 +32,13 @@ models = {
         "tool_platform": ["https://purl.imsglobal.org/spec/lti/claim/tool_platform", 'ToolPlatform'],
         "launch_presentation": ["https://purl.imsglobal.org/spec/lti/claim/launch_presentation", 'LaunchPresentation'],
         "custom": ["https://purl.imsglobal.org/spec/lti/claim/custom", 'Custom'],
-        "deep_linking_settings": ["https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings", 'DeepLinkSettings'],
+        "deep_linking_settings": ["https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings", 'DeeplinkSettings'],
     },
     'DeeplinkResponse': {
+        "version": ["https://purl.imsglobal.org/spec/lti/claim/version", "str", "1.3.0"],
+        "message_type": ["https://purl.imsglobal.org/spec/lti/claim/message_type", "str", "LTIDeepLinkingResponse"],
+        "data": ["https://purl.imsglobal.org/spec/lti-dl/claim/data"],
+        "deployment_id": ["https://purl.imsglobal.org/spec/lti/claim/deployment_id"],
         "content_items": ["https://purl.imsglobal.org/spec/lti-dl/claim/content_items", "List"]
     },
     'LineItem': {

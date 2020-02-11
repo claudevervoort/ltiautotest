@@ -46,3 +46,7 @@ table.results tr:nth-child(4) {
     animation-delay: 4s;
 }
 
+#dlchoices a {
+    padding-inline-start: 10px;
+    padding-inline-end: 10px;
+}

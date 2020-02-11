@@ -1,15 +1,34 @@
+<!DOCTYPE html>
 <html>
     <head>
         <script>
-            function autopost() {
-                document.getElementById('autopostform').submit();
+            function post(form_id) {
+                document.getElementById(form_id).submit();
             }
         </script>
+        <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/static/robottest.css">
     </head>
     <body>
-        Deep Linking
-        <form id="autopostform" action="{{ return_url }}">
-            <input type="hidden" name="JWT" value="{{ jwt }}">
+        <div class="centered">
+            <video autoplay loop muted playsinline>
+                <source src="/assets/deeplinking.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="centered">
+            <h4>Deep Linking, what do you want in your basket?</h4>
+            <span class="note">Your platform does not seem to support multiple items to be returned (accept_multiple is false).</span>
+            <span class="note">Your platform does not seem to support gradebook integration (no line items url).</span>
+        </div>
+        <div class="centered" id="dlchoices">
+            <a href="#" onclick="post('empty')">Nothing! (Cancel)</a> 
+            <a href="#" onclick="post('single')">A single not graded LTI Link</a> 
+            <a href="#" onclick="post('single_graded')">A single <b>graded</b> LTI Link</a> 
+            <a href="#" onclick="post('empty')">One of each please!
+            </a>
+        </div>
+        <form id="single" action="{{ return_url }}" method="post">
+            <input type="hidden" name="JWT" value="{{ jwt_single }}">
         </form>
     </body>
 </html>
