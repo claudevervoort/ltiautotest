@@ -1,20 +1,29 @@
 import requests
 import json
+import hashlib
 from uuid import uuid4
 from jose import jwk
 from jose.backends.base import Key
 
+from os import path
 from Crypto.PublicKey import RSA
 from base64 import b64encode, urlsafe_b64encode
 
-def gen_key():
-    return (RSA.generate(2048), str(uuid4()))
+if path.exists('private.pem'):
+    with open('private.pem', 'r') as f:
+        key = RSA.importKey(f.read())
+else:
+    with open('private.pem', 'w') as f:
+        key = RSA.generate(2048)
+        f.write(key.exportKey('PEM').decode())
+
+keyhash = hashlib.sha256()
+keyhash.update(key.exportKey('PEM'))
+kid = keyhash.hexdigest()
 
 def base64urlUInt_encode(val):
     bytes = val.to_bytes((val.bit_length() +7) // 8, byteorder='big')
     return urlsafe_b64encode(bytes).decode()
-
-(key, kid) = gen_key()
 
 public_keyset = {'keys':[
     {

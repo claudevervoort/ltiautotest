@@ -150,6 +150,50 @@ class DeeplinkSettings(dict):
 
 
 
+class GradeService(dict):
+
+    @property
+    def lineitem(self) -> str:
+        val = self.get('lineitem')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['lineitem'] = typed_val
+            return typed_val
+        return val
+            
+
+    @lineitem.setter
+    def lineitem(self, value: str):
+        self['lineitem'] = value
+
+
+    @property
+    def lineitems(self) -> str:
+        val = self.get('lineitems')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['lineitems'] = typed_val
+            return typed_val
+        return val
+            
+
+    @lineitems.setter
+    def lineitems(self, value: str):
+        self['lineitems'] = value
+
+
+    @property
+    def scope(self) -> List[str]:
+        if not 'scope' in self:
+            self['scope'] = []
+        return self.get('scope')
+
+    @scope.setter
+    def scope(self, value: List[str]):
+        self['scope'] = value
+
+
+
 class LTIMessage(dict):
 
     @property
@@ -341,6 +385,21 @@ class LTIMessage(dict):
     @deep_linking_settings.setter
     def deep_linking_settings(self, value: DeeplinkSettings):
         self['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'] = value
+
+
+    @property
+    def grade_service(self) -> GradeService:
+        val = self.get('https://purl.imsglobal.org/spec/lti-ags/claim/endpoint')
+        if (isinstance(val, dict) and not isinstance(val, GradeService)):
+            typed_val = GradeService( **val )
+            self['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'] = typed_val
+            return typed_val
+        return val
+            
+
+    @grade_service.setter
+    def grade_service(self, value: GradeService):
+        self['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'] = value
 
 
 

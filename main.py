@@ -7,7 +7,7 @@ from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 
-from typing import List
+from typing import List, Dict
 from datetime import datetime
 
 from lti import ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DeeplinkSettings, get_public_keyset, get_publickey_pem, const, registration
@@ -70,8 +70,6 @@ def oidc_init(request: Request,
         query_params.append(('login_hint', login_hint))
     if (lti_message_hint):
         query_params.append(('lti_message_hint', lti_message_hint))
-    print(query_params)
-    print(auth_url)
     redirect_url=urlunparse((auth_url.scheme, 
                              auth_url.netloc, 
                              auth_url.path, 
@@ -98,15 +96,16 @@ def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(.
         return deeplinking(request, reg, message)
     return test_and_show_results(request, message)
 
-def resource_link(name: str, deep_linking_settings: DeeplinkSettings, points: float = None):
+def resource_link(name: str, message: LTIMessage, multiple: bool, points: float = None):
     rl = LTIResourceLink()
     rl.title = name
     resource_id = 'rl1'
     rl.url = 'https://robotest.theedtech.dev/deeplink?p1=' + resource_id
     rl.custom['resource_id'] = resource_id
-    rl.custom['multiple'] = deep_linking_settings.accept_multiple
+    rl.custom['multiple'] = str(message.deep_linking_settings.accept_multiple and multiple)
+    rl.custom['lineitems_dl'] = message.grade_service.lineitems
     if ( points ):
-        rl.custom['maxPoints'] = str(rl.max_points)
+        rl.custom['max_points'] = str(rl.max_points)
         rl.max_points= 10.0
         rl.resource_id = resource_id
     return rl
@@ -116,15 +115,15 @@ def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
     dlresp0.data = message.deep_linking_settings.data
     dlresp0.deployment_id = message.deployment_id
     dlresp1 = DeeplinkResponse()
-    dlresp1.content_items.append( resource_link( "Not graded", message.deep_linking_settings ) )
+    dlresp1.content_items.append( resource_link( "Not graded", message, False ) )
     dlresp1.data = message.deep_linking_settings.data
     dlresp1.deployment_id = message.deployment_id
     dlresp2 = DeeplinkResponse()
-    dlresp2.content_items.append( resource_link( "Graded", message.deep_linking_settings, 10.0 ) )
+    dlresp2.content_items.append( resource_link( "Graded", message, False, 10.0 ) )
     dlresp2.deployment_id = message.deployment_id
     dlresp3 = DeeplinkResponse()
-    dlresp3.content_items.append( resource_link( "Graded", message.deep_linking_settings, 10.0 ) )
-    dlresp3.content_items.append( resource_link( "Not graded", message.deep_linking_settings ) )
+    dlresp3.content_items.append( resource_link( "Graded", message, True, 10.0 ) )
+    dlresp3.content_items.append( resource_link( "Not graded", message, True ) )
     dlresp3.deployment_id = message.deployment_id
 
     return templates.TemplateResponse("deeplink_autopost.html", {
@@ -143,8 +142,51 @@ def testdl(request: Request):
         "return_url": '',
         "jwt_single": ''})
 
+def test_deeplinking(message: LTIMessage) -> TestCategory:
+    res = TestCategory(name='Deep Linking')
+    res.results.append(TestResult('Custom parameter passed',
+                                     'resource_id' in message.custom, 
+                                     True, 
+                                     'resource_id: ' + message.custom.get('resource_id')))
+    res.results.append(TestResult('Supports Multiple',
+                                     'multiple' in message.custom and message.custom['multiple'] == 'True',
+                                     False, 
+                                     'Launch from Multiple return'))
+    return res
+
+
+def test_ags(message: LTIMessage) -> TestCategory:
+    res = TestCategory('Assignment and Grade Services')
+    res.results.append(TestResult('Line items in Deep Linking',
+                                     'lineitems_dl' in message.custom and len(message.custom['lineitems_dl'])>6,
+                                     False, 
+                                     ''))
+    if message.grade_service.lineitems:
+        res.results.append(TestResult('Line items present',
+                                     True,
+                                     True, 
+                                     ''))
+    else:
+        res.results.append(TestResult('Line items present',
+                                     False,
+                                     True, 
+                                     ''))
+
+    if message.grade_service.lineitem:
+        res.results.append(TestResult('Line item present',
+                                     'max_points' in message.custom,
+                                     True, 
+                                     ''))
+    
+
+    
+    return res
+
 def test_and_show_results(request: Request, message: dict):
-    return templates.TemplateResponse("results.html", {"request": request})
+    results = []
+    results.append(test_deeplinking(message))
+    results.append(test_ags(message))
+    return templates.TemplateResponse("results.html", {"request": request, "results": results})
 
 @app.get("/test")
 def test():

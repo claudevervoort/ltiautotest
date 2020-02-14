@@ -19,6 +19,11 @@ models = {
         "text": [],
         "data": []
     },
+    'GradeService': {
+        'lineitem': [],
+        'lineitems': [],
+        'scope':['', 'List[str]']
+    },
     'LTIMessage': {
         "iss": [],
         "sub": [],
@@ -33,6 +38,7 @@ models = {
         "launch_presentation": ["https://purl.imsglobal.org/spec/lti/claim/launch_presentation", 'LaunchPresentation'],
         "custom": ["https://purl.imsglobal.org/spec/lti/claim/custom", 'Custom'],
         "deep_linking_settings": ["https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings", 'DeeplinkSettings'],
+        "grade_service": ['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint', 'GradeService']
     },
     'DeeplinkResponse': {
         "version": ["https://purl.imsglobal.org/spec/lti/claim/version", "str", "1.3.0"],

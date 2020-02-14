@@ -10,6 +10,15 @@ body {
     perspective: 1000px;
 }
 
+span.note {
+    font-size: 70%;
+    color: lightgoldenrodyellow;
+}
+
+video {
+    max-width: 70%;
+}
+
 div.centered {
     display: flex;
     justify-content: center;
@@ -49,4 +58,25 @@ table.results tr:nth-child(4) {
 #dlchoices a {
     padding-inline-start: 10px;
     padding-inline-end: 10px;
+}
+
+a.primary {
+    color: lightgray;
+    font-weight: bold;
+}
+
+a.primary:hover {
+    color: white;
+    font-weight: bolder;
+}
+
+a.secondary {
+    font-size: 80%;
+    color: lightgoldenrodyellow;
+    font-weight: normal;
+}
+
+a.secondary:hover {
+    color: yellow;
+    font-weight: bold;
 }
