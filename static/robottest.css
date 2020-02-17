@@ -27,12 +27,37 @@ div.centered {
 
 table.results {
     border: none;
-    color: yellow;
-    transform: rotateY(40deg);
+    color: lightyellow;
+    transform: perspective(400px) rotateY(20deg);
+}
+
+table.results tr.category {
+    color: lightgoldenrodyellow;
 }
 
 table.results th, table.results td {
-  border-bottom: 1px solid yellow;
+  border-bottom: 1px solid lightyellow;
+}
+
+table.results td {
+    font-size: 80%;
+}
+
+table.results tr.result th {
+    font-weight: normal;
+    text-align: right;
+}
+
+table.results tr.result.failed.required {
+    color: darkred;
+}
+
+table.results tr.result.failed {
+    color: lightpink;
+}
+
+table.results tr.result.failed th {
+    text-decoration: line-through;
 }
 
 table.results tr {
@@ -42,16 +67,28 @@ table.results tr {
 }
 
 table.results tr:nth-child(1) {
-    animation-delay: 1s;
+    animation-delay: 0.5s;
 }
 
 table.results tr:nth-child(2) {
-    animation-delay: 2s;
+    animation-delay: 1s;
 }
 table.results tr:nth-child(3) {
-    animation-delay: 3s;
+    animation-delay: 1.5s;
 }
 table.results tr:nth-child(4) {
+    animation-delay: 2s;
+}
+table.results tr:nth-child(5) {
+    animation-delay: 2.5s;
+}
+table.results tr:nth-child(6) {
+    animation-delay: 3s;
+}
+table.results tr:nth-child(7) {
+    animation-delay: 3.5s;
+}
+table.results tr:nth-child(8) {
     animation-delay: 4s;
 }
 

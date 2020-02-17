@@ -144,21 +144,28 @@ def testdl(request: Request):
 
 def test_deeplinking(message: LTIMessage) -> TestCategory:
     res = TestCategory(name='Deep Linking')
-    res.results.append(TestResult('Custom parameter passed',
-                                     'resource_id' in message.custom, 
-                                     True, 
-                                     'resource_id: ' + message.custom.get('resource_id')))
-    res.results.append(TestResult('Supports Multiple',
-                                     'multiple' in message.custom and message.custom['multiple'] == 'True',
-                                     False, 
-                                     'Launch from Multiple return'))
+    if message.custom:
+        res.results.append(TestResult('Custom parameter passed',
+                                        'resource_id' in message.custom, 
+                                        True, 
+                                        'resource_id: ' + message.custom.get('resource_id')))
+        res.results.append(TestResult('Supports Multiple',
+                                        'multiple' in message.custom and message.custom['multiple'] == 'True',
+                                        False, 
+                                        'Launch from Multiple return'))
+    else:
+        res.results.append(TestResult('Custom parameter passed',
+                                        False, 
+                                        True, 
+                                        'no custom parameters passed back'))
+
     return res
 
 
 def test_ags(message: LTIMessage) -> TestCategory:
     res = TestCategory('Assignment and Grade Services')
     res.results.append(TestResult('Line items in Deep Linking',
-                                     'lineitems_dl' in message.custom and len(message.custom['lineitems_dl'])>6,
+                                     message.custom and 'lineitems_dl' in message.custom and len(message.custom['lineitems_dl'])>6,
                                      False, 
                                      ''))
     if message.grade_service.lineitems:
@@ -174,7 +181,7 @@ def test_ags(message: LTIMessage) -> TestCategory:
 
     if message.grade_service.lineitem:
         res.results.append(TestResult('Line item present',
-                                     'max_points' in message.custom,
+                                     message.custom and 'max_points' in message.custom,
                                      True, 
                                      ''))
     

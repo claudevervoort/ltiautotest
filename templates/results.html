@@ -1,16 +1,16 @@
 <html>
     <head>
         <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="static/robottest.css">
+        <link rel="stylesheet" type="text/css" href="/static/robottest.css">
     </head>
     <body>
     <div class="centered">
     <table class="results">
     {% for category in results %}
-        <th colspan="2">{{category.name}}</th>
+        <tr class="category"><th colspan="2">{{category.name}}</th></tr>
         {% for result in category.results %}
-            <tr class="{{ 'success' if result.success }} {{ 'required' if result.required }}">
-                <td>{{ result.name }}</td>
+            <tr class="result {{ 'failed' if not result.success }} {{ 'required' if result.required }}">
+                <th>{{ result.name }}</th>
                 <td>{{ result.comment }}</td>
             </tr>
         {% endfor %}
@@ -18,7 +18,7 @@
 
     </table>
             <video autoplay loop muted playsinline>
-                <source src="assets/thumbsup.mp4" type="video/mp4">
+                <source src="/assets/thumbsup.mp4" type="video/mp4">
             </video>
     </div>
     </body>
