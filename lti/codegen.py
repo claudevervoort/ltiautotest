@@ -53,7 +53,9 @@ models = {
         'scoreMaximum': ['', 'float'],
         'tag': [],
         'resourceId': [],
-        'resourceLinkId': []
+        'resourceLinkId': [],
+        'startDateTime': [],
+        'endDateTime': []
     },
     'GradingProgress': (
         'NotReady',
@@ -72,9 +74,18 @@ models = {
     'Score': {
         'userId': [],
         'scoreGiven': ['', 'float'],
-        'timestamp': [],
+        'scoreMaximum': ['', 'float'],
+        'comment': [],
+        'timestamp': ['', 'datetime'],
         'activityProgress': ['', 'ActivityProgress'],
         'gradingProgress': ['', 'GradingProgress']
+    },
+    'Result': {
+        'userId': [],
+        'resultScore': ['', 'float'],
+        'resultMaximum': ['', 'float'],
+        'comment': [],
+        'timestamp': [],
     },
     'LTIResourceLink': {
         'type': ['', 'str', 'ltiResourceLink'],
@@ -90,8 +101,6 @@ models = {
 
 template_enum = """
 class {name}(Enum):
-    def __json__(self):
-        return self.value
 
 """
 
@@ -115,6 +124,8 @@ template_property = """
     @property
     def {short}(self) -> {type}:
         val = self.get('{long}')
+        if issubclass({type}, Enum):
+            return {type}(val)
         if (isinstance(val, dict) and not isinstance(val, {type})):
             typed_val = {type}( **val )
             self['{long}'] = typed_val
@@ -124,7 +135,23 @@ template_property = """
 
     @{short}.setter
     def {short}(self, value: {type}):
-        self['{long}'] = value
+        if isinstance(value, Enum):
+            self['{long}'] = value.value
+        else:
+            self['{long}'] = value
+"""
+
+template_datetime_property = """
+    @property
+    def {short}(self) -> datetime:
+        val = self.get('{long}')
+        if (val):
+            return datetime.fromisoformat(val)
+        return None
+
+    @{short}.setter
+    def {short}(self, value: datetime):
+        self['{long}'] = value.isoformat()
 """
 
 template_dict_property = """
@@ -196,6 +223,9 @@ def generate_class(name: str, spec: dict):
         elif type.startswith('Dict'):
             gen.append(template_dict_property.format(
                 short=k, long=lk, type=type))
+        elif type == 'datetime':
+            gen.append(template_datetime_property.format(
+                short=k, long=lk))
         else:
             gen.append(template_property.format(short=k, long=lk, type=type))
 
@@ -211,12 +241,8 @@ if __name__ == "__main__":
 # generated file! see gen_model.py
 from typing import List, Set, Dict, Tuple, Optional
 from enum import Enum
+from datetime import datetime
 
-def json_default(o):
-    json = getattr(o, "__json__", None)
-    if callable(json):
-        return json()
-    raise TypeError('no __json__ function found.')
         """
 
     )
