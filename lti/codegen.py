@@ -48,11 +48,33 @@ models = {
         "content_items": ["https://purl.imsglobal.org/spec/lti-dl/claim/content_items", "List"]
     },
     'LineItem': {
+        'id': [],
         'label': [],
         'scoreMaximum': ['', 'float'],
         'tag': [],
         'resourceId': [],
         'resourceLinkId': []
+    },
+    'GradingProgress': (
+        'NotReady',
+        'Failed',
+        'Pending',
+        'PendingManual',
+        'FullyGraded'
+    ),
+    'ActivityProgress' : (
+        'Initialized',
+        'Started',
+        'InProgress',
+        'Submitted',
+        'Completed'
+    ),
+    'Score': {
+        'userId': [],
+        'scoreGiven': ['', 'float'],
+        'timestamp': [],
+        'activityProgress': ['', 'ActivityProgress'],
+        'gradingProgress': ['', 'GradingProgress']
     },
     'LTIResourceLink': {
         'type': ['', 'str', 'ltiResourceLink'],
@@ -65,6 +87,17 @@ models = {
         'resource_id': ['lineItem:LineItem->resourceId', 'float']
     }
 }
+
+template_enum = """
+class {name}(Enum):
+    def __json__(self):
+        return self.value
+
+"""
+
+template_enum_val = """
+    {name} = '{value}'
+"""
 
 template_class = "class {name}(dict):"
 
@@ -131,8 +164,15 @@ template_nested_property = """
         self['{container}']['{attr}'] = value
 """
 
+def generate_enum(name: str, spec: tuple):
+    gen = []
+    gen.append(template_enum.format(name=name))
+    for item in spec:
+        gen.append(template_enum_val.format(name=item.upper(), value=item))
+    return gen
 
-def generate(name: str, spec: dict):
+
+def generate_class(name: str, spec: dict):
     gen = []
     gen.append(template_class.format(name=name))
     init = False
@@ -170,13 +210,22 @@ if __name__ == "__main__":
         """
 # generated file! see gen_model.py
 from typing import List, Set, Dict, Tuple, Optional
+from enum import Enum
 
-
+def json_default(o):
+    json = getattr(o, "__json__", None)
+    if callable(json):
+        return json()
+    raise TypeError('no __json__ function found.')
         """
+
     )
 
     for (k, v) in models.items():
-        gen.extend(generate(k, v))
+        if isinstance(v, dict):
+            gen.extend(generate_class(k, v))
+        else:
+            gen.extend(generate_enum(k, v))
         gen.append('')
         gen.append('')
 

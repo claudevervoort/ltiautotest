@@ -1,8 +1,13 @@
 
 # generated file! see gen_model.py
 from typing import List, Set, Dict, Tuple, Optional
+from enum import Enum
 
-
+def json_default(o):
+    json = getattr(o, "__json__", None)
+    if callable(json):
+        return json()
+    raise TypeError('no __json__ function found.')
         
 class Context(dict):
     pass
@@ -496,6 +501,21 @@ class DeeplinkResponse(dict):
 class LineItem(dict):
 
     @property
+    def id(self) -> str:
+        val = self.get('id')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['id'] = typed_val
+            return typed_val
+        return val
+            
+
+    @id.setter
+    def id(self, value: str):
+        self['id'] = value
+
+
+    @property
     def label(self) -> str:
         val = self.get('label')
         if (isinstance(val, dict) and not isinstance(val, str)):
@@ -568,6 +588,115 @@ class LineItem(dict):
     @resourceLinkId.setter
     def resourceLinkId(self, value: str):
         self['resourceLinkId'] = value
+
+
+
+
+class GradingProgress(Enum):
+    def __json__(self):
+        return self.value
+
+
+
+    NOTREADY = 'NotReady'
+
+
+    FAILED = 'Failed'
+
+
+    PENDING = 'Pending'
+
+
+    PENDINGMANUAL = 'PendingManual'
+
+
+    FULLYGRADED = 'FullyGraded'
+
+
+
+
+class ActivityProgress(Enum):
+    def __json__(self):
+        return self.value
+
+
+
+    INITIALIZED = 'Initialized'
+
+
+    STARTED = 'Started'
+
+
+    INPROGRESS = 'InProgress'
+
+
+    SUBMITTED = 'Submitted'
+
+
+    COMPLETED = 'Completed'
+
+
+
+class Score(dict):
+
+    @property
+    def userId(self) -> str:
+        val = self.get('userId')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['userId'] = typed_val
+            return typed_val
+        return val
+            
+
+    @userId.setter
+    def userId(self, value: str):
+        self['userId'] = value
+
+
+    @property
+    def scoreGiven(self) -> float:
+        val = self.get('scoreGiven')
+        if (isinstance(val, dict) and not isinstance(val, float)):
+            typed_val = float( **val )
+            self['scoreGiven'] = typed_val
+            return typed_val
+        return val
+            
+
+    @scoreGiven.setter
+    def scoreGiven(self, value: float):
+        self['scoreGiven'] = value
+
+
+    @property
+    def timestamp(self) -> str:
+        val = self.get('timestamp')
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['timestamp'] = typed_val
+            return typed_val
+        return val
+            
+
+    @timestamp.setter
+    def timestamp(self, value: str):
+        self['timestamp'] = value
+
+
+    @property
+    def activityProgress(self) -> ActivityProgress:
+        val = self.get('activityProgress')
+        if (isinstance(val, dict) and not isinstance(val, ActivityProgress)):
+            typed_val = ActivityProgress( **val )
+            self['activityProgress'] = typed_val
+            return typed_val
+        return val
+            
+
+    @activityProgress.setter
+    def activityProgress(self, value: ActivityProgress):
+        self['activityProgress'] = value
 
 
 

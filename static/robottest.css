@@ -19,6 +19,12 @@ video {
     max-width: 70%;
 }
 
+body.results video.ignore {
+    position: absolute;
+    right: 15%;
+    z-index: 1;
+}
+
 div.centered {
     display: flex;
     justify-content: center;
@@ -29,6 +35,9 @@ table.results {
     border: none;
     color: lightyellow;
     transform: perspective(400px) rotateY(20deg);
+    position: absolute;
+    left: 15%;
+    z-index: 10;
 }
 
 table.results tr.category {
