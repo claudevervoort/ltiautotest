@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/static/robottest.css">
+        <script type="application/javascript">
+            function closeme() {
+                (window.opener || window.parent).postMessage({subject:'org.imsglobal.lti.close'}, '*');
+            }
+        </script>
+    </head>
+    <body class="results">
+    <div class="centered">
+            <video autoplay loop muted playsinline>
+                <source src="/assets/thumbsup.mp4" type="video/mp4">
+            </video>
+    </div>
+    <div class="centered">
+        Registration completed. <button onclick="closeme()">close</button>
+    </div>
+    </body>
+</html>

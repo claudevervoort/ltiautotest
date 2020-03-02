@@ -4,11 +4,6 @@ from typing import List, Set, Dict, Tuple, Optional
 from enum import Enum
 from datetime import datetime
 
-def json_default(o):
-    json = getattr(o, "__json__", None)
-    if callable(json):
-        return json()
-    raise TypeError('no __json__ function found.')
         
 class Context(dict):
     pass
@@ -626,6 +621,9 @@ class DeeplinkResponse(dict):
 
 class LineItem(dict):
 
+    mime = 'mmm'
+
+
     @property
     def id(self) -> str:
         val = self.get('id')
@@ -789,8 +787,6 @@ class LineItem(dict):
 
 
 class GradingProgress(Enum):
-    def __json__(self):
-        return self.value
 
 
 
@@ -812,8 +808,6 @@ class GradingProgress(Enum):
 
 
 class ActivityProgress(Enum):
-    def __json__(self):
-        return self.value
 
 
 

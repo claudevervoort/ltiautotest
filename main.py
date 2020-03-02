@@ -35,6 +35,10 @@ def read_root(request: Request):
     cat1.results.append(TestResult('res3', True, True, 'You passed this easily'))
     return templates.TemplateResponse("results.html", {"request": request, "results": [cat1]})
 
+@app.get("/register")
+def register(request: Request, openid_configuration: str, registration_token: str):
+    return templates.TemplateResponse("registration_completed.html", {"request": request})
+
 @app.get("/.well-known/jwks.json")
 def jwks():
     return get_public_keyset()

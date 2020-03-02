@@ -48,6 +48,11 @@ models = {
         "content_items": ["https://purl.imsglobal.org/spec/lti-dl/claim/content_items", "List"]
     },
     'LineItem': {
+        'cls_const': {
+            'mime': 'mmm',
+            'read_scope': 'xxx',
+            'write_scope': 'zzzz'
+        },
         'id': [],
         'label': [],
         'scoreMaximum': ['', 'float'],
@@ -55,7 +60,7 @@ models = {
         'resourceId': [],
         'resourceLinkId': [],
         'startDateTime': [],
-        'endDateTime': []
+        'endDateTime': [],
     },
     'GradingProgress': (
         'NotReady',
@@ -104,7 +109,7 @@ class {name}(Enum):
 
 """
 
-template_enum_val = """
+template_class_val = """
     {name} = '{value}'
 """
 
@@ -195,7 +200,7 @@ def generate_enum(name: str, spec: tuple):
     gen = []
     gen.append(template_enum.format(name=name))
     for item in spec:
-        gen.append(template_enum_val.format(name=item.upper(), value=item))
+        gen.append(template_class_val.format(name=item.upper(), value=item))
     return gen
 
 
@@ -204,12 +209,16 @@ def generate_class(name: str, spec: dict):
     gen.append(template_class.format(name=name))
     init = False
     for (k, v) in spec.items():
-        if len(v) == 3:
+        if k=='cls_const':
+            for (kk,vv) in v.items():
+                gen.append(template_class_val.format(name=kk, value=vv))
+        elif len(v) == 3:
             lk = k if len(v) == 0 or len(v[0]) == 0 else v[0]
             if not init:
                 gen.append(template_class_init)
             gen.append(template_class_init_val.format(long=lk, value=v[2]))
-    for (k, v) in spec.items():
+    items = (item for item in spec.items() if isinstance(item[1], list) )
+    for (k, v) in items:
         type = 'str' if len(v) < 2 else v[1]
         lk = k if len(v) == 0 or len(v[0]) == 0 else v[0]
         if '->' in lk:

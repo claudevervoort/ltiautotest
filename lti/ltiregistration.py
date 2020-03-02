@@ -1,5 +1,8 @@
 from jose import jwt
+from datetime import datetime
 from lti.jwks import get_remote_keyset, get_webkey
+
+TOKEN_TTL = 300
 
 class ToolRegistration(object):
 
@@ -9,7 +12,6 @@ class ToolRegistration(object):
         self.auth_endpoint = auth_endpoint
         self.token_uri = token_uri
         self.jwks_uri = jwks_uri
-        print( 'Registered' + self.client_id)
 
     def decode(self, token:str) -> dict:
         return jwt.decode(token, 
@@ -23,12 +25,14 @@ class ToolRegistration(object):
         else:
             claims['iss'] = self.iss
             claims['aud'] = self.client_id
-        return jwt.encode(claims, get_webkey(), algorithm='RS256')
+        if not 'iat' in claims:
+            claims['iat'] = int(datetime.now().timestamp())
+        if not 'exp' in claims:
+            claims['exp'] = int(datetime.now().timestamp()) + TOKEN_TTL
+        return jwt.encode(claims, get_webkey(), algorithm='RS256', headers={'kid': get_webkey()['kid']})
 
 
 def registration( lms: str, iss: str, client_id: str) -> ToolRegistration:
-    print(lms)
     if (lms.lower() == 'moodle'):
         return ToolRegistration(iss, client_id, iss+'/mod/lti/auth.php', iss+'/mod/lti/token.php', iss+'/mod/lti/certs.php')
-    print('No registration')
     return None
