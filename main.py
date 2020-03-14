@@ -1,5 +1,6 @@
 import json
 import random
+import traceback
 from fastapi import FastAPI, Form
 from starlette.responses import PlainTextResponse, RedirectResponse
 from starlette.requests import Request
@@ -10,7 +11,8 @@ from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List, Dict
 from datetime import datetime
 
-from lti import ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DeeplinkSettings, get_public_keyset, get_publickey_pem, const, registration
+from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get
+
 from robotest import TestCategory, TestResult
 
 app = FastAPI()
@@ -24,11 +26,11 @@ def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/broken")
-def read_root(request: Request):
+def read_broken(request: Request):
     return templates.TemplateResponse("broken.html", {"request": request})
 
 @app.get("/results")
-def read_root(request: Request):
+def read_results(request: Request):
     cat1 = TestCategory(name='category 1')
     cat1.results.append(TestResult('res1', True, True, 'You passed this easily'))
     cat1.results.append(TestResult('res2', True, True, 'You passed this easily'))
@@ -44,7 +46,7 @@ def jwks():
     return get_public_keyset()
 
 @app.get("/.well-known/publickey.pem", response_class=PlainTextResponse)
-def jwks():
+def jwk_public():
     return get_publickey_pem()
 
 @app.get("/oidc/init")
@@ -74,11 +76,11 @@ def oidc_init(request: Request,
         query_params.append(('login_hint', login_hint))
     if (lti_message_hint):
         query_params.append(('lti_message_hint', lti_message_hint))
-    redirect_url=urlunparse((auth_url.scheme, 
-                             auth_url.netloc, 
-                             auth_url.path, 
-                             auth_url.params, 
-                             urlencode(query_params), 
+    redirect_url=urlunparse((auth_url.scheme,
+                             auth_url.netloc,
+                             auth_url.path,
+                             auth_url.params,
+                             urlencode(query_params),
                              auth_url.fragment))
     return RedirectResponse(url=redirect_url)
 
@@ -87,7 +89,7 @@ def oidc_init_post(request: Request,
               iss:str = Form(...),
               client_id: str = None,
               lms: str = 'moodle',
-              target_link_uri:str = Form(...), 
+              target_link_uri:str = Form(...),
               login_hint: str = Form(...),
               lti_message_hint: str = Form(...)):
     return oidc_init(request, iss, login_hint, lti_message_hint, client_id, lms, target_link_uri)
@@ -98,7 +100,7 @@ def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(.
     message = LTIMessage(**reg.decode(id_token))
     if message.message_type == const.dl.request_msg_type:
         return deeplinking(request, reg, message)
-    return test_and_show_results(request, message)
+    return test_and_show_results(request, reg, message)
 
 def resource_link(name: str, message: LTIMessage, multiple: bool, points: float = None):
     rl = LTIResourceLink()
@@ -131,7 +133,7 @@ def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
     dlresp3.deployment_id = message.deployment_id
 
     return templates.TemplateResponse("deeplink_autopost.html", {
-        "request": request, 
+        "request": request,
         "return_url": message.deep_linking_settings.return_url,
         "jwt_empty": reg.encode(dlresp0),
         "jwt_single": reg.encode(dlresp1),
@@ -142,7 +144,7 @@ def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
 @app.get('/dl')
 def testdl(request: Request):
     return templates.TemplateResponse("deeplink_autopost.html", {
-        "request": request, 
+        "request": request,
         "return_url": '',
         "jwt_single": ''})
 
@@ -150,53 +152,65 @@ def test_deeplinking(message: LTIMessage) -> TestCategory:
     res = TestCategory(name='Deep Linking')
     if message.custom:
         res.results.append(TestResult('Custom parameter passed',
-                                        'resource_id' in message.custom, 
-                                        True, 
+                                        'resource_id' in message.custom,
+                                        True,
                                         'resource_id: ' + message.custom.get('resource_id')))
         res.results.append(TestResult('Supports Multiple',
                                         'multiple' in message.custom and message.custom['multiple'] == 'True',
-                                        False, 
+                                        False,
                                         'Launch from Multiple return'))
     else:
         res.results.append(TestResult('Custom parameter passed',
-                                        False, 
-                                        True, 
+                                        False,
+                                        True,
                                         'no custom parameters passed back'))
 
     return res
 
 
-def test_ags(message: LTIMessage) -> TestCategory:
+def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
     res = TestCategory('Assignment and Grade Services')
     res.results.append(TestResult('Line items in Deep Linking',
                                      message.custom and 'lineitems_dl' in message.custom and len(message.custom['lineitems_dl'])>6,
-                                     False, 
+                                     False,
                                      ''))
     if message.grade_service.lineitems:
         res.results.append(TestResult('Line items present',
                                      True,
-                                     True, 
+                                     True,
                                      ''))
     else:
         res.results.append(TestResult('Line items present',
                                      False,
-                                     True, 
+                                     True,
                                      ''))
 
-    if message.grade_service.lineitem:
+    if message.custom and 'max_points' in message.custom:
         res.results.append(TestResult('Line item present',
-                                     message.custom and 'max_points' in message.custom,
-                                     True, 
+                                      message.grade_service.lineitem,
+                                     True,
                                      ''))
-    
+    if message.grade_service.lineitem:
+        try:
+            lineitem = ltiservice_get(reg, LineItem, message.grade_service.lineitem)
+            res.results.append(TestResult('Line item loaded',
+                                     True,
+                                     True,
+                                     lineitem.id))
+        except Exception as e:
+            print(traceback.format_exc())
+            res.results.append(TestResult('Line item loaded',
+                                     False,
+                                     True,
+                                     str(e)))
 
-    
+
     return res
 
-def test_and_show_results(request: Request, message: dict):
+def test_and_show_results(request: Request, reg: ToolRegistration, message: dict):
     results = []
     results.append(test_deeplinking(message))
-    results.append(test_ags(message))
+    results.append(test_ags(reg, message))
     return templates.TemplateResponse("results.html", {"request": request, "results": results})
 
 @app.get("/test")

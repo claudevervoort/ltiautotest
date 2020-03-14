@@ -621,7 +621,16 @@ class DeeplinkResponse(dict):
 
 class LineItem(dict):
 
-    mime = 'mmm'
+    mime = 'application/vnd.ims.lis.v2.lineitem+json'
+
+
+    mime_collection = 'application/vnd.ims.lis.v2.lineitemcontainer+json'
+
+
+    read_scope = 'https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly'
+
+
+    write_scope = 'https://purl.imsglobal.org/spec/lti-ags/scope/lineitem'
 
 
     @property

@@ -49,9 +49,10 @@ models = {
     },
     'LineItem': {
         'cls_const': {
-            'mime': 'mmm',
-            'read_scope': 'xxx',
-            'write_scope': 'zzzz'
+            'mime': 'application/vnd.ims.lis.v2.lineitem+json',
+            'mime_collection': 'application/vnd.ims.lis.v2.lineitemcontainer+json',
+            'read_scope': 'https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly',
+            'write_scope': 'https://purl.imsglobal.org/spec/lti-ags/scope/lineitem'
         },
         'id': [],
         'label': [],
