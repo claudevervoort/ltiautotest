@@ -19,10 +19,8 @@ video {
     max-width: 60%;
 }
 
-body.results video.ignore {
-    position: absolute;
-    right: 15%;
-    z-index: 1;
+body.results video {
+    padding-left: 30%;
 }
 
 div.centered {
@@ -33,19 +31,20 @@ div.centered {
 
 table.results {
     border: none;
-    color: lightyellow;
-    transform: perspective(400px) rotateY(20deg);
+    color: azure;
+    transform: rotateY(20deg);
     position: absolute;
-    left: 15%;
+    left: 10%;
     z-index: 10;
+    max-width: 40%;
 }
 
 table.results tr.category {
-    color: lightgoldenrodyellow;
+    color: azure;
 }
 
 table.results th, table.results td {
-  border-bottom: 1px solid lightyellow;
+  border-bottom: 1px solid azure;
 }
 
 table.results td {
@@ -55,14 +54,15 @@ table.results td {
 table.results tr.result th {
     font-weight: normal;
     text-align: right;
+    color: darkgreen;
 }
 
-table.results tr.result.failed.required {
+table.results tr.result.failed.required th {
     color: darkred;
 }
 
-table.results tr.result.failed {
-    color: lightpink;
+table.results tr.result.failed th {
+    color: orange
 }
 
 table.results tr.result.failed th {
