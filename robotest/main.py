@@ -1,3 +1,8 @@
+import sys
+import os
+sys.path.extend([
+        os.path.abspath('../')])
+print(sys.path)
 import json
 import random
 import traceback
@@ -13,7 +18,7 @@ from datetime import datetime
 
 from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get
 
-from robotest import TestCategory, TestResult
+from robotest.test_results import TestCategory, TestResult
 
 app = FastAPI()
 
