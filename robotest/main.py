@@ -1,8 +1,10 @@
+# 
 import sys
 import os
 sys.path.extend([
         os.path.abspath('../')])
-print(sys.path)
+base_url = os.environ['ROBOTEST_WWW'] if 'ROBOTEST_WWW' in os.environ else 'https://robotest.theedtech.dev'
+
 import json
 import random
 import traceback
@@ -28,7 +30,7 @@ templates = Jinja2Templates(directory="templates")
 
 @app.get("/")
 def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("moodleinstructions.html", {"request": request, "base_url": base_url})
 
 @app.get("/broken")
 def read_broken(request: Request):
@@ -110,8 +112,8 @@ def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(.
 def resource_link(name: str, message: LTIMessage, multiple: bool, points: float = None):
     rl = LTIResourceLink()
     rl.title = name
-    resource_id = 'rl1'
-    rl.url = 'https://robotest.theedtech.dev/deeplink?p1=' + resource_id
+    resource_id = 'rl' + str(random.randint(0, 99999))
+    rl.url = '{base_url}/deeplink?p1={rid}'.format(base_url=base_url, rid=resource_id)
     rl.custom['resource_id'] = resource_id
     rl.custom['multiple'] = str(message.deep_linking_settings.accept_multiple and multiple)
     rl.custom['lineitems_dl'] = message.grade_service.lineitems

@@ -10,6 +10,18 @@ body {
     perspective: 1000px;
 }
 
+h1 {
+    color: rgb(249, 180, 98)
+}
+
+li bold {
+    color: rgb(249, 180, 98)
+}
+
+h2 {
+    color: rgb(43, 48, 57)
+}
+
 span.note {
     font-size: 70%;
     color: lightgoldenrodyellow;

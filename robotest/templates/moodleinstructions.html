@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/static/robottest.css">
+    </head>
+    <body class="results">
+    <div class="centered">
+        <div>
+            <h1>LTI™ Robotest</h1>
+            <em>An easy way to test your platform for its support for LTI Advantage.</em>
+            <br/>
+            <em>For more info and resources on LTI visit <a href="https://imsglobal.org">IMS Global</a></em>
+            <h2>Moodle instructions</h2>
+            <ul>
+                <li>As admin got to Site Admin to add an external tool</li>
+                <li>Select <em>configure a tool manually</em></li>
+                <li><bold>Tool url</bold> {{ base_url }}</li>
+                <li><bold>Inititiation Login URL</bold> {{ base_url }}/oidc/init</li>
+                <li><bold>Redirect URI</bold> {{ base_url }}/oidc/launch</li>
+                <li><bold>Show more and enable <em>Content-Item Message</em></bold></li>
+                <li><bold>Public Key</bold> <em>Use URI if supported see MDL-66920</em>
+                    <ul>
+                        <li>JWKS URI: {{ base_url }}/.well-known/jwks.json</li>
+                        <li>Public key: copy from <a href="{{ base_url }}/.well-known/publickey.pem">public key</a>
+                    </ul>
+                </li>
+                <li><bold>Services</bold>
+                    <ul>
+                        <li><bold>AGS</bold> for grade sync and column management</li>
+                        <li><bold>Names and Roles</bold> retrieve members as per privacy settings</li>
+                    </ul>
+                </li>
+                <li><bold>Privacy</bold>
+                    <ul>
+                        <li><bold>Accept grades</bold>bold> Delegates to Teacher</li>
+                    </ul>
+                </li>
+                <li><bold>Save</bold></li>
+                <li>If previous to MDL-67072 you need to add the client id to the init login
+                    <ul>
+                        <li>Edit the newly created tool</li>
+                        <li>Modify the login uri with the client_id generated for that tool</li>
+                        <li>{{ base_url }}/oidc/init?client_id=generated_value</li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+        <img style="max-width: 40%;" src="/assets/box_cropped.png" >
+    </div>
+    </body>
+</html>
