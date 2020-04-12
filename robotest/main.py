@@ -37,12 +37,15 @@ def read_broken(request: Request):
     return templates.TemplateResponse("broken.html", {"request": request})
 
 @app.get("/results")
-def read_results(request: Request):
+def read_results(request: Request,
+                 success: bool = True):
     cat1 = TestCategory(name='category 1')
     cat1.results.append(TestResult('res1', True, True, 'You passed this easily'))
     cat1.results.append(TestResult('res2', True, True, 'You passed this easily'))
-    cat1.results.append(TestResult('res3', True, True, 'You passed this easily'))
-    return templates.TemplateResponse("results.html", {"request": request, "results": [cat1]})
+    cat1.results.append(TestResult('res3', success, True, 'You passed this easily'))
+    print( cat1.success )
+
+    return templates.TemplateResponse("results.html", {"request": request, "results": [cat1], "success": cat1.success})
 
 @app.get("/register")
 def register(request: Request, openid_configuration: str, registration_token: str):
@@ -155,8 +158,12 @@ def testdl(request: Request):
         "return_url": '',
         "jwt_single": ''})
 
-def test_deeplinking(message: LTIMessage) -> TestCategory:
+def test_deeplinking(request: Request, message: LTIMessage) -> TestCategory:
     res = TestCategory(name='Deep Linking')
+    res.results.append(TestResult('URL contains deep link param',
+                                    'rl' in request.query_params,
+                                    True,
+                                    ''))
     if message.custom:
         res.results.append(TestResult('Custom parameter passed',
                                         'resource_id' in message.custom,
@@ -211,14 +218,14 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                                      True,
                                      str(e)))
 
-
     return res
 
 def test_and_show_results(request: Request, reg: ToolRegistration, message: dict):
     results = []
-    results.append(test_deeplinking(message))
+    results.append(test_deeplinking(request, message))
     results.append(test_ags(reg, message))
-    return templates.TemplateResponse("results.html", {"request": request, "results": results})
+    success = all((map(lambda r: r.success, results)))
+    return templates.TemplateResponse("results.html", {"request": request, "results": results, "success": success})
 
 @app.get("/test")
 def test():

@@ -17,5 +17,5 @@ class TestCategory():
 
     @property
     def success(self) -> bool:
-        return reduce(lambda x,y: x and y.success, self.results, True)
+        return all(map(lambda x: x.success or not x.required, self.results))
 
