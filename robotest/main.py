@@ -162,8 +162,8 @@ def testdl(request: Request):
 
 def test_deeplinking(request: Request, message: LTIMessage) -> TestCategory:
     res = TestCategory(name='Deep Linking')
-    res.results.append(TestResult('URL contains deep link param',
-                                    'rl' in request.query_params,
+    res.results.append(TestResult('Target link present and with param',
+                                    message.target_link_uri and message.target_link_uri.contains('p1='),
                                     True,
                                     ''))
     if message.custom:

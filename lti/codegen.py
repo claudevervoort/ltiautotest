@@ -29,6 +29,7 @@ models = {
         "sub": [],
         "given_name": [],
         "deployment_id": ["https://purl.imsglobal.org/spec/lti/claim/deployment_id"],
+        "target_link_uri": ["https://purl.imsglobal.org/spec/lti/claim/target_link_uri"], 
         "message_type": ["https://purl.imsglobal.org/spec/lti/claim/message_type"],
         "version": ["https://purl.imsglobal.org/spec/lti/claim/version"],
         "role": ["https://purl.imsglobal.org/spec/lti/claim/roles", "List[str]"],

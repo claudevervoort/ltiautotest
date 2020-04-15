@@ -318,6 +318,26 @@ class LTIMessage(dict):
 
 
     @property
+    def target_link_uri(self) -> str:
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/target_link_uri')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/target_link_uri'] = typed_val
+            return typed_val
+        return val
+            
+
+    @target_link_uri.setter
+    def target_link_uri(self, value: str):
+        if isinstance(value, Enum):
+            self['https://purl.imsglobal.org/spec/lti/claim/target_link_uri'] = value.value
+        else:
+            self['https://purl.imsglobal.org/spec/lti/claim/target_link_uri'] = value
+
+
+    @property
     def message_type(self) -> str:
         val = self.get('https://purl.imsglobal.org/spec/lti/claim/message_type')
         if issubclass(str, Enum):
