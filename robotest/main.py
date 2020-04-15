@@ -106,6 +106,7 @@ def oidc_init_post(request: Request,
 
 @app.post("/oidc/launch")
 def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(...)):
+    print('OIDC launch')
     reg = ToolRegistration(**json.loads(state)['r'])
     message = LTIMessage(**reg.decode(id_token))
     if message.message_type == const.dl.request_msg_type:
@@ -127,6 +128,7 @@ def resource_link(name: str, message: LTIMessage, multiple: bool, points: float 
     return rl
 
 def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
+    print('Deeplinking')
     dlresp0 = DeeplinkResponse()
     dlresp0.data = message.deep_linking_settings.data
     dlresp0.deployment_id = message.deployment_id
