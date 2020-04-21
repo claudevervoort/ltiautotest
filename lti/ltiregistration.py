@@ -1,6 +1,7 @@
 from jose import jwt
 from datetime import datetime
 from lti.jwks import get_remote_keyset, get_webkey
+from lti.spi import log
 
 TOKEN_TTL = 300
 
@@ -12,6 +13,8 @@ class ToolRegistration(object):
         self.auth_endpoint = auth_endpoint
         self.token_uri = token_uri
         self.jwks_uri = jwks_uri
+        log("Registration: {0}", str(self.__dict__))
+        
 
     def decode(self, token:str) -> dict:
         return jwt.decode(token, 
