@@ -97,12 +97,13 @@ def oidc_init(request: Request,
 @app.post("/oidc/init")
 def oidc_init_post(request: Request,
               iss:str = Form(...),
-              client_id: str = None,
+              clientid: str = None,
+              client_id: str = Form(None),
               lms: str = 'moodle',
               target_link_uri:str = Form(...),
               login_hint: str = Form(...),
               lti_message_hint: str = Form(...)):
-    return oidc_init(request, iss, login_hint, lti_message_hint, client_id, lms, target_link_uri)
+    return oidc_init(request, iss, login_hint, lti_message_hint, client_id or clientid, lms, target_link_uri)
 
 @app.post("/oidc/launch")
 def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(...)):
