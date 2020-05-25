@@ -103,6 +103,29 @@ models = {
         'line_item': ['lineItem', 'LineItem'],
         'max_points': ['lineItem:LineItem->scoreMaximum', 'float'],
         'resource_id': ['lineItem:LineItem->resourceId', 'float']
+    },
+    'MemberStatus': ('Active', 'Inactive', 'Deleted'),
+    'Member': {
+        'status': ['', 'MemberStatus'],
+        'context_id': [],
+        'context_label': [],
+        'context_title': [],
+        'name': [],
+        'picture': [],
+        'given_name': [],
+        'family_name': [],
+        'middle_name': [],
+        'email': [],
+        'user_id': [],
+        'roles': ['', 'List[str]']
+    },
+    'Members': {
+        'cls_const': {
+            'mime': 'application/vnd.ims.lti-nprs.v2.membershipcontainer+json',
+            'read_scope': 'https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly'
+        },
+        'id': [],
+        'members': ['', 'List[Member]']
     }
 }
 

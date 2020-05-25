@@ -1240,3 +1240,292 @@ class LTIResourceLink(dict):
 
 
 
+
+class MemberStatus(Enum):
+
+
+
+    ACTIVE = 'Active'
+
+
+    INACTIVE = 'Inactive'
+
+
+    DELETED = 'Deleted'
+
+
+
+class Member(dict):
+
+    @property
+    def status(self) -> MemberStatus:
+        val = self.get('status')
+        if issubclass(MemberStatus, Enum):
+            return MemberStatus(val)
+        if (isinstance(val, dict) and not isinstance(val, MemberStatus)):
+            typed_val = MemberStatus( **val )
+            self['status'] = typed_val
+            return typed_val
+        return val
+            
+
+    @status.setter
+    def status(self, value: MemberStatus):
+        if isinstance(value, Enum):
+            self['status'] = value.value
+        else:
+            self['status'] = value
+
+
+    @property
+    def context_id(self) -> str:
+        val = self.get('context_id')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['context_id'] = typed_val
+            return typed_val
+        return val
+            
+
+    @context_id.setter
+    def context_id(self, value: str):
+        if isinstance(value, Enum):
+            self['context_id'] = value.value
+        else:
+            self['context_id'] = value
+
+
+    @property
+    def context_label(self) -> str:
+        val = self.get('context_label')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['context_label'] = typed_val
+            return typed_val
+        return val
+            
+
+    @context_label.setter
+    def context_label(self, value: str):
+        if isinstance(value, Enum):
+            self['context_label'] = value.value
+        else:
+            self['context_label'] = value
+
+
+    @property
+    def context_title(self) -> str:
+        val = self.get('context_title')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['context_title'] = typed_val
+            return typed_val
+        return val
+            
+
+    @context_title.setter
+    def context_title(self, value: str):
+        if isinstance(value, Enum):
+            self['context_title'] = value.value
+        else:
+            self['context_title'] = value
+
+
+    @property
+    def name(self) -> str:
+        val = self.get('name')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['name'] = typed_val
+            return typed_val
+        return val
+            
+
+    @name.setter
+    def name(self, value: str):
+        if isinstance(value, Enum):
+            self['name'] = value.value
+        else:
+            self['name'] = value
+
+
+    @property
+    def picture(self) -> str:
+        val = self.get('picture')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['picture'] = typed_val
+            return typed_val
+        return val
+            
+
+    @picture.setter
+    def picture(self, value: str):
+        if isinstance(value, Enum):
+            self['picture'] = value.value
+        else:
+            self['picture'] = value
+
+
+    @property
+    def given_name(self) -> str:
+        val = self.get('given_name')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['given_name'] = typed_val
+            return typed_val
+        return val
+            
+
+    @given_name.setter
+    def given_name(self, value: str):
+        if isinstance(value, Enum):
+            self['given_name'] = value.value
+        else:
+            self['given_name'] = value
+
+
+    @property
+    def family_name(self) -> str:
+        val = self.get('family_name')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['family_name'] = typed_val
+            return typed_val
+        return val
+            
+
+    @family_name.setter
+    def family_name(self, value: str):
+        if isinstance(value, Enum):
+            self['family_name'] = value.value
+        else:
+            self['family_name'] = value
+
+
+    @property
+    def middle_name(self) -> str:
+        val = self.get('middle_name')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['middle_name'] = typed_val
+            return typed_val
+        return val
+            
+
+    @middle_name.setter
+    def middle_name(self, value: str):
+        if isinstance(value, Enum):
+            self['middle_name'] = value.value
+        else:
+            self['middle_name'] = value
+
+
+    @property
+    def email(self) -> str:
+        val = self.get('email')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['email'] = typed_val
+            return typed_val
+        return val
+            
+
+    @email.setter
+    def email(self, value: str):
+        if isinstance(value, Enum):
+            self['email'] = value.value
+        else:
+            self['email'] = value
+
+
+    @property
+    def user_id(self) -> str:
+        val = self.get('user_id')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['user_id'] = typed_val
+            return typed_val
+        return val
+            
+
+    @user_id.setter
+    def user_id(self, value: str):
+        if isinstance(value, Enum):
+            self['user_id'] = value.value
+        else:
+            self['user_id'] = value
+
+
+    @property
+    def roles(self) -> List[str]:
+        if not 'roles' in self:
+            self['roles'] = []
+        return self.get('roles')
+
+    @roles.setter
+    def roles(self, value: List[str]):
+        self['roles'] = value
+
+
+
+class Members(dict):
+
+    mime = 'application/vnd.ims.lti-nprs.v2.membershipcontainer+json'
+
+
+    read_scope = 'https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly'
+
+
+    @property
+    def id(self) -> str:
+        val = self.get('id')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['id'] = typed_val
+            return typed_val
+        return val
+            
+
+    @id.setter
+    def id(self, value: str):
+        if isinstance(value, Enum):
+            self['id'] = value.value
+        else:
+            self['id'] = value
+
+
+    @property
+    def members(self) -> List[Member]:
+        if not 'members' in self:
+            self['members'] = []
+        return self.get('members')
+
+    @members.setter
+    def members(self, value: List[Member]):
+        self['members'] = value
+
+
+
