@@ -11,4 +11,4 @@ http://localhost:8000/test/jwks?jwks_uri=https%3A%2F%2Fqa-gateway.cengage.com%2F
               jwks_uri: str,
 
 
-        
+uvicorn main:app --reload --port 8001 

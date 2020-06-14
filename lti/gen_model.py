@@ -235,6 +235,49 @@ class GradeService(dict):
 
 
 
+class MembershipService(dict):
+
+    @property
+    def context_memberships_url(self) -> str:
+        val = self.get('context_memberships_url')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['context_memberships_url'] = typed_val
+            return typed_val
+        return val
+            
+
+    @context_memberships_url.setter
+    def context_memberships_url(self, value: str):
+        if isinstance(value, Enum):
+            self['context_memberships_url'] = value.value
+        else:
+            self['context_memberships_url'] = value
+
+
+    @property
+    def service_version(self) -> str:
+        val = self.get('service_version')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['service_version'] = typed_val
+            return typed_val
+        return val
+            
+
+    @service_version.setter
+    def service_version(self, value: str):
+        if isinstance(value, Enum):
+            self['service_version'] = value.value
+        else:
+            self['service_version'] = value
+
+
+
 class LTIMessage(dict):
 
     @property
@@ -526,6 +569,26 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'] = value.value
         else:
             self['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'] = value
+
+
+    @property
+    def membership_service(self) -> MembershipService:
+        val = self.get('https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice')
+        if issubclass(MembershipService, Enum):
+            return MembershipService(val)
+        if (isinstance(val, dict) and not isinstance(val, MembershipService)):
+            typed_val = MembershipService( **val )
+            self['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice'] = typed_val
+            return typed_val
+        return val
+            
+
+    @membership_service.setter
+    def membership_service(self, value: MembershipService):
+        if isinstance(value, Enum):
+            self['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice'] = value.value
+        else:
+            self['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice'] = value
 
 
 

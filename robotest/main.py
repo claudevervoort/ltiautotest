@@ -18,7 +18,7 @@ from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List, Dict
 from datetime import datetime
 
-from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get
+from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, Members, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get
 
 from robotest.test_results import TestCategory, TestResult
 
@@ -122,6 +122,7 @@ def resource_link(name: str, message: LTIMessage, multiple: bool, points: float 
     rl.custom['resource_id'] = resource_id
     rl.custom['multiple'] = str(message.deep_linking_settings.accept_multiple and multiple)
     rl.custom['lineitems_dl'] = message.grade_service.lineitems
+    rl.custom['membership_dl'] = message.membership_service.context_memberships_url if 'membership_service' in message and 'context_memberships_url' in message.membership_service else ''
     if ( points ):
         rl.custom['max_points'] = str(rl.max_points)
         rl.max_points= 10.0
@@ -129,7 +130,6 @@ def resource_link(name: str, message: LTIMessage, multiple: bool, points: float 
     return rl
 
 def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
-    print('Deeplinking')
     dlresp0 = DeeplinkResponse()
     dlresp0.data = message.deep_linking_settings.data
     dlresp0.deployment_id = message.deployment_id
@@ -185,6 +185,38 @@ def test_deeplinking(request: Request, message: LTIMessage) -> TestCategory:
     return res
 
 
+def test_nrps(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
+    res = TestCategory('Names and Role Service (aka Roster)')
+    res.results.append(TestResult('Service in Deep Linking',
+                                     message.custom and 'membership_dl' in message.custom and len(message.custom['membership_dl'])>6,
+                                     False,
+                                     ''))
+    if message.membership_service and message.membership_service.context_memberships_url:
+        res.results.append(TestResult('Service url present',
+                                     True,
+                                     True,
+                                     ''))
+        try:
+            members = ltiservice_get(reg, Members, message.membership_service.context_memberships_url)
+            # instructors = list(filter(lambda m: )) util to get role from enum
+            res.results.append(TestResult('Line item loaded',
+                                    True,
+                                    True,
+                                    '{m} members'.format(m=len(members))))
+        except Exception as e:
+            print(traceback.format_exc())
+            res.results.append(TestResult('Members loaded',
+                                    False,
+                                    True,
+                                    str(e)))
+    else:
+        res.results.append(TestResult('Service Url present',
+                                     False,
+                                     True,
+                                     ''))
+    return res
+
+
 def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
     res = TestCategory('Assignment and Grade Services')
     res.results.append(TestResult('Line items in Deep Linking',
@@ -227,6 +259,7 @@ def test_and_show_results(request: Request, reg: ToolRegistration, message: dict
     results = []
     results.append(test_deeplinking(request, message))
     results.append(test_ags(reg, message))
+    results.append(test_nrps(reg, message))
     success = all((map(lambda r: r.success, results)))
     return templates.TemplateResponse("results.html", {"request": request, "results": results, "success": success})
 

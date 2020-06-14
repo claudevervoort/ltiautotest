@@ -24,6 +24,10 @@ models = {
         'lineitems': [],
         'scope':['', 'List[str]']
     },
+    'MembershipService': {
+        'context_memberships_url': [],
+        'service_version': []
+    },
     'LTIMessage': {
         "iss": [],
         "sub": [],
@@ -39,7 +43,8 @@ models = {
         "launch_presentation": ["https://purl.imsglobal.org/spec/lti/claim/launch_presentation", 'LaunchPresentation'],
         "custom": ["https://purl.imsglobal.org/spec/lti/claim/custom", 'Custom'],
         "deep_linking_settings": ["https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings", 'DeeplinkSettings'],
-        "grade_service": ['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint', 'GradeService']
+        "grade_service": ['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint', 'GradeService'],
+        "membership_service": ["https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice", 'MembershipService']
     },
     'DeeplinkResponse': {
         "version": ["https://purl.imsglobal.org/spec/lti/claim/version", "str", "1.3.0"],
