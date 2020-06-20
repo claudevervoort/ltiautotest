@@ -32,8 +32,11 @@ models = {
         "iss": [],
         "sub": [],
         "given_name": [],
+        "family_name": [],
+        "name": [],
+        "email": [],
         "deployment_id": ["https://purl.imsglobal.org/spec/lti/claim/deployment_id"],
-        "target_link_uri": ["https://purl.imsglobal.org/spec/lti/claim/target_link_uri"], 
+        "target_link_uri": ["https://purl.imsglobal.org/spec/lti/claim/target_link_uri"],
         "message_type": ["https://purl.imsglobal.org/spec/lti/claim/message_type"],
         "version": ["https://purl.imsglobal.org/spec/lti/claim/version"],
         "role": ["https://purl.imsglobal.org/spec/lti/claim/roles", "List[str]"],
@@ -166,7 +169,7 @@ template_property = """
             self['{long}'] = typed_val
             return typed_val
         return val
-            
+
 
     @{short}.setter
     def {short}(self, value: {type}):

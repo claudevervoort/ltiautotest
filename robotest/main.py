@@ -152,12 +152,14 @@ def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
         "jwt_single": reg.encode(dlresp1),
         "jwt_single_graded": reg.encode(dlresp2),
         "jwt_multiple": reg.encode(dlresp3),
-        })
+        "name": message.name or 'No name!'
+    })
 
 @app.get('/dl')
 def testdl(request: Request):
     return templates.TemplateResponse("deeplink_autopost.html", {
         "request": request,
+        "name": 'Saul Tigh',
         "return_url": '',
         "jwt_single": ''})
 

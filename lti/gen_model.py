@@ -37,7 +37,7 @@ class DeeplinkSettings(dict):
             self['deep_link_return_url'] = typed_val
             return typed_val
         return val
-            
+
 
     @return_url.setter
     def return_url(self, value: str):
@@ -90,7 +90,7 @@ class DeeplinkSettings(dict):
             self['accept_multiple'] = typed_val
             return typed_val
         return val
-            
+
 
     @accept_multiple.setter
     def accept_multiple(self, value: bool):
@@ -110,7 +110,7 @@ class DeeplinkSettings(dict):
             self['auto_create'] = typed_val
             return typed_val
         return val
-            
+
 
     @auto_create.setter
     def auto_create(self, value: bool):
@@ -130,7 +130,7 @@ class DeeplinkSettings(dict):
             self['title'] = typed_val
             return typed_val
         return val
-            
+
 
     @title.setter
     def title(self, value: str):
@@ -150,7 +150,7 @@ class DeeplinkSettings(dict):
             self['text'] = typed_val
             return typed_val
         return val
-            
+
 
     @text.setter
     def text(self, value: str):
@@ -170,7 +170,7 @@ class DeeplinkSettings(dict):
             self['data'] = typed_val
             return typed_val
         return val
-            
+
 
     @data.setter
     def data(self, value: str):
@@ -193,7 +193,7 @@ class GradeService(dict):
             self['lineitem'] = typed_val
             return typed_val
         return val
-            
+
 
     @lineitem.setter
     def lineitem(self, value: str):
@@ -213,7 +213,7 @@ class GradeService(dict):
             self['lineitems'] = typed_val
             return typed_val
         return val
-            
+
 
     @lineitems.setter
     def lineitems(self, value: str):
@@ -247,7 +247,7 @@ class MembershipService(dict):
             self['context_memberships_url'] = typed_val
             return typed_val
         return val
-            
+
 
     @context_memberships_url.setter
     def context_memberships_url(self, value: str):
@@ -267,7 +267,7 @@ class MembershipService(dict):
             self['service_version'] = typed_val
             return typed_val
         return val
-            
+
 
     @service_version.setter
     def service_version(self, value: str):
@@ -290,7 +290,7 @@ class LTIMessage(dict):
             self['iss'] = typed_val
             return typed_val
         return val
-            
+
 
     @iss.setter
     def iss(self, value: str):
@@ -310,7 +310,7 @@ class LTIMessage(dict):
             self['sub'] = typed_val
             return typed_val
         return val
-            
+
 
     @sub.setter
     def sub(self, value: str):
@@ -330,7 +330,7 @@ class LTIMessage(dict):
             self['given_name'] = typed_val
             return typed_val
         return val
-            
+
 
     @given_name.setter
     def given_name(self, value: str):
@@ -338,6 +338,66 @@ class LTIMessage(dict):
             self['given_name'] = value.value
         else:
             self['given_name'] = value
+
+
+    @property
+    def family_name(self) -> str:
+        val = self.get('family_name')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['family_name'] = typed_val
+            return typed_val
+        return val
+
+
+    @family_name.setter
+    def family_name(self, value: str):
+        if isinstance(value, Enum):
+            self['family_name'] = value.value
+        else:
+            self['family_name'] = value
+
+
+    @property
+    def name(self) -> str:
+        val = self.get('name')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['name'] = typed_val
+            return typed_val
+        return val
+
+
+    @name.setter
+    def name(self, value: str):
+        if isinstance(value, Enum):
+            self['name'] = value.value
+        else:
+            self['name'] = value
+
+
+    @property
+    def email(self) -> str:
+        val = self.get('email')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['email'] = typed_val
+            return typed_val
+        return val
+
+
+    @email.setter
+    def email(self, value: str):
+        if isinstance(value, Enum):
+            self['email'] = value.value
+        else:
+            self['email'] = value
 
 
     @property
@@ -350,7 +410,7 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti/claim/deployment_id'] = typed_val
             return typed_val
         return val
-            
+
 
     @deployment_id.setter
     def deployment_id(self, value: str):
@@ -370,7 +430,7 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti/claim/target_link_uri'] = typed_val
             return typed_val
         return val
-            
+
 
     @target_link_uri.setter
     def target_link_uri(self, value: str):
@@ -390,7 +450,7 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti/claim/message_type'] = typed_val
             return typed_val
         return val
-            
+
 
     @message_type.setter
     def message_type(self, value: str):
@@ -410,7 +470,7 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti/claim/version'] = typed_val
             return typed_val
         return val
-            
+
 
     @version.setter
     def version(self, value: str):
@@ -441,7 +501,7 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti/claim/context'] = typed_val
             return typed_val
         return val
-            
+
 
     @context.setter
     def context(self, value: Context):
@@ -461,7 +521,7 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti/claim/resource_link'] = typed_val
             return typed_val
         return val
-            
+
 
     @resource_link.setter
     def resource_link(self, value: ResourceLink):
@@ -481,7 +541,7 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti/claim/tool_platform'] = typed_val
             return typed_val
         return val
-            
+
 
     @tool_platform.setter
     def tool_platform(self, value: ToolPlatform):
@@ -501,7 +561,7 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti/claim/launch_presentation'] = typed_val
             return typed_val
         return val
-            
+
 
     @launch_presentation.setter
     def launch_presentation(self, value: LaunchPresentation):
@@ -521,7 +581,7 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti/claim/custom'] = typed_val
             return typed_val
         return val
-            
+
 
     @custom.setter
     def custom(self, value: Custom):
@@ -541,7 +601,7 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings'] = typed_val
             return typed_val
         return val
-            
+
 
     @deep_linking_settings.setter
     def deep_linking_settings(self, value: DeeplinkSettings):
@@ -561,7 +621,7 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'] = typed_val
             return typed_val
         return val
-            
+
 
     @grade_service.setter
     def grade_service(self, value: GradeService):
@@ -581,7 +641,7 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice'] = typed_val
             return typed_val
         return val
-            
+
 
     @membership_service.setter
     def membership_service(self, value: MembershipService):
@@ -620,7 +680,7 @@ class DeeplinkResponse(dict):
             self['https://purl.imsglobal.org/spec/lti/claim/version'] = typed_val
             return typed_val
         return val
-            
+
 
     @version.setter
     def version(self, value: str):
@@ -640,7 +700,7 @@ class DeeplinkResponse(dict):
             self['https://purl.imsglobal.org/spec/lti/claim/message_type'] = typed_val
             return typed_val
         return val
-            
+
 
     @message_type.setter
     def message_type(self, value: str):
@@ -660,7 +720,7 @@ class DeeplinkResponse(dict):
             self['https://purl.imsglobal.org/spec/lti-dl/claim/data'] = typed_val
             return typed_val
         return val
-            
+
 
     @data.setter
     def data(self, value: str):
@@ -680,7 +740,7 @@ class DeeplinkResponse(dict):
             self['https://purl.imsglobal.org/spec/lti/claim/deployment_id'] = typed_val
             return typed_val
         return val
-            
+
 
     @deployment_id.setter
     def deployment_id(self, value: str):
@@ -726,7 +786,7 @@ class LineItem(dict):
             self['id'] = typed_val
             return typed_val
         return val
-            
+
 
     @id.setter
     def id(self, value: str):
@@ -746,7 +806,7 @@ class LineItem(dict):
             self['label'] = typed_val
             return typed_val
         return val
-            
+
 
     @label.setter
     def label(self, value: str):
@@ -766,7 +826,7 @@ class LineItem(dict):
             self['scoreMaximum'] = typed_val
             return typed_val
         return val
-            
+
 
     @scoreMaximum.setter
     def scoreMaximum(self, value: float):
@@ -786,7 +846,7 @@ class LineItem(dict):
             self['tag'] = typed_val
             return typed_val
         return val
-            
+
 
     @tag.setter
     def tag(self, value: str):
@@ -806,7 +866,7 @@ class LineItem(dict):
             self['resourceId'] = typed_val
             return typed_val
         return val
-            
+
 
     @resourceId.setter
     def resourceId(self, value: str):
@@ -826,7 +886,7 @@ class LineItem(dict):
             self['resourceLinkId'] = typed_val
             return typed_val
         return val
-            
+
 
     @resourceLinkId.setter
     def resourceLinkId(self, value: str):
@@ -846,7 +906,7 @@ class LineItem(dict):
             self['startDateTime'] = typed_val
             return typed_val
         return val
-            
+
 
     @startDateTime.setter
     def startDateTime(self, value: str):
@@ -866,7 +926,7 @@ class LineItem(dict):
             self['endDateTime'] = typed_val
             return typed_val
         return val
-            
+
 
     @endDateTime.setter
     def endDateTime(self, value: str):
@@ -931,7 +991,7 @@ class Score(dict):
             self['userId'] = typed_val
             return typed_val
         return val
-            
+
 
     @userId.setter
     def userId(self, value: str):
@@ -951,7 +1011,7 @@ class Score(dict):
             self['scoreGiven'] = typed_val
             return typed_val
         return val
-            
+
 
     @scoreGiven.setter
     def scoreGiven(self, value: float):
@@ -971,7 +1031,7 @@ class Score(dict):
             self['scoreMaximum'] = typed_val
             return typed_val
         return val
-            
+
 
     @scoreMaximum.setter
     def scoreMaximum(self, value: float):
@@ -991,7 +1051,7 @@ class Score(dict):
             self['comment'] = typed_val
             return typed_val
         return val
-            
+
 
     @comment.setter
     def comment(self, value: str):
@@ -1023,7 +1083,7 @@ class Score(dict):
             self['activityProgress'] = typed_val
             return typed_val
         return val
-            
+
 
     @activityProgress.setter
     def activityProgress(self, value: ActivityProgress):
@@ -1043,7 +1103,7 @@ class Score(dict):
             self['gradingProgress'] = typed_val
             return typed_val
         return val
-            
+
 
     @gradingProgress.setter
     def gradingProgress(self, value: GradingProgress):
@@ -1066,7 +1126,7 @@ class Result(dict):
             self['userId'] = typed_val
             return typed_val
         return val
-            
+
 
     @userId.setter
     def userId(self, value: str):
@@ -1086,7 +1146,7 @@ class Result(dict):
             self['resultScore'] = typed_val
             return typed_val
         return val
-            
+
 
     @resultScore.setter
     def resultScore(self, value: float):
@@ -1106,7 +1166,7 @@ class Result(dict):
             self['resultMaximum'] = typed_val
             return typed_val
         return val
-            
+
 
     @resultMaximum.setter
     def resultMaximum(self, value: float):
@@ -1126,7 +1186,7 @@ class Result(dict):
             self['comment'] = typed_val
             return typed_val
         return val
-            
+
 
     @comment.setter
     def comment(self, value: str):
@@ -1146,7 +1206,7 @@ class Result(dict):
             self['timestamp'] = typed_val
             return typed_val
         return val
-            
+
 
     @timestamp.setter
     def timestamp(self, value: str):
@@ -1177,7 +1237,7 @@ class LTIResourceLink(dict):
             self['type'] = typed_val
             return typed_val
         return val
-            
+
 
     @type.setter
     def type(self, value: str):
@@ -1197,7 +1257,7 @@ class LTIResourceLink(dict):
             self['title'] = typed_val
             return typed_val
         return val
-            
+
 
     @title.setter
     def title(self, value: str):
@@ -1217,7 +1277,7 @@ class LTIResourceLink(dict):
             self['text'] = typed_val
             return typed_val
         return val
-            
+
 
     @text.setter
     def text(self, value: str):
@@ -1237,7 +1297,7 @@ class LTIResourceLink(dict):
             self['url'] = typed_val
             return typed_val
         return val
-            
+
 
     @url.setter
     def url(self, value: str):
@@ -1268,7 +1328,7 @@ class LTIResourceLink(dict):
             self['lineItem'] = typed_val
             return typed_val
         return val
-            
+
 
     @line_item.setter
     def line_item(self, value: LineItem):
@@ -1330,7 +1390,7 @@ class Member(dict):
             self['status'] = typed_val
             return typed_val
         return val
-            
+
 
     @status.setter
     def status(self, value: MemberStatus):
@@ -1350,7 +1410,7 @@ class Member(dict):
             self['context_id'] = typed_val
             return typed_val
         return val
-            
+
 
     @context_id.setter
     def context_id(self, value: str):
@@ -1370,7 +1430,7 @@ class Member(dict):
             self['context_label'] = typed_val
             return typed_val
         return val
-            
+
 
     @context_label.setter
     def context_label(self, value: str):
@@ -1390,7 +1450,7 @@ class Member(dict):
             self['context_title'] = typed_val
             return typed_val
         return val
-            
+
 
     @context_title.setter
     def context_title(self, value: str):
@@ -1410,7 +1470,7 @@ class Member(dict):
             self['name'] = typed_val
             return typed_val
         return val
-            
+
 
     @name.setter
     def name(self, value: str):
@@ -1430,7 +1490,7 @@ class Member(dict):
             self['picture'] = typed_val
             return typed_val
         return val
-            
+
 
     @picture.setter
     def picture(self, value: str):
@@ -1450,7 +1510,7 @@ class Member(dict):
             self['given_name'] = typed_val
             return typed_val
         return val
-            
+
 
     @given_name.setter
     def given_name(self, value: str):
@@ -1470,7 +1530,7 @@ class Member(dict):
             self['family_name'] = typed_val
             return typed_val
         return val
-            
+
 
     @family_name.setter
     def family_name(self, value: str):
@@ -1490,7 +1550,7 @@ class Member(dict):
             self['middle_name'] = typed_val
             return typed_val
         return val
-            
+
 
     @middle_name.setter
     def middle_name(self, value: str):
@@ -1510,7 +1570,7 @@ class Member(dict):
             self['email'] = typed_val
             return typed_val
         return val
-            
+
 
     @email.setter
     def email(self, value: str):
@@ -1530,7 +1590,7 @@ class Member(dict):
             self['user_id'] = typed_val
             return typed_val
         return val
-            
+
 
     @user_id.setter
     def user_id(self, value: str):
@@ -1570,7 +1630,7 @@ class Members(dict):
             self['id'] = typed_val
             return typed_val
         return val
-            
+
 
     @id.setter
     def id(self, value: str):
