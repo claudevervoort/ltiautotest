@@ -177,7 +177,7 @@ def test_deeplinking(request: Request, message: LTIMessage) -> TestCategory:
         res.results.append(TestResult('Supports Multiple',
                                         'multiple' in message.custom and message.custom['multiple'] == 'True',
                                         False,
-                                        'Launch from Multiple return'))
+                                        'True if this link was added as part of multiple return.'))
     else:
         res.results.append(TestResult('Custom parameter passed',
                                         False,
@@ -189,22 +189,24 @@ def test_deeplinking(request: Request, message: LTIMessage) -> TestCategory:
 
 def test_nrps(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
     res = TestCategory('Names and Role Service (aka Roster)')
+    nrps_in_dl = message.custom and 'membership_dl' in message.custom and len(message.custom['membership_dl'])>6,
     res.results.append(TestResult('Service in Deep Linking',
-                                     message.custom and 'membership_dl' in message.custom and len(message.custom['membership_dl'])>6,
+                                     nrps_in_dl,
                                      False,
-                                     ''))
+                                     'Yeah! roster can be queried in deep linking' if nrps_in_dl else 'cannot query roster in deep linking'))
     if message.membership_service and message.membership_service.context_memberships_url:
         res.results.append(TestResult('Service url present',
                                      True,
                                      True,
-                                     ''))
+                                     message.membership_service.context_memberships_url))
         try:
             members = ltiservice_get(reg, Members, message.membership_service.context_memberships_url)
+            print(json.dumps(members))
             # instructors = list(filter(lambda m: )) util to get role from enum
-            res.results.append(TestResult('Line item loaded',
+            res.results.append(TestResult('Members loaded',
                                     True,
                                     True,
-                                    '{m} members'.format(m=len(members))))
+                                    '{m} members'.format(m=len(members.members))))
         except Exception as e:
             print(traceback.format_exc())
             res.results.append(TestResult('Members loaded',
@@ -215,7 +217,7 @@ def test_nrps(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
         res.results.append(TestResult('Service Url present',
                                      False,
                                      True,
-                                     ''))
+                                     'Roster service is not available'))
     return res
 
 
@@ -229,12 +231,12 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
         res.results.append(TestResult('Line items present',
                                      True,
                                      True,
-                                     ''))
+                                     'Can query existing grade book columns for this tool and add new ones'))
     else:
         res.results.append(TestResult('Line items present',
                                      False,
                                      True,
-                                     ''))
+                                     'Cannot query existing grade book columns for this tool nor add new ones'))
 
     if message.custom and 'max_points' in message.custom:
         res.results.append(TestResult('Line item present',
@@ -244,10 +246,10 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
     if message.grade_service.lineitem:
         try:
             lineitem = ltiservice_get(reg, LineItem, message.grade_service.lineitem)
-            res.results.append(TestResult('Line item loaded',
+            res.results.append(TestResult('Line item present and queried',
                                      True,
                                      True,
-                                     lineitem.id))
+                                     'This link is graded and the line item url can be used to post score for it'))
         except Exception as e:
             print(traceback.format_exc())
             res.results.append(TestResult('Line item loaded',
