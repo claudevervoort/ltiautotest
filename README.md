@@ -1,14 +1,27 @@
-# ltiautotest
+# ltirobotest
 
-http://localhost:8000/oidc/init?iss=https://test&target_link_uri=http://ttt&login_hint=hint&auth_endpoint=http://localhost:8001?t=1&token_endpoint=http://token&jwks_uri=http://jwks
+![robotest logo](still_intro.png)
 
-http://localhost:8000/test/jwks?jwks_uri=https%3A%2F%2Fqa-gateway.cengage.com%2F.well-known%2Fjwks.json&kid=4b1e2d0e-6596-4ea0-ba9b-e9d5b1c868ee
+Welcome to LTI Robotest application. Less click, more tests!
 
-              target_link_uri: str, 
-              login_hint: str,
-              auth_endpoint: str,
-              token_endpoint: str,
-              jwks_uri: str,
+It's called Robotest as it aims to test a learning platform's LTI Advantage support with as little click as possible, let's the robo do the work :)
+
+It's very much a work in progress. It is split in 2 parts:
+
+- **lti lib**: framework agnostic lti library, with extension points allowing customization to match the tool persistence and caching ch 
+oices.
+- **Robotest app**: A fast-api app using the library to implement the actual app UI. 
+
+Launch: 
+
+`cd robotest; uvicorn main:app --reload`
+
+Code is using a simple code generation to create a model that is based on Dict but exposing typed parameters for the most common LTI params.
 
 
-uvicorn main:app --reload --port 8001 
+## About the robot
+
+The robot and box models have been adapted from those models using blender:
+
+https://sketchfab.com/3d-models/nier-automata-robot-878e4b8066064024a4ee0e8889b19904
+https://sketchfab.com/3d-models/si-fi-box-d7932f22d195402bbea02db5ddb3a782
