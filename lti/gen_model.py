@@ -1652,3 +1652,614 @@ class Members(dict):
 
 
 
+class PlatformConfig(dict):
+
+    @property
+    def product_family_code(self) -> str:
+        val = self.get('product_family_code')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['product_family_code'] = typed_val
+            return typed_val
+        return val
+
+
+    @product_family_code.setter
+    def product_family_code(self, value: str):
+        if isinstance(value, Enum):
+            self['product_family_code'] = value.value
+        else:
+            self['product_family_code'] = value
+
+
+    @property
+    def variables(self) -> List[str]:
+        if not 'variables' in self:
+            self['variables'] = []
+        return self.get('variables')
+
+    @variables.setter
+    def variables(self, value: List[str]):
+        self['variables'] = value
+
+
+
+class PlatformOIDCConfig(dict):
+
+    @property
+    def issuer(self) -> str:
+        val = self.get('issuer')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['issuer'] = typed_val
+            return typed_val
+        return val
+
+
+    @issuer.setter
+    def issuer(self, value: str):
+        if isinstance(value, Enum):
+            self['issuer'] = value.value
+        else:
+            self['issuer'] = value
+
+
+    @property
+    def authorization_endpoint(self) -> str:
+        val = self.get('authorization_endpoint')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['authorization_endpoint'] = typed_val
+            return typed_val
+        return val
+
+
+    @authorization_endpoint.setter
+    def authorization_endpoint(self, value: str):
+        if isinstance(value, Enum):
+            self['authorization_endpoint'] = value.value
+        else:
+            self['authorization_endpoint'] = value
+
+
+    @property
+    def token_endpoint(self) -> str:
+        val = self.get('token_endpoint')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['token_endpoint'] = typed_val
+            return typed_val
+        return val
+
+
+    @token_endpoint.setter
+    def token_endpoint(self, value: str):
+        if isinstance(value, Enum):
+            self['token_endpoint'] = value.value
+        else:
+            self['token_endpoint'] = value
+
+
+    @property
+    def token_endpoint_auth_methods_supported(self) -> List[str]:
+        if not 'token_endpoint_auth_methods_supported' in self:
+            self['token_endpoint_auth_methods_supported'] = []
+        return self.get('token_endpoint_auth_methods_supported')
+
+    @token_endpoint_auth_methods_supported.setter
+    def token_endpoint_auth_methods_supported(self, value: List[str]):
+        self['token_endpoint_auth_methods_supported'] = value
+
+
+    @property
+    def token_endpoint_auth_signing_alg_values_supported(self) -> List[str]:
+        if not 'token_endpoint_auth_signing_alg_values_supported' in self:
+            self['token_endpoint_auth_signing_alg_values_supported'] = []
+        return self.get('token_endpoint_auth_signing_alg_values_supported')
+
+    @token_endpoint_auth_signing_alg_values_supported.setter
+    def token_endpoint_auth_signing_alg_values_supported(self, value: List[str]):
+        self['token_endpoint_auth_signing_alg_values_supported'] = value
+
+
+    @property
+    def jwks_uri(self) -> str:
+        val = self.get('jwks_uri')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['jwks_uri'] = typed_val
+            return typed_val
+        return val
+
+
+    @jwks_uri.setter
+    def jwks_uri(self, value: str):
+        if isinstance(value, Enum):
+            self['jwks_uri'] = value.value
+        else:
+            self['jwks_uri'] = value
+
+
+    @property
+    def registration_endpoint(self) -> str:
+        val = self.get('registration_endpoint')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['registration_endpoint'] = typed_val
+            return typed_val
+        return val
+
+
+    @registration_endpoint.setter
+    def registration_endpoint(self, value: str):
+        if isinstance(value, Enum):
+            self['registration_endpoint'] = value.value
+        else:
+            self['registration_endpoint'] = value
+
+
+    @property
+    def scopes_supported(self) -> List[str]:
+        if not 'scopes_supported' in self:
+            self['scopes_supported'] = []
+        return self.get('scopes_supported')
+
+    @scopes_supported.setter
+    def scopes_supported(self, value: List[str]):
+        self['scopes_supported'] = value
+
+
+    @property
+    def response_types_supported(self) -> List[str]:
+        if not 'response_types_supported' in self:
+            self['response_types_supported'] = []
+        return self.get('response_types_supported')
+
+    @response_types_supported.setter
+    def response_types_supported(self, value: List[str]):
+        self['response_types_supported'] = value
+
+
+    @property
+    def subject_types_supported(self) -> List[str]:
+        if not 'subject_types_supported' in self:
+            self['subject_types_supported'] = []
+        return self.get('subject_types_supported')
+
+    @subject_types_supported.setter
+    def subject_types_supported(self, value: List[str]):
+        self['subject_types_supported'] = value
+
+
+    @property
+    def id_token_signing_alg_values_supported(self) -> List[str]:
+        if not 'id_token_signing_alg_values_supported' in self:
+            self['id_token_signing_alg_values_supported'] = []
+        return self.get('id_token_signing_alg_values_supported')
+
+    @id_token_signing_alg_values_supported.setter
+    def id_token_signing_alg_values_supported(self, value: List[str]):
+        self['id_token_signing_alg_values_supported'] = value
+
+
+    @property
+    def claims_supported(self) -> List[str]:
+        if not 'claims_supported' in self:
+            self['claims_supported'] = []
+        return self.get('claims_supported')
+
+    @claims_supported.setter
+    def claims_supported(self, value: List[str]):
+        self['claims_supported'] = value
+
+
+    @property
+    def lti_config(self) -> PlatformConfig:
+        val = self.get('https://purl.imsglobal.org/spec/lti-platform-configuration')
+        if issubclass(PlatformConfig, Enum):
+            return PlatformConfig(val)
+        if (isinstance(val, dict) and not isinstance(val, PlatformConfig)):
+            typed_val = PlatformConfig( **val )
+            self['https://purl.imsglobal.org/spec/lti-platform-configuration'] = typed_val
+            return typed_val
+        return val
+
+
+    @lti_config.setter
+    def lti_config(self, value: PlatformConfig):
+        if isinstance(value, Enum):
+            self['https://purl.imsglobal.org/spec/lti-platform-configuration'] = value.value
+        else:
+            self['https://purl.imsglobal.org/spec/lti-platform-configuration'] = value
+
+
+
+class MessageDef(dict):
+
+    @property
+    def type(self) -> str:
+        val = self.get('type')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['type'] = typed_val
+            return typed_val
+        return val
+
+
+    @type.setter
+    def type(self, value: str):
+        if isinstance(value, Enum):
+            self['type'] = value.value
+        else:
+            self['type'] = value
+
+
+    @property
+    def allowLearner(self) -> bool:
+        val = self.get('allowLearner')
+        if issubclass(bool, Enum):
+            return bool(val)
+        if (isinstance(val, dict) and not isinstance(val, bool)):
+            typed_val = bool( **val )
+            self['allowLearner'] = typed_val
+            return typed_val
+        return val
+
+
+    @allowLearner.setter
+    def allowLearner(self, value: bool):
+        if isinstance(value, Enum):
+            self['allowLearner'] = value.value
+        else:
+            self['allowLearner'] = value
+
+
+    @property
+    def target_link_uri(self) -> str:
+        val = self.get('target_link_uri')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['target_link_uri'] = typed_val
+            return typed_val
+        return val
+
+
+    @target_link_uri.setter
+    def target_link_uri(self, value: str):
+        if isinstance(value, Enum):
+            self['target_link_uri'] = value.value
+        else:
+            self['target_link_uri'] = value
+
+
+    @property
+    def label(self) -> str:
+        val = self.get('label')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['label'] = typed_val
+            return typed_val
+        return val
+
+
+    @label.setter
+    def label(self, value: str):
+        if isinstance(value, Enum):
+            self['label'] = value.value
+        else:
+            self['label'] = value
+
+
+    @property
+    def placements(self) -> List[str]:
+        if not 'placements' in self:
+            self['placements'] = []
+        return self.get('placements')
+
+    @placements.setter
+    def placements(self, value: List[str]):
+        self['placements'] = value
+
+
+
+class ToolConfig(dict):
+
+    @property
+    def domain(self) -> str:
+        val = self.get('domain')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['domain'] = typed_val
+            return typed_val
+        return val
+
+
+    @domain.setter
+    def domain(self, value: str):
+        if isinstance(value, Enum):
+            self['domain'] = value.value
+        else:
+            self['domain'] = value
+
+
+    @property
+    def target_link_uri(self) -> str:
+        val = self.get('target_link_uri')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['target_link_uri'] = typed_val
+            return typed_val
+        return val
+
+
+    @target_link_uri.setter
+    def target_link_uri(self, value: str):
+        if isinstance(value, Enum):
+            self['target_link_uri'] = value.value
+        else:
+            self['target_link_uri'] = value
+
+
+    @property
+    def custom_parameters(self) -> Custom:
+        val = self.get('custom_parameters')
+        if issubclass(Custom, Enum):
+            return Custom(val)
+        if (isinstance(val, dict) and not isinstance(val, Custom)):
+            typed_val = Custom( **val )
+            self['custom_parameters'] = typed_val
+            return typed_val
+        return val
+
+
+    @custom_parameters.setter
+    def custom_parameters(self, value: Custom):
+        if isinstance(value, Enum):
+            self['custom_parameters'] = value.value
+        else:
+            self['custom_parameters'] = value
+
+
+    @property
+    def scopes(self) -> List[str]:
+        if not 'scopes' in self:
+            self['scopes'] = []
+        return self.get('scopes')
+
+    @scopes.setter
+    def scopes(self, value: List[str]):
+        self['scopes'] = value
+
+
+    @property
+    def claims(self) -> List[str]:
+        if not 'claims' in self:
+            self['claims'] = []
+        return self.get('claims')
+
+    @claims.setter
+    def claims(self, value: List[str]):
+        self['claims'] = value
+
+
+    @property
+    def messages(self) -> List[MessageDef]:
+        if not 'messages' in self:
+            self['messages'] = []
+        return self.get('messages')
+
+    @messages.setter
+    def messages(self, value: List[MessageDef]):
+        self['messages'] = value
+
+
+
+class ToolOIDCConfig(dict):
+
+    @property
+    def application_type(self) -> str:
+        val = self.get('application_type')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['application_type'] = typed_val
+            return typed_val
+        return val
+
+
+    @application_type.setter
+    def application_type(self, value: str):
+        if isinstance(value, Enum):
+            self['application_type'] = value.value
+        else:
+            self['application_type'] = value
+
+
+    @property
+    def response_types(self) -> List[str]:
+        if not 'response_types' in self:
+            self['response_types'] = []
+        return self.get('response_types')
+
+    @response_types.setter
+    def response_types(self, value: List[str]):
+        self['response_types'] = value
+
+
+    @property
+    def grant_types(self) -> List[str]:
+        if not 'grant_types' in self:
+            self['grant_types'] = []
+        return self.get('grant_types')
+
+    @grant_types.setter
+    def grant_types(self, value: List[str]):
+        self['grant_types'] = value
+
+
+    @property
+    def initiate_login_uri(self) -> str:
+        val = self.get('initiate_login_uri')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['initiate_login_uri'] = typed_val
+            return typed_val
+        return val
+
+
+    @initiate_login_uri.setter
+    def initiate_login_uri(self, value: str):
+        if isinstance(value, Enum):
+            self['initiate_login_uri'] = value.value
+        else:
+            self['initiate_login_uri'] = value
+
+
+    @property
+    def redirect_uris(self) -> List[str]:
+        if not 'redirect_uris' in self:
+            self['redirect_uris'] = []
+        return self.get('redirect_uris')
+
+    @redirect_uris.setter
+    def redirect_uris(self, value: List[str]):
+        self['redirect_uris'] = value
+
+
+    @property
+    def client_name(self) -> str:
+        val = self.get('client_name')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['client_name'] = typed_val
+            return typed_val
+        return val
+
+
+    @client_name.setter
+    def client_name(self, value: str):
+        if isinstance(value, Enum):
+            self['client_name'] = value.value
+        else:
+            self['client_name'] = value
+
+
+    @property
+    def jwks_uri(self) -> str:
+        val = self.get('jwks_uri')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['jwks_uri'] = typed_val
+            return typed_val
+        return val
+
+
+    @jwks_uri.setter
+    def jwks_uri(self, value: str):
+        if isinstance(value, Enum):
+            self['jwks_uri'] = value.value
+        else:
+            self['jwks_uri'] = value
+
+
+    @property
+    def logo_uri(self) -> str:
+        val = self.get('logo_uri')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['logo_uri'] = typed_val
+            return typed_val
+        return val
+
+
+    @logo_uri.setter
+    def logo_uri(self, value: str):
+        if isinstance(value, Enum):
+            self['logo_uri'] = value.value
+        else:
+            self['logo_uri'] = value
+
+
+    @property
+    def token_endpoint_auth_method(self) -> str:
+        val = self.get('token_endpoint_auth_method')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['token_endpoint_auth_method'] = typed_val
+            return typed_val
+        return val
+
+
+    @token_endpoint_auth_method.setter
+    def token_endpoint_auth_method(self, value: str):
+        if isinstance(value, Enum):
+            self['token_endpoint_auth_method'] = value.value
+        else:
+            self['token_endpoint_auth_method'] = value
+
+
+    @property
+    def contacts(self) -> List[str]:
+        if not 'contacts' in self:
+            self['contacts'] = []
+        return self.get('contacts')
+
+    @contacts.setter
+    def contacts(self, value: List[str]):
+        self['contacts'] = value
+
+
+    @property
+    def lti_config(self) -> ToolConfig:
+        val = self.get('https://purl.imsglobal.org/spec/lti-tool-configuration')
+        if issubclass(ToolConfig, Enum):
+            return ToolConfig(val)
+        if (isinstance(val, dict) and not isinstance(val, ToolConfig)):
+            typed_val = ToolConfig( **val )
+            self['https://purl.imsglobal.org/spec/lti-tool-configuration'] = typed_val
+            return typed_val
+        return val
+
+
+    @lti_config.setter
+    def lti_config(self, value: ToolConfig):
+        if isinstance(value, Enum):
+            self['https://purl.imsglobal.org/spec/lti-tool-configuration'] = value.value
+        else:
+            self['https://purl.imsglobal.org/spec/lti-tool-configuration'] = value
+
+
+
