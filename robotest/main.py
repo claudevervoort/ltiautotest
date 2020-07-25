@@ -18,7 +18,9 @@ from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List, Dict
 from datetime import datetime
 
-from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, Members, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get
+from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, 
+from lti import Members, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get
+from lti import get_platform_config, register
 
 from robotest.test_results import TestCategory, TestResult
 
@@ -40,16 +42,44 @@ def read_broken(request: Request):
 def read_results(request: Request,
                  success: bool = True):
     cat1 = TestCategory(name='category 1')
-    cat1.results.append(TestResult('res1', True, True, 'You passed this easily'))
-    cat1.results.append(TestResult('res2', True, True, 'You passed this easily'))
-    cat1.results.append(TestResult('res3', success, True, 'You passed this easily'))
+    cat1.results.append(TestResult('res1 blah blah blllla', True, True, 'You passed this easily'))
+    cat1.results.append(TestResult('res2 is required to pass this', True, True, 'You passed this but not so easily'))
+    cat1.results.append(TestResult('res3 cannot be failed even if you want', success, True, 'How did you not pass this test?'))
+    cat2 = TestCategory(name='category 2')
+    cat2.results.append(TestResult('res1 blah blah blllla', True, True, 'You passed this easily'))
+    cat2.results.append(TestResult('res2 is required to pass this', True, True, 'You passed this but not so easily'))
+    cat2.results.append(TestResult('res3 cannot be failed even if you want', success, True, 'https://moodle.zeedeeyou.com/mod/lti/services.php/CourseSection/2/bindings/3/memberships'))
     print( cat1.success )
 
-    return templates.TemplateResponse("results.html", {"request": request, "results": [cat1], "success": cat1.success})
+    return templates.TemplateResponse("results.html", {"request": request, "results": [cat1, cat2], "success": cat1.success})
 
 @app.get("/register")
 def register(request: Request, openid_configuration: str, registration_token: str):
-    return templates.TemplateResponse("registration_completed.html", {"request": request})
+    res = TestCategory(name='Dynamic Registration')
+    res.results.append(TestResult('OpenId Config URL',
+                                   openid_configuration or False,
+                                   True,
+                                   'OpenId config URL is required to get the platform info'))
+    if openid_configuration:
+        platform_config = get_platform_config(openid_configuration)
+        res.results.append(TestResult('Config retrieved from Platform',
+                                       platform_config or False,
+                                       True,
+                                       json.dumps(platform_config) if platform_config else 'No config'));
+        if platform_config and platform_config.registration_endpoint:
+            res.results.append(TestResult('Registration end point found',
+                                        True,
+                                        True,
+                                        platform_config.registration_endpoint))
+            
+        else:
+            res.results.append(TestResult('Registration end point found',
+                                        False,
+                                        True,
+                                        'Cannot register tool without registration endpoint'))
+
+
+    return templates.TemplateResponse("results.html", {"request": request, "results": [res], "success": res.success})
 
 @app.get("/.well-known/jwks.json")
 def jwks():

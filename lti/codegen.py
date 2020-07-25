@@ -134,6 +134,53 @@ models = {
         },
         'id': [],
         'members': ['', 'List[Member]']
+    },
+    'PlatformConfig': {
+        'product_family_code': [],
+        'variables': ['', 'List[str]']
+    },
+    'PlatformOIDCConfig': {
+        'issuer': [],
+        'authorization_endpoint': [],
+        'token_endpoint': [],
+        'token_endpoint_auth_methods_supported': ['', 'List[str]'],
+        'token_endpoint_auth_signing_alg_values_supported': ['', 'List[str]'],
+        'jwks_uri': [],
+        'registration_endpoint': [],
+        'scopes_supported': ['', 'List[str]'],
+        'response_types_supported': ['', 'List[str]'],
+        'subject_types_supported': ['', 'List[str]'],
+        'id_token_signing_alg_values_supported': ['', 'List[str]'],
+        'claims_supported': ['', 'List[str]'],
+        'lti_config': ['https://purl.imsglobal.org/spec/lti-platform-configuration', 'PlatformConfig']
+    },
+    'MessageDef': {
+        "type": [],
+        "allowLearner": ['', 'bool'],
+        "target_link_uri": [],
+        "label": [],
+        "placements": ['', 'List[str]']
+    },
+    'ToolConfig': {
+        "domain": [],
+        "target_link_uri": [],
+        "custom_parameters": ['', 'Custom'],
+        "scopes": ['', 'List[str]'],
+        "claims": ['', 'List[str]'],
+        "messages": ['', 'List[MessageDef]']
+    },
+    'ToolOIDCConfig': {
+        "application_type": [],
+        "response_types": ['', 'List[str]'],
+        "grant_types": ['', 'List[str]'],
+        "initiate_login_uri": [],
+        "redirect_uris": ['', 'List[str]'],
+        "client_name": [],
+        "jwks_uri": [],
+        "logo_uri": [],
+        "token_endpoint_auth_method": [],
+        "contacts": ['', 'List[str]'],
+        "lti_config": ["https://purl.imsglobal.org/spec/lti-tool-configuration", 'ToolConfig']
     }
 }
 

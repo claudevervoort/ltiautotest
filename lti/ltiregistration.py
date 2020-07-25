@@ -2,6 +2,9 @@ from jose import jwt
 from datetime import datetime
 from lti.jwks import get_remote_keyset, get_webkey
 from lti.spi import log
+from lti.gen_model import PlatformOIDCConfig, ToolOIDCConfig
+import requests
+import json
 
 TOKEN_TTL = 300
 
@@ -14,7 +17,6 @@ class ToolRegistration(object):
         self.token_uri = token_uri
         self.jwks_uri = jwks_uri
         log("Registration: {0}", str(self.__dict__))
-        
 
     def decode(self, token:str) -> dict:
         return jwt.decode(token, 
@@ -39,3 +41,21 @@ def registration( lms: str, iss: str, client_id: str) -> ToolRegistration:
     if (lms.lower() == 'moodle'):
         return ToolRegistration(iss, client_id, iss+'/mod/lti/auth.php', iss+'/mod/lti/token.php', iss+'/mod/lti/certs.php')
     return None
+
+def get_platform_config( url: str) -> PlatformOIDCConfig:
+    headers = {
+        'Accept': 'application/json'
+    }
+    r = requests.get(url, headers=headers)
+    return PlatformOIDCConfig(json.loads(r.text))
+
+def register( url: str, config: ToolOIDCConfig, token:str = None) -> ToolOIDCConfig:
+    headers = {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+    }
+    if token:
+        headers['Authorization'] = 'Bearer {token}'.format(token=token)
+    r = requests.post(url, headers=headers, json=config)
+    return ToolOIDCConfig(json.loads(r.text))
+        

@@ -28,11 +28,11 @@ span.note {
 }
 
 video {
-    max-width: 60%;
+    max-width: 50%;
 }
 
 body.results video {
-    padding-left: 30%;
+    padding-left: 50%;
 }
 
 div.centered {
@@ -44,16 +44,16 @@ div.centered {
 table.results {
     border: none;
     color: azure;
-    transform: rotateY(20deg);
+    /*transform: rotateY(20deg);*/
     position: absolute;
-    left: 10%;
+    left: 5px;
     z-index: 10;
-    max-width: 40%;
+    max-width: 60%;
 }
 
 table.results tr.category {
     color: azure;
-    background-color: rgb(97, 105, 111);
+    background-color: rgba(97, 105, 111,0.6);
 }
 
 table.results th, table.results td {
@@ -88,7 +88,7 @@ table.results tr {
     animation-fill-mode: forwards;
 }
 
-table.results tr:nth-child(1) {
+/* table.results tr:nth-child(1) {
     animation-delay: 0.5s;
 }
 
@@ -130,7 +130,7 @@ table.results tr:nth-child(13) {
 }
 table.results tr:nth-child(14) {
     animation-delay: 7s;
-}
+} */
 
 
 #dlchoices a {

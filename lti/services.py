@@ -44,7 +44,7 @@ def ltiservice_get(registration: ToolRegistration, resource_class: Type[T], url:
         token = access_token( registration, resource_class.read_scope )
         headers = {
             'Authorization': 'Bearer {token}'.format(token=token),
-            'Content-Type': mime
+            'Accept': mime
         }
         r = requests.get(url, headers=headers, params=params)
 
