@@ -2079,6 +2079,46 @@ class ToolConfig(dict):
 class ToolOIDCConfig(dict):
 
     @property
+    def client_id(self) -> str:
+        val = self.get('client_id')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['client_id'] = typed_val
+            return typed_val
+        return val
+
+
+    @client_id.setter
+    def client_id(self, value: str):
+        if isinstance(value, Enum):
+            self['client_id'] = value.value
+        else:
+            self['client_id'] = value
+
+
+    @property
+    def registration_client_uri(self) -> str:
+        val = self.get('registration_client_uri')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['registration_client_uri'] = typed_val
+            return typed_val
+        return val
+
+
+    @registration_client_uri.setter
+    def registration_client_uri(self, value: str):
+        if isinstance(value, Enum):
+            self['registration_client_uri'] = value.value
+        else:
+            self['registration_client_uri'] = value
+
+
+    @property
     def application_type(self) -> str:
         val = self.get('application_type')
         if issubclass(str, Enum):

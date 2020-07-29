@@ -2,6 +2,11 @@
     <head>
         <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/static/robottest.css">
+        <script type="application/javascript">
+            function closeme() {
+                (window.opener || window.parent).postMessage({subject:'org.imsglobal.lti.close'}, '*');
+            }
+        </script>
     </head>
     <body class="results">
     <div class="centered">
@@ -15,11 +20,18 @@
             </tr>
         {% endfor %}
     {% endfor %}
+    {%if showClose %}
+            <tr class="result result.success">
+                <th>Close this with Post Message</th>
+                <td><button onclick="closeme()">Close</button></td>
+            </tr>
+    {%endif%}
 
     </table>
             <video autoplay loop muted playsinline>
                 <source src="{{ '/assets/thumbsup.mp4'if success else '/assets/broken.mp4' }}" type="video/mp4">
             </video>
     </div>
+    
     </body>
 </html>

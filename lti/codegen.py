@@ -170,6 +170,8 @@ models = {
         "messages": ['', 'List[MessageDef]']
     },
     'ToolOIDCConfig': {
+        "client_id": [],
+        "registration_client_uri": [],
         "application_type": [],
         "response_types": ['', 'List[str]'],
         "grant_types": ['', 'List[str]'],
@@ -181,6 +183,12 @@ models = {
         "token_endpoint_auth_method": [],
         "contacts": ['', 'List[str]'],
         "lti_config": ["https://purl.imsglobal.org/spec/lti-tool-configuration", 'ToolConfig']
+    }
+}
+
+defaults = {
+    'ToolOIDCConfig': {
+
     }
 }
 

@@ -2,7 +2,7 @@ from jose import jwt
 from datetime import datetime
 from lti.jwks import get_remote_keyset, get_webkey
 from lti.spi import log
-from lti.gen_model import PlatformOIDCConfig, ToolOIDCConfig
+from lti.gen_model import PlatformOIDCConfig, ToolOIDCConfig, MessageDef
 import requests
 import json
 
@@ -59,3 +59,70 @@ def register( url: str, config: ToolOIDCConfig, token:str = None) -> ToolOIDCCon
     r = requests.post(url, headers=headers, json=config)
     return ToolOIDCConfig(json.loads(r.text))
         
+def base_tool_oidc_conf(*,name:str, 
+                        domain:str, 
+                        login_uri: str, 
+                        redirect_uri: str,  
+                        jwks_uri: str = None,
+                        dl_label: str = None,
+                        dl_url: str = None, 
+                        base_url:str = None, 
+                        pii_name: bool = False, 
+                        pii_email: bool = False, 
+                        ags: bool = False, 
+                        nrps: bool = False) -> ToolOIDCConfig:
+    if not jwks_uri:
+        jwks_uri = 'https://{domain}/.well-known/jwks.json'.format(domain=domain)
+    if not base_url:
+        base_url = 'https://{domain}'.format(domain=domain)
+    tool_conf_json = """
+    {{
+        "application_type": "web",
+        "response_types": ["id_token"],
+        "grant_types": ["implict", "client_credentials"],
+        "initiate_login_uri": "{login_uri}",
+        "redirect_uris": ["{redirect_uri}"],
+        "client_name": "{name}",
+        "jwks_uri": "{jwks_uri}",
+        "token_endpoint_auth_method": "private_key_jwt",
+        "https://purl.imsglobal.org/spec/lti-tool-configuration": {{
+            "domain": "{domain}",
+            "target_link_uri": "{base_url}",
+            "custom_parameters": {{
+            }},
+            "scopes": [],
+            "claims": ["iss", "sub"],
+            "messages": [
+            ]
+        }}
+    }}
+    """.format(name=name, jwks_uri=jwks_uri, login_uri=login_uri, 
+               redirect_uri=redirect_uri, domain=domain, base_url=base_url)
+    print(tool_conf_json)
+    tool_conf = ToolOIDCConfig(**json.loads(tool_conf_json))
+
+    if dl_label:
+        if not dl_url:
+            dl_url = base_url
+        dl_message = '''
+                {{
+                    "type": "LTIDeepLinkingRequest",
+                    "allowLearner": false,
+                    "target_link_uri": "{dl_url}",
+                    "label": "{dl_label}",
+                    "placements": []
+                }}
+        '''.format(dl_label=dl_label, dl_url=dl_url)
+        tool_conf.lti_config.messages.append(MessageDef(**json.loads(dl_message)))
+    if pii_email:
+        tool_conf.lti_config.claims.append('email')
+    if pii_name:
+        tool_conf.lti_config.claims.extend(["name", "given_name", "family_name"])
+    if ags:
+        tool_conf.lti_config.scopes.extend([
+            "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",
+            "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
+            "https://purl.imsglobal.org/spec/lti-ags/scope/score"])
+    if nrps:
+        tool_conf.lti_config.scopes.append('https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly')
+    return tool_conf

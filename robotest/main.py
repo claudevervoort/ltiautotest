@@ -18,9 +18,9 @@ from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List, Dict
 from datetime import datetime
 
-from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, 
+from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse
 from lti import Members, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get
-from lti import get_platform_config, register
+from lti import get_platform_config, register, base_tool_oidc_conf
 
 from robotest.test_results import TestCategory, TestResult
 
@@ -51,7 +51,7 @@ def read_results(request: Request,
     cat2.results.append(TestResult('res3 cannot be failed even if you want', success, True, 'https://moodle.zeedeeyou.com/mod/lti/services.php/CourseSection/2/bindings/3/memberships'))
     print( cat1.success )
 
-    return templates.TemplateResponse("results.html", {"request": request, "results": [cat1, cat2], "success": cat1.success})
+    return templates.TemplateResponse("results.html", {"request": request, "results": [cat1, cat2], "success": cat1.success, "showClose": True})
 
 @app.get("/register")
 def register(request: Request, openid_configuration: str, registration_token: str):
@@ -61,25 +61,47 @@ def register(request: Request, openid_configuration: str, registration_token: st
                                    True,
                                    'OpenId config URL is required to get the platform info'))
     if openid_configuration:
-        platform_config = get_platform_config(openid_configuration)
-        res.results.append(TestResult('Config retrieved from Platform',
-                                       platform_config or False,
-                                       True,
-                                       json.dumps(platform_config) if platform_config else 'No config'));
-        if platform_config and platform_config.registration_endpoint:
-            res.results.append(TestResult('Registration end point found',
+        try:
+            platform_config = get_platform_config(openid_configuration)
+            res.results.append(TestResult('Config retrieved from Platform',
+                                        platform_config or False,
                                         True,
-                                        True,
-                                        platform_config.registration_endpoint))
-            
-        else:
-            res.results.append(TestResult('Registration end point found',
+                                        json.dumps(platform_config) if platform_config else 'No config'));
+            if platform_config and platform_config.registration_endpoint:
+                res.results.append(TestResult('Registration end point found',
+                                            True,
+                                            True,
+                                            platform_config.registration_endpoint))
+                init_login = str(request.url.replace(path='/oidc/init', query='dynreg=true', scheme='https'))
+                redirect_uri = str(request.url.replace(path='/oidc/launch', query='', scheme='https'))
+                tool_conf = base_tool_oidc_conf(name='Robotest', 
+                        domain = request.url.hostname,
+                        login_uri = init_login,
+                        redirect_uri = redirect_uri,
+                        dl_label='Add Robotest')
+                res.results.append(TestResult('Tool Config to Register',
+                                   True,
+                                   True, 
+                                   json.dumps(tool_conf)))
+                registered = register(platform_config.registration_endpoint, tool_conf, registration_token)
+                res.results.append(TestResult('Successful registration',
+                                   True if registered.client_id else False,
+                                   True, 
+                                   'Client Id: {client_id} \n {json}'.format( client_id=registered.client_id, json=json.dumps(registered))))
+
+                
+            else:
+                res.results.append(TestResult('Registration end point found',
+                                            False,
+                                            True,
+                                            'Cannot register tool without registration endpoint'))
+
+        except:
+            res.results.append(TestResult('Error during registration',
                                         False,
                                         True,
-                                        'Cannot register tool without registration endpoint'))
-
-
-    return templates.TemplateResponse("results.html", {"request": request, "results": [res], "success": res.success})
+                                        traceback.format_exc()))
+    return templates.TemplateResponse("results.html", {"request": request, "results": [res], "success": res.success, "showClose": True})
 
 @app.get("/.well-known/jwks.json")
 def jwks():
