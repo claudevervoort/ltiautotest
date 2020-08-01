@@ -247,6 +247,24 @@ template_datetime_property = """
         self['{long}'] = value.isoformat()
 """
 
+template_bool_property = """
+    @property
+    def {short}(self) -> bool:
+        val = self.get('{long}')
+        if (val):
+            if type(val) is bool:
+                return val
+            # Moodle error encoded a string
+            if type(val) is str:
+                return a.lower() == 'true'
+            return False
+        return None
+
+    @{short}.setter
+    def {short}(self, value: bool):
+        self['{long}'] = value
+"""
+
 template_dict_property = """
     @property
     def {short}(self) -> {type}:
@@ -322,6 +340,9 @@ def generate_class(name: str, spec: dict):
                 short=k, long=lk, type=type))
         elif type == 'datetime':
             gen.append(template_datetime_property.format(
+                short=k, long=lk))
+        elif type == 'bool':
+            gen.append(template_bool_property.format(
                 short=k, long=lk))
         else:
             gen.append(template_property.format(short=k, long=lk, type=type))

@@ -83,41 +83,35 @@ class DeeplinkSettings(dict):
     @property
     def accept_multiple(self) -> bool:
         val = self.get('accept_multiple')
-        if issubclass(bool, Enum):
-            return bool(val)
-        if (isinstance(val, dict) and not isinstance(val, bool)):
-            typed_val = bool( **val )
-            self['accept_multiple'] = typed_val
-            return typed_val
-        return val
-
+        if (val):
+            if type(val) is bool:
+                return val
+            # Moodle error encoded a string
+            if type(val) is str:
+                return a.lower() == 'true'
+            return False
+        return None
 
     @accept_multiple.setter
     def accept_multiple(self, value: bool):
-        if isinstance(value, Enum):
-            self['accept_multiple'] = value.value
-        else:
-            self['accept_multiple'] = value
+        self['accept_multiple'] = value
 
 
     @property
     def auto_create(self) -> bool:
         val = self.get('auto_create')
-        if issubclass(bool, Enum):
-            return bool(val)
-        if (isinstance(val, dict) and not isinstance(val, bool)):
-            typed_val = bool( **val )
-            self['auto_create'] = typed_val
-            return typed_val
-        return val
-
+        if (val):
+            if type(val) is bool:
+                return val
+            # Moodle error encoded a string
+            if type(val) is str:
+                return a.lower() == 'true'
+            return False
+        return None
 
     @auto_create.setter
     def auto_create(self, value: bool):
-        if isinstance(value, Enum):
-            self['auto_create'] = value.value
-        else:
-            self['auto_create'] = value
+        self['auto_create'] = value
 
 
     @property
@@ -1911,21 +1905,18 @@ class MessageDef(dict):
     @property
     def allowLearner(self) -> bool:
         val = self.get('allowLearner')
-        if issubclass(bool, Enum):
-            return bool(val)
-        if (isinstance(val, dict) and not isinstance(val, bool)):
-            typed_val = bool( **val )
-            self['allowLearner'] = typed_val
-            return typed_val
-        return val
-
+        if (val):
+            if type(val) is bool:
+                return val
+            # Moodle error encoded a string
+            if type(val) is str:
+                return a.lower() == 'true'
+            return False
+        return None
 
     @allowLearner.setter
     def allowLearner(self, value: bool):
-        if isinstance(value, Enum):
-            self['allowLearner'] = value.value
-        else:
-            self['allowLearner'] = value
+        self['allowLearner'] = value
 
 
     @property
