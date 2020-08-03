@@ -88,7 +88,7 @@ class DeeplinkSettings(dict):
                 return val
             # Moodle error encoded a string
             if type(val) is str:
-                return a.lower() == 'true'
+                return val.lower() == 'true'
             return False
         return None
 
@@ -105,7 +105,7 @@ class DeeplinkSettings(dict):
                 return val
             # Moodle error encoded a string
             if type(val) is str:
-                return a.lower() == 'true'
+                return val.lower() == 'true'
             return False
         return None
 
@@ -1608,10 +1608,13 @@ class Member(dict):
 
 class Members(dict):
 
-    mime = 'application/vnd.ims.lti-nprs.v2.membershipcontainer+json'
+    mime = 'application/vnd.ims.lti-nrps.v2.membershipcontainer+json'
 
 
     read_scope = 'https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly'
+
+
+    collection_attribute = 'members'
 
 
     @property
@@ -1910,7 +1913,7 @@ class MessageDef(dict):
                 return val
             # Moodle error encoded a string
             if type(val) is str:
-                return a.lower() == 'true'
+                return val.lower() == 'true'
             return False
         return None
 

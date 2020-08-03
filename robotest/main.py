@@ -253,13 +253,22 @@ def test_nrps(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                                      True,
                                      message.membership_service.context_memberships_url))
         try:
-            members = ltiservice_get(reg, Members, message.membership_service.context_memberships_url)
-            print(json.dumps(members))
+            # we linit to 5 to test limit and paging
+            nrps_url = urlparse(message.membership_service.context_memberships_url)
+            query_params = parse_qsl(nrps_url.query)
+            query_params.append(('limit', 5))
+            nrps_limited_url=urlunparse((*nrps_url[0:4],
+                                    urlencode(query_params),
+                                    nrps_url.fragment))
+            print(message.membership_service.context_memberships_url)
+            print(nrps_limited_url)
+            members = ltiservice_get(reg, Members, nrps_limited_url)
+            # members = ltiservice_get(reg, Members, message.membership_service.context_memberships_url)
             # instructors = list(filter(lambda m: )) util to get role from enum
             res.results.append(TestResult('Members loaded',
+                                    len(members.members)>0 and not len(members.members) == 5,
                                     True,
-                                    True,
-                                    '{m} members'.format(m=len(members.members))))
+                                    '{m} members - 5 is paging boundary so ideally have more than 5 members'.format(m=len(members.members))))
         except Exception as e:
             print(traceback.format_exc())
             res.results.append(TestResult('Members loaded',
