@@ -15,13 +15,14 @@
                 <li>As admin got to Site Admin to add an external tool</li>
                 <li>Select <em>configure a tool manually</em></li>
                 <li><bold>Tool url</bold> {{ base_url }}</li>
+                <li><bold>LTI Version</bold>1.3</li>
                 <li><bold>Inititiation Login URL</bold> {{ base_url }}/oidc/init</li>
                 <li><bold>Redirect URI</bold> {{ base_url }}/oidc/launch</li>
-                <li><bold>Show more and enable <em>Content-Item Message</em></bold></li>
-                <li><bold>Public Key</bold> <em>Use URI if supported see MDL-66920</em>
+                <li><bold>enable <em>Deep Linking (Content-Item Message)</em></bold></li>
+                <li><bold>Public Key</bold> <em>Use JWKS URI unless not supported by youur moodle version</em>
                     <ul>
                         <li>JWKS URI: {{ base_url }}/.well-known/jwks.json</li>
-                        <li>Public key: copy from <a href="{{ base_url }}/.well-known/publickey.pem">public key</a>
+                        <li>Public key if 3.8 or earlier: copy from <a href="{{ base_url }}/.well-known/publickey.pem">public key</a>
                     </ul>
                 </li>
                 <li><bold>Services</bold>
@@ -32,11 +33,11 @@
                 </li>
                 <li><bold>Privacy</bold>
                     <ul>
-                        <li><bold>Accept grades</bold>Delegates to Teacher</li>
+                        <li><bold>Accept grades</bold>Based on Tool Item definition or Delegates to Teacher</li>
                     </ul>
                 </li>
                 <li><bold>Save</bold></li>
-                <li>If previous to MDL-67072 you need to add the client id to the init login
+                <li>If previous to MDL-67072 (3.8 or before) you need to add the client id to the init login
                     <ul>
                         <li>Edit the newly created tool</li>
                         <li>Modify the login uri with the client_id generated for that tool</li>
