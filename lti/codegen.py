@@ -129,8 +129,9 @@ models = {
     },
     'Members': {
         'cls_const': {
-            'mime': 'application/vnd.ims.lti-nprs.v2.membershipcontainer+json',
-            'read_scope': 'https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly'
+            'mime': 'application/vnd.ims.lti-nrps.v2.membershipcontainer+json',
+            'read_scope': 'https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly',
+            'collection_attribute': 'members'
         },
         'id': [],
         'members': ['', 'List[Member]']
@@ -256,7 +257,7 @@ template_bool_property = """
                 return val
             # Moodle error encoded a string
             if type(val) is str:
-                return a.lower() == 'true'
+                return val.lower() == 'true'
             return False
         return None
 

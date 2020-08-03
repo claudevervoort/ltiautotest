@@ -18,6 +18,7 @@ def merge(a:dict, b:dict):
 def next(headers: Dict):
     if ('Link' in headers):
         links = headers['Link'].split(',')
+        print(links)
         nexts = list(filter(lambda l: 'rel=next' in l or 'rel=\"next\"' in l, links))
         if len(nexts)>0:
             match = link_anchor_re.search(nexts[0])
@@ -47,6 +48,13 @@ def ltiservice_get(registration: ToolRegistration, resource_class: Type[T], url:
             'Accept': mime
         }
         r = requests.get(url, headers=headers, params=params)
-
-        return resource_class(json.loads(r.text))
+        r.raise_for_status()
+        response = resource_class(json.loads(r.text))
+        if (load_all and next(r.headers)):
+            remaining = ltiservice_get(registration, resource_class, next(r.headers), params)
+            if type(response) is list:
+                response.extend(remaining)
+            else:
+                response[resource_class.collection_attribute].extend(remaining)
+        return response
     raise ValueError("No scope defined for read")
