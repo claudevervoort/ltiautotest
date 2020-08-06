@@ -20,7 +20,7 @@ from datetime import datetime
 
 from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse
 from lti import Members, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get
-from lti import get_platform_config, register, base_tool_oidc_conf
+from lti import get_platform_config, register_tool, base_tool_oidc_conf
 
 from robotest.test_results import TestCategory, TestResult
 
@@ -83,7 +83,8 @@ def register(request: Request, openid_configuration: str, registration_token: st
                                    True,
                                    True, 
                                    json.dumps(tool_conf)))
-                registered = register(platform_config.registration_endpoint, tool_conf, registration_token)
+                registered = register_tool(platform_config.registration_endpoint, tool_conf, registration_token)
+                print(json.dumps(registered))
                 res.results.append(TestResult('Successful registration',
                                    True if registered.client_id else False,
                                    True, 

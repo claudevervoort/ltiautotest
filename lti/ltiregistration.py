@@ -47,9 +47,10 @@ def get_platform_config( url: str) -> PlatformOIDCConfig:
         'Accept': 'application/json'
     }
     r = requests.get(url, headers=headers)
+    r.raise_for_status()
     return PlatformOIDCConfig(json.loads(r.text))
 
-def register( url: str, config: ToolOIDCConfig, token:str = None) -> ToolOIDCConfig:
+def register_tool( url: str, config: ToolOIDCConfig, token:str = None) -> ToolOIDCConfig:
     headers = {
         'Accept': 'application/json',
         'Content-type': 'application/json'
@@ -57,6 +58,8 @@ def register( url: str, config: ToolOIDCConfig, token:str = None) -> ToolOIDCCon
     if token:
         headers['Authorization'] = 'Bearer {token}'.format(token=token)
     r = requests.post(url, headers=headers, json=config)
+    print('RES:'+r.text)
+    r.raise_for_status()
     return ToolOIDCConfig(json.loads(r.text))
         
 def base_tool_oidc_conf(*,name:str, 
@@ -79,7 +82,7 @@ def base_tool_oidc_conf(*,name:str,
     {{
         "application_type": "web",
         "response_types": ["id_token"],
-        "grant_types": ["implict", "client_credentials"],
+        "grant_types": ["implicit", "client_credentials"],
         "initiate_login_uri": "{login_uri}",
         "redirect_uris": ["{redirect_uri}"],
         "client_name": "{name}",
@@ -106,7 +109,7 @@ def base_tool_oidc_conf(*,name:str,
             dl_url = base_url
         dl_message = '''
                 {{
-                    "type": "LTIDeepLinkingRequest",
+                    "type": "LtiDeepLinkingRequest",
                     "allowLearner": false,
                     "target_link_uri": "{dl_url}",
                     "label": "{dl_label}",
