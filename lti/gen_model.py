@@ -1211,6 +1211,72 @@ class Result(dict):
 
 
 
+class DLIFrame(dict):
+
+    @property
+    def width(self) -> float:
+        val = self.get('width')
+        if issubclass(float, Enum):
+            return float(val)
+        if (isinstance(val, dict) and not isinstance(val, float)):
+            typed_val = float( **val )
+            self['width'] = typed_val
+            return typed_val
+        return val
+
+
+    @width.setter
+    def width(self, value: float):
+        if isinstance(value, Enum):
+            self['width'] = value.value
+        else:
+            self['width'] = value
+
+
+    @property
+    def height(self) -> float:
+        val = self.get('height')
+        if issubclass(float, Enum):
+            return float(val)
+        if (isinstance(val, dict) and not isinstance(val, float)):
+            typed_val = float( **val )
+            self['height'] = typed_val
+            return typed_val
+        return val
+
+
+    @height.setter
+    def height(self, value: float):
+        if isinstance(value, Enum):
+            self['height'] = value.value
+        else:
+            self['height'] = value
+
+
+
+class DLWindow(dict):
+
+    @property
+    def targetName(self) -> str:
+        val = self.get('targetName')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['targetName'] = typed_val
+            return typed_val
+        return val
+
+
+    @targetName.setter
+    def targetName(self, value: str):
+        if isinstance(value, Enum):
+            self['targetName'] = value.value
+        else:
+            self['targetName'] = value
+
+
+
 class LTIResourceLink(dict):
 
     def __init__(self, *args, **kwargs):
@@ -1354,6 +1420,46 @@ class LTIResourceLink(dict):
         if not self.get('lineItem'):
             self['lineItem'] = LineItem()
         self['lineItem']['resourceId'] = value
+
+
+    @property
+    def iframe(self) -> DLIFrame:
+        val = self.get('iframe')
+        if issubclass(DLIFrame, Enum):
+            return DLIFrame(val)
+        if (isinstance(val, dict) and not isinstance(val, DLIFrame)):
+            typed_val = DLIFrame( **val )
+            self['iframe'] = typed_val
+            return typed_val
+        return val
+
+
+    @iframe.setter
+    def iframe(self, value: DLIFrame):
+        if isinstance(value, Enum):
+            self['iframe'] = value.value
+        else:
+            self['iframe'] = value
+
+
+    @property
+    def window(self) -> DLWindow:
+        val = self.get('window')
+        if issubclass(DLWindow, Enum):
+            return DLWindow(val)
+        if (isinstance(val, dict) and not isinstance(val, DLWindow)):
+            typed_val = DLWindow( **val )
+            self['window'] = typed_val
+            return typed_val
+        return val
+
+
+    @window.setter
+    def window(self, value: DLWindow):
+        if isinstance(value, Enum):
+            self['window'] = value.value
+        else:
+            self['window'] = value
 
 
 

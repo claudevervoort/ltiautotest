@@ -18,7 +18,7 @@ from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List, Dict
 from datetime import datetime
 
-from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse
+from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow
 from lti import Members, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get
 from lti import get_platform_config, register_tool, base_tool_oidc_conf
 
@@ -167,35 +167,44 @@ def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(.
         return deeplinking(request, reg, message)
     return test_and_show_results(request, reg, message)
 
-def resource_link(name: str, message: LTIMessage, multiple: bool, points: float = None):
+def resource_link(name: str, message: LTIMessage, multiple: bool, iframe: bool = False, window: bool = False, points: float = None):
     rl = LTIResourceLink()
     rl.title = name
+    rl.text = 'This is a description for {name}'.format(name=name)
     resource_id = 'rl' + str(random.randint(0, 99999))
     rl.url = '{base_url}/deeplink?p1={rid}'.format(base_url=base_url, rid=resource_id)
     rl.custom['resource_id'] = resource_id
     rl.custom['multiple'] = str(message.deep_linking_settings.accept_multiple and multiple)
     rl.custom['lineitems_dl'] = message.grade_service.lineitems
     rl.custom['membership_dl'] = message.membership_service.context_memberships_url if 'membership_service' in message and 'context_memberships_url' in message.membership_service else ''
-    if ( points ):
+    if points:
         rl.custom['max_points'] = str(rl.max_points)
         rl.max_points= 10.0
         rl.resource_id = resource_id
+    if iframe:
+        rl.iframe = DLIFrame()
+        rl.iframe.height = 800
+    if window:
+        rl.window = DLWindow()
+        rl.window.targetName = 'robotest-win'
+
     return rl
 
 def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
+    today = datetime.now().strftime("%Y-%m-%d %H:%M")
     dlresp0 = DeeplinkResponse()
     dlresp0.data = message.deep_linking_settings.data
     dlresp0.deployment_id = message.deployment_id
     dlresp1 = DeeplinkResponse()
-    dlresp1.content_items.append( resource_link( "Not graded", message, False ) )
+    dlresp1.content_items.append( resource_link( "Not graded (new win) " + today, message, False, False, True ) )
     dlresp1.data = message.deep_linking_settings.data
     dlresp1.deployment_id = message.deployment_id
     dlresp2 = DeeplinkResponse()
-    dlresp2.content_items.append( resource_link( "Graded", message, False, 10.0 ) )
+    dlresp2.content_items.append( resource_link( "Graded (IFrame) " + today, message, False, True, True, 10.0 ) )
     dlresp2.deployment_id = message.deployment_id
     dlresp3 = DeeplinkResponse()
-    dlresp3.content_items.append( resource_link( "Graded", message, True, 10.0 ) )
-    dlresp3.content_items.append( resource_link( "Not graded", message, True ) )
+    dlresp3.content_items.append( resource_link( "Graded (IFrame) " + today, message, True, True, True, 10.0 ) )
+    dlresp3.content_items.append( resource_link( "Not graded (new win) " + today, message, True, False, True ) )
     dlresp3.deployment_id = message.deployment_id
 
     return templates.TemplateResponse("deeplink_autopost.html", {

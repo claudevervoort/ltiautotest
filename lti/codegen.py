@@ -102,6 +102,13 @@ models = {
         'comment': [],
         'timestamp': [],
     },
+    'DLIFrame': {
+        'width': ['', 'float'],
+        'height': ['', 'float']
+    },
+    'DLWindow': {
+        'targetName': []
+    },
     'LTIResourceLink': {
         'type': ['', 'str', 'ltiResourceLink'],
         'title': [],
@@ -110,7 +117,9 @@ models = {
         'custom': ['', 'Dict[str,str]'],
         'line_item': ['lineItem', 'LineItem'],
         'max_points': ['lineItem:LineItem->scoreMaximum', 'float'],
-        'resource_id': ['lineItem:LineItem->resourceId', 'float']
+        'resource_id': ['lineItem:LineItem->resourceId', 'float'],
+        'iframe': ['', 'DLIFrame'],
+        'window': ['', 'DLWindow']
     },
     'MemberStatus': ('Active', 'Inactive', 'Deleted'),
     'Member': {
