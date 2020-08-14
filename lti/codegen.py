@@ -173,6 +173,7 @@ models = {
     },
     'ToolConfig': {
         "domain": [],
+        "description": [],
         "target_link_uri": [],
         "custom_parameters": ['', 'Custom'],
         "scopes": ['', 'List[str]'],

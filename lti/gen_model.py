@@ -2103,6 +2103,26 @@ class ToolConfig(dict):
 
 
     @property
+    def description(self) -> str:
+        val = self.get('description')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['description'] = typed_val
+            return typed_val
+        return val
+
+
+    @description.setter
+    def description(self, value: str):
+        if isinstance(value, Enum):
+            self['description'] = value.value
+        else:
+            self['description'] = value
+
+
+    @property
     def target_link_uri(self) -> str:
         val = self.get('target_link_uri')
         if issubclass(str, Enum):

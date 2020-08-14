@@ -101,7 +101,6 @@ def base_tool_oidc_conf(*,name:str,
     }}
     """.format(name=name, jwks_uri=jwks_uri, login_uri=login_uri, 
                redirect_uri=redirect_uri, domain=domain, base_url=base_url)
-    print(tool_conf_json)
     tool_conf = ToolOIDCConfig(**json.loads(tool_conf_json))
 
     if dl_label:

@@ -78,13 +78,17 @@ def register(request: Request, openid_configuration: str, registration_token: st
                         domain = request.url.hostname,
                         login_uri = init_login,
                         redirect_uri = redirect_uri,
+                        ags=True,
+                        nrps=True,
+                        pii_name=True,
                         dl_label='Add Robotest')
+                tool_conf.lti_config.description = "Less clicks, more tests, this is the LTI Robotest!"
+                tool_conf.logo_uri =  str(request.url.replace(path='/assets/robotest_logo.png', query='', scheme='https'))
                 res.results.append(TestResult('Tool Config to Register',
                                    True,
                                    True, 
                                    json.dumps(tool_conf)))
                 registered = register_tool(platform_config.registration_endpoint, tool_conf, registration_token)
-                print(json.dumps(registered))
                 res.results.append(TestResult('Successful registration',
                                    True if registered.client_id else False,
                                    True, 
