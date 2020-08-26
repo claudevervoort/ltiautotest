@@ -2,10 +2,11 @@ from functools import reduce
 
 class TestResult():
 
-    def __init__(self, name: str, success: bool, required: bool = True,comment: str = ''):
+    def __init__(self, name: str, success: bool, required: bool = True,comment: str = '', comment_pre: str = ''):
         self.name = name
         self.success = success
         self.comment = comment
+        self.comment_pre = comment_pre
         self.required = required
 
 

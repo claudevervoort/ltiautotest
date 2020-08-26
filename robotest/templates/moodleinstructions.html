@@ -31,6 +31,13 @@
                         <li><bold>Names and Roles</bold> retrieve members as per privacy settings</li>
                     </ul>
                 </li>
+                <li><bold>Custom Parameters</bold>
+                    {% for k in custom_params %}
+                    <ul>
+                        <li>{{ k }}={{ custom_params[k] }}</li>
+                    </ul>
+                    {% endfor %}
+                </li>
                 <li><bold>Privacy</bold>
                     <ul>
                         <li><bold>Accept grades</bold>Based on Tool Item definition or Delegates to Teacher</li>

@@ -30,9 +30,23 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 templates = Jinja2Templates(directory="templates")
 
+context_sub_variables = {
+    'context_id_history': '$Context.id.history',
+    'context_start_date': '$CourseSection.timeFrame.begin',
+    'context_end_date': '$CourseSection.timeFrame.end'
+}
+
+link_sub_variables = {
+    'resource_link_history': '$ResourceLink.id.history',
+    'resource_available_start':'$ResourceLink.available.startDateTime',
+    'resource_available_end':'$ResourceLink.available.endDateTime',
+    'resource_submission_start':'$ResourceLink.submission.startDateTime',
+    'resource_submission_end':'$ResourceLink.submission.endDateTime'
+}
+
 @app.get("/")
 def read_root(request: Request):
-    return templates.TemplateResponse("moodleinstructions.html", {"request": request, "base_url": base_url})
+    return templates.TemplateResponse("moodleinstructions.html", {"request": request, "base_url": base_url, "custom_params": {**context_sub_variables, **link_sub_variables}})
 
 @app.get("/broken")
 def read_broken(request: Request):
@@ -66,7 +80,8 @@ def register(request: Request, openid_configuration: str, registration_token: st
             res.results.append(TestResult('Config retrieved from Platform',
                                         platform_config or False,
                                         True,
-                                        json.dumps(platform_config) if platform_config else 'No config'));
+                                        "",
+                                        json.dumps(platform_config, indent=2) if platform_config else 'No config'));
             if platform_config and platform_config.registration_endpoint:
                 res.results.append(TestResult('Registration end point found',
                                             True,
@@ -84,17 +99,19 @@ def register(request: Request, openid_configuration: str, registration_token: st
                         dl_label='Add Robotest')
                 tool_conf.lti_config.description = "Less clicks, more tests, this is the LTI Robotest!"
                 tool_conf.logo_uri =  str(request.url.replace(path='/assets/robotest_logo.png', query='', scheme='https'))
+                tool_conf.lti_config.custom_parameters.update({**context_sub_variables, **link_sub_variables})
+
                 res.results.append(TestResult('Tool Config to Register',
                                    True,
-                                   True, 
-                                   json.dumps(tool_conf)))
+                                   True,
+                                   "", 
+                                   json.dumps(tool_conf, indent=2)))
                 registered = register_tool(platform_config.registration_endpoint, tool_conf, registration_token)
                 res.results.append(TestResult('Successful registration',
                                    True if registered.client_id else False,
                                    True, 
-                                   'Client Id: {client_id} \n {json}'.format( client_id=registered.client_id, json=json.dumps(registered))))
-
-                
+                                   'Client Id: {client_id}'.format( client_id=registered.client_id ),
+                                   json.dumps(registered, indent=2)))
             else:
                 res.results.append(TestResult('Registration end point found',
                                             False,
@@ -335,11 +352,40 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
 
     return res
 
+def test_substitution_variables(category: str, sub_variables: Dict[str, str], custom_params: Dict[str, str]):
+    res = TestCategory(category)
+    for key in sub_variables:
+        if key in custom_params:
+            if custom_params[key]:
+                if custom_params[key] == sub_variables[key]:
+                    res.results.append(TestResult(sub_variables[key],
+                                     False,
+                                     False,
+                                     'Not substituted'))
+                else:
+                    res.results.append(TestResult(sub_variables[key],
+                                     True,
+                                     False,
+                                     custom_params[key]))
+            else:
+                res.results.append(TestResult(sub_variables[key],
+                                    True,
+                                    False,
+                                    'blank means supported but no value'))
+        else:
+            res.results.append(TestResult(sub_variables[key],
+                                False,
+                                True,
+                                'Missing custom parameter, tool properly configured?'))
+    return res
+
+
 def test_and_show_results(request: Request, reg: ToolRegistration, message: dict):
     results = []
     results.append(test_deeplinking(request, message))
     results.append(test_ags(reg, message))
     results.append(test_nrps(reg, message))
+    results.append(test_substitution_variables('Subsitution Variables (resourcelink)', {**context_sub_variables, **link_sub_variables}, message.custom))
     success = all((map(lambda r: r.success, results)))
     return templates.TemplateResponse("results.html", {"request": request, "results": results, "success": success})
 

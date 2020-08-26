@@ -16,7 +16,7 @@
         {% for result in category.results %}
             <tr class="result {{ 'failed' if not result.success }} {{ 'required' if result.required }}">
                 <th>{{ result.name }}</th>
-                <td>{{ result.comment }}</td>
+                <td>{{result.comment}}<br><pre>{{ result.comment_pre}}</pre></td>
             </tr>
         {% endfor %}
     {% endfor %}
