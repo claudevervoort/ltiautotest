@@ -51,7 +51,7 @@ models = {
     },
     'DeeplinkResponse': {
         "version": ["https://purl.imsglobal.org/spec/lti/claim/version", "str", "1.3.0"],
-        "message_type": ["https://purl.imsglobal.org/spec/lti/claim/message_type", "str", "LTIDeepLinkingResponse"],
+        "message_type": ["https://purl.imsglobal.org/spec/lti/claim/message_type", "str", "LtiDeepLinkingResponse"],
         "data": ["https://purl.imsglobal.org/spec/lti-dl/claim/data"],
         "deployment_id": ["https://purl.imsglobal.org/spec/lti/claim/deployment_id"],
         "content_items": ["https://purl.imsglobal.org/spec/lti-dl/claim/content_items", "List"]
@@ -333,6 +333,7 @@ def generate_class(name: str, spec: dict):
             lk = k if len(v) == 0 or len(v[0]) == 0 else v[0]
             if not init:
                 gen.append(template_class_init)
+                init = True
             gen.append(template_class_init_val.format(long=lk, value=v[2]))
     items = (item for item in spec.items() if isinstance(item[1], list) )
     for (k, v) in items:

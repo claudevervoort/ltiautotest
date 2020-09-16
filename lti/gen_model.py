@@ -656,12 +656,8 @@ class DeeplinkResponse(dict):
             self['https://purl.imsglobal.org/spec/lti/claim/version'] = '1.3.0'
 
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
         if not self.get('https://purl.imsglobal.org/spec/lti/claim/message_type'):
-            self['https://purl.imsglobal.org/spec/lti/claim/message_type'] = 'LTIDeepLinkingResponse'
+            self['https://purl.imsglobal.org/spec/lti/claim/message_type'] = 'LtiDeepLinkingResponse'
 
 
     @property
