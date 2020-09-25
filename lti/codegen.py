@@ -178,7 +178,7 @@ models = {
         "custom_parameters": ['', 'Custom'],
         "scopes": ['', 'List[str]'],
         "claims": ['', 'List[str]'],
-        "messages": ['', 'List[MessageDef]']
+        "messages": ['', 'List[MessageDef]'],
     },
     'ToolOIDCConfig': {
         "client_id": [],
@@ -193,6 +193,7 @@ models = {
         "logo_uri": [],
         "token_endpoint_auth_method": [],
         "contacts": ['', 'List[str]'],
+        "scope": [],
         "lti_config": ["https://purl.imsglobal.org/spec/lti-tool-configuration", 'ToolConfig']
     }
 }

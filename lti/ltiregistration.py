@@ -93,7 +93,6 @@ def base_tool_oidc_conf(*,name:str,
             "target_link_uri": "{base_url}",
             "custom_parameters": {{
             }},
-            "scopes": [],
             "claims": ["iss", "sub"],
             "messages": [
             ]
@@ -102,7 +101,7 @@ def base_tool_oidc_conf(*,name:str,
     """.format(name=name, jwks_uri=jwks_uri, login_uri=login_uri, 
                redirect_uri=redirect_uri, domain=domain, base_url=base_url)
     tool_conf = ToolOIDCConfig(**json.loads(tool_conf_json))
-
+    scopes = []
     if dl_label:
         if not dl_url:
             dl_url = base_url
@@ -121,10 +120,11 @@ def base_tool_oidc_conf(*,name:str,
     if pii_name:
         tool_conf.lti_config.claims.extend(["name", "given_name", "family_name"])
     if ags:
-        tool_conf.lti_config.scopes.extend([
+        scopes.extend([
             "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",
             "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
             "https://purl.imsglobal.org/spec/lti-ags/scope/score"])
     if nrps:
-        tool_conf.lti_config.scopes.append('https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly')
+        scopes.append('https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly')
+    tool_conf.scope = " ".join(scopes)
     return tool_conf

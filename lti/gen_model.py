@@ -2399,6 +2399,26 @@ class ToolOIDCConfig(dict):
 
 
     @property
+    def scope(self) -> str:
+        val = self.get('scope')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['scope'] = typed_val
+            return typed_val
+        return val
+
+
+    @scope.setter
+    def scope(self, value: str):
+        if isinstance(value, Enum):
+            self['scope'] = value.value
+        else:
+            self['scope'] = value
+
+
+    @property
     def lti_config(self) -> ToolConfig:
         val = self.get('https://purl.imsglobal.org/spec/lti-tool-configuration')
         if issubclass(ToolConfig, Enum):
