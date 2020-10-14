@@ -257,7 +257,7 @@ def test_deeplinking(request: Request, message: LTIMessage) -> TestCategory:
         res.results.append(TestResult('Custom parameter passed',
                                         'resource_id' in message.custom,
                                         True,
-                                        'resource_id: ' + message.custom.get('resource_id')))
+                                        'resource_id: ' + message.custom.get('resource_id', 'None')))
         res.results.append(TestResult('Supports Multiple',
                                         'multiple' in message.custom and message.custom['multiple'] == 'True',
                                         False,
