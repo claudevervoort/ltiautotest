@@ -100,6 +100,10 @@ def register(request: Request, openid_configuration: str, registration_token: st
                                             True,
                                             platform_config.token_endpoint))
 
+                res.results.append(TestResult('Platform product found',
+                                            platform_config.lti_config.product_family_code or False,
+                                            True,
+                                            platform_config.lti_config.product_family_code))
                 init_login = str(request.url.replace(path='/oidc/init', query='dynreg=true', scheme='https'))
                 redirect_uri = str(request.url.replace(path='/oidc/launch', query='', scheme='https'))
                 tool_conf = base_tool_oidc_conf(name='Robotest', 
