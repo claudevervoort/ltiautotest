@@ -87,6 +87,19 @@ def register(request: Request, openid_configuration: str, registration_token: st
                                             True,
                                             True,
                                             platform_config.registration_endpoint))
+                res.results.append(TestResult('JWKS end point found',
+                                            platform_config.jwks_uri or False,
+                                            True,
+                                            platform_config.jwks_uri))
+                res.results.append(TestResult('Authorization end point found',
+                                            platform_config.authorization_endpoint or False,
+                                            True,
+                                            platform_config.authorization_endpoint))
+                res.results.append(TestResult('Token end point found',
+                                            platform_config.token_endpoint or False,
+                                            True,
+                                            platform_config.token_endpoint))
+
                 init_login = str(request.url.replace(path='/oidc/init', query='dynreg=true', scheme='https'))
                 redirect_uri = str(request.url.replace(path='/oidc/launch', query='', scheme='https'))
                 tool_conf = base_tool_oidc_conf(name='Robotest', 
