@@ -99,11 +99,21 @@ def register(request: Request, openid_configuration: str, registration_token: st
                                             platform_config.token_endpoint or False,
                                             True,
                                             platform_config.token_endpoint))
-
+                lms_type = platform_config.lti_config.product_family_code
                 res.results.append(TestResult('Platform product found',
-                                            platform_config.lti_config.product_family_code or False,
+                                            lms_type or False,
                                             True,
-                                            platform_config.lti_config.product_family_code))
+                                            lms_type))
+                reg = registration(lms_type, platform_config.issuer, "verif")
+                if reg:
+                    # For now we only support LMS - to be added to stored the endpoints
+                    # as custom parameters to support any LMS. For now verifying moodle endpoints.
+                    res.results.append(TestResult('Endpoints match',
+                                                platform_config.jwks_uri==reg.jwks_uri and platform_config.token_endpoint==reg.token_uri
+                                                and platform_config.authorization_endpoint==reg.auth_endpoint,
+                                                True,
+                                                ""))
+
                 init_login = str(request.url.replace(path='/oidc/init', query='dynreg=true', scheme='https'))
                 redirect_uri = str(request.url.replace(path='/oidc/launch', query='', scheme='https'))
                 tool_conf = base_tool_oidc_conf(name='Robotest', 
@@ -198,7 +208,6 @@ def oidc_init_post(request: Request,
 
 @app.post("/oidc/launch")
 def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(...)):
-    print('OIDC launch')
     reg = ToolRegistration(**json.loads(state)['r'])
     message = LTIMessage(**reg.decode(id_token))
     if message.message_type == const.dl.request_msg_type:
