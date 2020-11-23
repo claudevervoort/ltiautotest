@@ -101,7 +101,7 @@ def base_tool_oidc_conf(*,name:str,
     """.format(name=name, jwks_uri=jwks_uri, login_uri=login_uri, 
                redirect_uri=redirect_uri, domain=domain, base_url=base_url)
     tool_conf = ToolOIDCConfig(**json.loads(tool_conf_json))
-    scopes = []
+    scopes = ['openid']
     if dl_label:
         if not dl_url:
             dl_url = base_url
