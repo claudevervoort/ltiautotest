@@ -1,4 +1,4 @@
-# 
+#
 import sys
 import os
 sys.path.extend([
@@ -116,7 +116,7 @@ def register(request: Request, openid_configuration: str, registration_token: st
 
                 init_login = str(request.url.replace(path='/oidc/init', query='dynreg=true', scheme='https'))
                 redirect_uri = str(request.url.replace(path='/oidc/launch', query='', scheme='https'))
-                tool_conf = base_tool_oidc_conf(name='Robotest', 
+                tool_conf = base_tool_oidc_conf(name='Robotest',
                         domain = request.url.hostname,
                         login_uri = init_login,
                         redirect_uri = redirect_uri,
@@ -131,12 +131,12 @@ def register(request: Request, openid_configuration: str, registration_token: st
                 res.results.append(TestResult('Tool Config to Register',
                                    True,
                                    True,
-                                   "", 
+                                   "",
                                    json.dumps(tool_conf, indent=2)))
                 registered = register_tool(platform_config.registration_endpoint, tool_conf, registration_token)
                 res.results.append(TestResult('Successful registration',
                                    True if registered.client_id else False,
-                                   True, 
+                                   True,
                                    'Client Id: {client_id}'.format( client_id=registered.client_id ),
                                    json.dumps(registered, indent=2)))
             else:
@@ -228,6 +228,7 @@ def resource_link(name: str, message: LTIMessage, multiple: bool, iframe: bool =
         rl.custom['max_points'] = str(rl.max_points)
         rl.max_points= 10.0
         rl.resource_id = resource_id
+        rl.tag = 'zetag'
     if iframe:
         rl.iframe = DLIFrame()
         rl.iframe.height = 800
@@ -369,6 +370,16 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                                      True,
                                      True,
                                      'This link is graded and the line item url can be used to post score for it'))
+
+            res.results.append(TestResult('Line item resourceId correct',
+                                     message.custom['resource_id'] == lineitem.resourceId,
+                                     True,
+                                     'in message: {mrid} - in lineitem: {lrid}'.format(mrid=message.custom['resource_id'], lrid=lineitem.resourceId)))
+            res.results.append(TestResult('Line item tag correct',
+                                     lineitem.tag == 'zetag',
+                                     True,
+                                     'lineitem tag found: {tag}'.format(tag=lineitem.tag)))
+
         except Exception as e:
             print(traceback.format_exc())
             res.results.append(TestResult('Line item loaded',

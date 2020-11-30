@@ -1407,15 +1407,27 @@ class LTIResourceLink(dict):
 
 
     @property
-    def resource_id(self) -> float:
+    def resource_id(self) -> str:
         if self.get('lineItem'):
             return self.get('lineItem').get('resourceId')
 
     @resource_id.setter
-    def resource_id(self, value: float):
+    def resource_id(self, value: str):
         if not self.get('lineItem'):
             self['lineItem'] = LineItem()
         self['lineItem']['resourceId'] = value
+
+
+    @property
+    def tag(self) -> str:
+        if self.get('lineItem'):
+            return self.get('lineItem').get('tag')
+
+    @tag.setter
+    def tag(self, value: str):
+        if not self.get('lineItem'):
+            self['lineItem'] = LineItem()
+        self['lineItem']['tag'] = value
 
 
     @property

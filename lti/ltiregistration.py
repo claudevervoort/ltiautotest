@@ -88,6 +88,7 @@ def base_tool_oidc_conf(*,name:str,
         "client_name": "{name}",
         "jwks_uri": "{jwks_uri}",
         "token_endpoint_auth_method": "private_key_jwt",
+        "id_token_signed_response_alg": "RS256",
         "https://purl.imsglobal.org/spec/lti-tool-configuration": {{
             "domain": "{domain}",
             "target_link_uri": "{base_url}",
@@ -108,7 +109,6 @@ def base_tool_oidc_conf(*,name:str,
         dl_message = '''
                 {{
                     "type": "LtiDeepLinkingRequest",
-                    "allowLearner": false,
                     "target_link_uri": "{dl_url}",
                     "label": "{dl_label}",
                     "placements": []

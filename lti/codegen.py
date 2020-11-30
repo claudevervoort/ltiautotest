@@ -117,7 +117,8 @@ models = {
         'custom': ['', 'Dict[str,str]'],
         'line_item': ['lineItem', 'LineItem'],
         'max_points': ['lineItem:LineItem->scoreMaximum', 'float'],
-        'resource_id': ['lineItem:LineItem->resourceId', 'float'],
+        'resource_id': ['lineItem:LineItem->resourceId', 'str'],
+        'tag': ['lineItem:LineItem->tag', 'str'],
         'iframe': ['', 'DLIFrame'],
         'window': ['', 'DLWindow']
     },
@@ -166,7 +167,6 @@ models = {
     },
     'MessageDef': {
         "type": [],
-        "allowLearner": ['', 'bool'],
         "target_link_uri": [],
         "label": [],
         "placements": ['', 'List[str]']
