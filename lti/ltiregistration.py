@@ -58,9 +58,22 @@ def register_tool( url: str, config: ToolOIDCConfig, token:str = None) -> ToolOI
     if token:
         headers['Authorization'] = 'Bearer {token}'.format(token=token)
     r = requests.post(url, headers=headers, json=config)
-    print('RES:'+r.text)
     r.raise_for_status()
     return ToolOIDCConfig(json.loads(r.text))
+
+def get_tool_configuration( url: str, token: str = None) -> ToolOIDCConfig:
+    headers = {
+        'Accept': 'application/json',
+    }
+    if token:
+        headers['Authorization'] = 'Bearer {token}'.format(token=token)
+    r = requests.get(url, headers=headers)
+    print('Res get conf '+r.text)
+    if r.status_code==404:
+        return None
+    r.raise_for_status()
+    return ToolOIDCConfig(json.loads(r.text))
+
         
 def base_tool_oidc_conf(*,name:str, 
                         domain:str, 

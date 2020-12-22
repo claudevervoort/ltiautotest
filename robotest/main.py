@@ -8,6 +8,7 @@ base_url = os.environ['ROBOTEST_WWW'] if 'ROBOTEST_WWW' in os.environ else 'http
 import json
 import random
 import traceback
+import requests
 from fastapi import FastAPI, Form
 from starlette.responses import PlainTextResponse, RedirectResponse
 from starlette.requests import Request
@@ -20,7 +21,7 @@ from datetime import datetime
 
 from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow
 from lti import Members, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get
-from lti import get_platform_config, register_tool, base_tool_oidc_conf
+from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration
 
 from robotest.test_results import TestCategory, TestResult
 
@@ -104,15 +105,16 @@ def register(request: Request, openid_configuration: str, registration_token: st
                                             lms_type or False,
                                             True,
                                             lms_type))
-                reg = registration(lms_type, platform_config.issuer, "verif")
+                reg = registration(lms_type, platform_config.issuer, "no-client-id")
                 if reg:
-                    # For now we only support LMS - to be added to stored the endpoints
-                    # as custom parameters to support any LMS. For now verifying moodle endpoints.
+                    # if we can statically infer the config from domain, let's verify with the actual data we got from LMS
                     res.results.append(TestResult('Endpoints match',
                                                 platform_config.jwks_uri==reg.jwks_uri and platform_config.token_endpoint==reg.token_uri
                                                 and platform_config.authorization_endpoint==reg.auth_endpoint,
                                                 True,
                                                 ""))
+                if lms_type.lower() == 'moodle':
+                    check_registration_update(platform_config.registration_endpoint, registration_token, res)
 
                 init_login = str(request.url.replace(path='/oidc/init', query='dynreg=true', scheme='https'))
                 redirect_uri = str(request.url.replace(path='/oidc/launch', query='', scheme='https'))
@@ -151,6 +153,27 @@ def register(request: Request, openid_configuration: str, registration_token: st
                                         True,
                                         traceback.format_exc()))
     return templates.TemplateResponse("results.html", {"request": request, "results": [res], "success": res.success, "showClose": True})
+
+def check_registration_update(registration_url: str, registration_token: str, res: TestCategory):
+    try:
+        conf = get_tool_configuration(registration_url, registration_token)
+        if conf:
+            res.results.append(TestResult('Previous registration found',
+                                        True,
+                                        False,
+                                        '', json.dumps(conf, indent=2)))
+        else:
+            res.results.append(TestResult('No previous registration found, this is not an update',
+                                        False,
+                                        False,
+                                        'Ignore this unless this is testing an update'))
+    except requests.exceptions.HTTPError:
+            res.results.append(TestResult('Error getting previous registration',
+                                        False,
+                                        False,
+                                        'Ignore this unless this is testing an update'))
+
+
 
 @app.get("/.well-known/jwks.json")
 def jwks():
