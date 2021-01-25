@@ -21,7 +21,7 @@ from datetime import datetime
 
 from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow
 from lti import Members, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get
-from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration
+from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration, verify_11_oauth
 
 from robotest.test_results import TestCategory, TestResult
 
@@ -162,6 +162,12 @@ def check_registration_update(registration_url: str, registration_token: str, re
                                         True,
                                         False,
                                         '', json.dumps(conf, indent=2)))
+            if conf.lti_config.version == 'LTI-1p0':
+                res.results.append(TestResult('Matching the 1.1 signature',
+                                            verify_11_oauth(conf.lti_config.oauth_consumer, 'robohasnosecret'),
+                                            True,
+                                            '', 'This test code assumes the secret is: robohasnosecret'))
+
         else:
             res.results.append(TestResult('No previous registration found, this is not an update',
                                         False,

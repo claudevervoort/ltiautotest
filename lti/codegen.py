@@ -171,9 +171,16 @@ models = {
         "label": [],
         "placements": ['', 'List[str]']
     },
+    'Oauth11Consumer': {
+        "key": [],
+        "nonce": [],
+        "sign": []
+    },
     'ToolConfig': {
+        "version": [],
         "domain": [],
         "description": [],
+        "oauth_consumer": ['', 'Oauth11Consumer'],
         "target_link_uri": [],
         "custom_parameters": ['', 'Custom'],
         "scopes": ['', 'List[str]'],

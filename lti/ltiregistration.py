@@ -2,9 +2,10 @@ from jose import jwt
 from datetime import datetime
 from lti.jwks import get_remote_keyset, get_webkey
 from lti.spi import log
-from lti.gen_model import PlatformOIDCConfig, ToolOIDCConfig, MessageDef
+from lti.gen_model import PlatformOIDCConfig, ToolOIDCConfig, MessageDef, Oauth11Consumer
 import requests
 import json
+import hashlib
 
 TOKEN_TTL = 300
 
@@ -141,3 +142,12 @@ def base_tool_oidc_conf(*,name:str,
         scopes.append('https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly')
     tool_conf.scope = " ".join(scopes)
     return tool_conf
+
+def verify_11_oauth(consumer:Oauth11Consumer, secret:str) -> bool:
+    s = hashlib.sha256()
+    s.update(consumer.key.encode('utf-8'))
+    s.update(secret.encode('utf-8'))
+    s.update(consumer.nonce.encode('utf-8'))
+    print(s.hexdigest())
+    print(consumer.sign)
+    return consumer.sign == s.hexdigest()

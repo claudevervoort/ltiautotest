@@ -2020,23 +2020,6 @@ class MessageDef(dict):
 
 
     @property
-    def allowLearner(self) -> bool:
-        val = self.get('allowLearner')
-        if (val):
-            if type(val) is bool:
-                return val
-            # Moodle error encoded a string
-            if type(val) is str:
-                return val.lower() == 'true'
-            return False
-        return None
-
-    @allowLearner.setter
-    def allowLearner(self, value: bool):
-        self['allowLearner'] = value
-
-
-    @property
     def target_link_uri(self) -> str:
         val = self.get('target_link_uri')
         if issubclass(str, Enum):
@@ -2088,7 +2071,90 @@ class MessageDef(dict):
 
 
 
+class Oauth11Consumer(dict):
+
+    @property
+    def key(self) -> str:
+        val = self.get('key')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['key'] = typed_val
+            return typed_val
+        return val
+
+
+    @key.setter
+    def key(self, value: str):
+        if isinstance(value, Enum):
+            self['key'] = value.value
+        else:
+            self['key'] = value
+
+
+    @property
+    def nonce(self) -> str:
+        val = self.get('nonce')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['nonce'] = typed_val
+            return typed_val
+        return val
+
+
+    @nonce.setter
+    def nonce(self, value: str):
+        if isinstance(value, Enum):
+            self['nonce'] = value.value
+        else:
+            self['nonce'] = value
+
+
+    @property
+    def sign(self) -> str:
+        val = self.get('sign')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['sign'] = typed_val
+            return typed_val
+        return val
+
+
+    @sign.setter
+    def sign(self, value: str):
+        if isinstance(value, Enum):
+            self['sign'] = value.value
+        else:
+            self['sign'] = value
+
+
+
 class ToolConfig(dict):
+
+    @property
+    def version(self) -> str:
+        val = self.get('version')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['version'] = typed_val
+            return typed_val
+        return val
+
+
+    @version.setter
+    def version(self, value: str):
+        if isinstance(value, Enum):
+            self['version'] = value.value
+        else:
+            self['version'] = value
+
 
     @property
     def domain(self) -> str:
@@ -2128,6 +2194,26 @@ class ToolConfig(dict):
             self['description'] = value.value
         else:
             self['description'] = value
+
+
+    @property
+    def oauth_consumer(self) -> Oauth11Consumer:
+        val = self.get('oauth_consumer')
+        if issubclass(Oauth11Consumer, Enum):
+            return Oauth11Consumer(val)
+        if (isinstance(val, dict) and not isinstance(val, Oauth11Consumer)):
+            typed_val = Oauth11Consumer( **val )
+            self['oauth_consumer'] = typed_val
+            return typed_val
+        return val
+
+
+    @oauth_consumer.setter
+    def oauth_consumer(self, value: Oauth11Consumer):
+        if isinstance(value, Enum):
+            self['oauth_consumer'] = value.value
+        else:
+            self['oauth_consumer'] = value
 
 
     @property
