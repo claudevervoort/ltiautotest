@@ -395,6 +395,26 @@ class LTIMessage(dict):
 
 
     @property
+    def lti_launch_id(self) -> str:
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/lti_launch_id')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/lti_launch_id'] = typed_val
+            return typed_val
+        return val
+
+
+    @lti_launch_id.setter
+    def lti_launch_id(self, value: str):
+        if isinstance(value, Enum):
+            self['https://purl.imsglobal.org/spec/lti/claim/lti_launch_id'] = value.value
+        else:
+            self['https://purl.imsglobal.org/spec/lti/claim/lti_launch_id'] = value
+
+
+    @property
     def deployment_id(self) -> str:
         val = self.get('https://purl.imsglobal.org/spec/lti/claim/deployment_id')
         if issubclass(str, Enum):
