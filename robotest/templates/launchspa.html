@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="/static/robottest.css">
+    </head>
+    <body>
+        <div id="success" style="display: none;">
+            <div class="centered">
+                <video autoplay loop muted playsinline>
+                    <source src="/assets/thumbsup.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="centered">
+                <span>Hello {{message.given_name}} ! This launch has been verified to be the one expected to happen in this IFrame.</span>
+            </div>
+            <div class="centered">
+                
+                <form action="/oidc/launchspa" target="_blank" method="POST">
+                    <input type="hidden" name="id_token" value="{{ id_token }}"></input>
+                    <input type="hidden" name="state" value="{{ state }}"></input>
+                    Try me again in a direct launch: <input type="submit" value="Launch outside LMS context"></input>
+                </form>
+            </div>
+        </div>
+        <div id="failed" style="display: none;">
+            <div class="centered">
+                <video autoplay loop muted playsinline>
+                    <source src="/assets/broken.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="centered">
+                <span>Hmmm! This page cannot be started, as we could not determine if it's meant to be run here.</span>
+            </div>
+
+        </div>
+    </body>
+    <script>
+        let parent = window.parent || window.opener
+        if (parent) {
+            let bootstrapMe = () => {
+                document.getElementById('success').style.display = null;
+            }
+            let errorMe = () => {
+                document.getElementById('failed').style.display = null;
+            }
+            let timeout = window.setTimeout(errorMe, 5000)
+            window.addEventListener("message", (event) => {
+                window.clearTimeout(timeout);
+                if (event.origin === "{{iss}}" && event.source === window.parent && event.data.ltiLaunchId === '{{ lti_launch_id }}') {
+                    bootstrapMe();
+                } else {
+                    console.log(event);
+                    errorMe();
+                }
+            }, false)
+            window.parent.postMessage("lti-getltilaunchid", '{{ iss }}');
+        } else {
+            errorMe();
+        }
+    </script>
+</html>
