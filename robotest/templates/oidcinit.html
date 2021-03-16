@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="/static/robottest.css">
+    </head>
+    <body>
+        <form id="authreqform" action="{{authurl}}" method="POST">
+            <input type="hidden" name="state" value="{{ state }}">
+            <input type="hidden" name="login_hint" value="{{ login_hint }}">
+            <input type="hidden" name="lti_message_hint" value="{{ lti_message_hint }}">
+            <input type="hidden" name="redirect_uri" value="{{ redirect_uri }}">
+            <input type="hidden" name="scope" value="openid">
+            <input type="hidden" name="response_mode" value="form_post">
+            <input type="hidden" name="response_type" value="id_token">
+            <input type="hidden" name="client_id" value="{{ client_id }}">
+            <input type="hidden" name="nonce" value="{{ nonce }}">
+        </form>
+        <script>
+        let parent = window.parent || window.opener
+        if (parent) {
+            window.parent.postMessage({"subject": "lti-storeVariable", "key": "state", "value": "{{ state }}"}, '{{ iss }}');
+        }
+        document.getElementById('authreqform').submit();
+        </script>
+    </body>
+</html>

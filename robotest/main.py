@@ -192,6 +192,44 @@ def jwk_public():
     return get_publickey_pem()
 
 
+@app.get("/oidc/initjs")
+def oidc_init_js(request: Request,
+              iss:str,
+              login_hint: str = None,
+              lti_message_hint: str = None,
+              client_id: str = None,
+              lms: str = 'moodle',
+              target_link_uri: str = None):
+    cookie = "LTI-" + str(random.randint(0,9999))
+    reg = registration(lms, iss, client_id)
+    state = {
+        'r': reg.__dict__,
+        'cookie': cookie
+    }
+    return templates.TemplateResponse("oidcinit.html", {
+        "request": request,
+        "authurl": reg.auth_endpoint,
+        "iss": reg.iss,
+        "client_id": client_id,
+        "state": jwt.encode(state, 'robohasnosecret', algorithm='HS256'),
+        "nonce": datetime.now().strftime('%y%m%d%H%M%S'),
+        "login_hint": login_hint,
+        "redirect_uri": 
+           str(request.url.replace(path='/oidc/launchspa', query='', scheme='https'))})
+
+@app.post("/oidc/initjs")
+def oidc_init_js_post(request: Request,
+              iss:str = Form(...),
+              clientid: str = None,
+              client_id: str = Form(None),
+              lms: str = 'moodle',
+              target_link_uri:str = Form(...),
+              login_hint: str = Form(...),
+              lti_message_hint: str = Form(...),
+              is_spa: bool = False):
+    return oidc_init_js(request, iss, login_hint, lti_message_hint, client_id or clientid, lms, target_link_uri)
+
+
 @app.get("/oidc/init")
 def oidc_init(request: Request,
               iss:str,
@@ -251,21 +289,18 @@ def oidc_launch_spa(request: Request, state: str = Form(...), id_token: str = Fo
     state_dec = jwt.decode(state, "robohasnosecret", algorithms=["HS256"])
     reg = ToolRegistration(**state_dec['r'])
     message = LTIMessage(**reg.decode(id_token))
-    if (message.lti_launch_id == state_dec['lti_launch_id']):
-        return templates.TemplateResponse("launchspa.html", {
-        "request": request,
-        "lti_launch_id": message.lti_launch_id,
-        "iss": reg.iss,
-        "message": message,
-        "state": state,
-        "id_token": id_token})
-    return templates.TemplateResponse("broken.html", {"request": request, "errormsg": "mismatch lti launch id"})
+    return templates.TemplateResponse("launchspa.html", {
+    "request": request,
+    "state": state,
+    "iss": reg.iss,
+    "message": message,
+    "id_token": id_token})
 
 
 @app.post("/oidc/launch")
 def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(...)):
     state_dec = jwt.decode(state, "robohasnosecret", algorithms=["HS256"])
-    reg = ToolRegistration(state_dec['r'])
+    reg = ToolRegistration(**state_dec['r'])
     message = LTIMessage(**reg.decode(id_token))
     if message.message_type == const.dl.request_msg_type:
         return deeplinking(request, reg, message)

@@ -45,14 +45,14 @@
             let timeout = window.setTimeout(errorMe, 5000)
             window.addEventListener("message", (event) => {
                 window.clearTimeout(timeout);
-                if (event.origin === "{{iss}}" && event.source === window.parent && event.data.ltiLaunchId === '{{ lti_launch_id }}') {
+                if (event.origin === "{{iss}}" && event.source === window.parent && event.data.value === '{{ state }}') {
                     bootstrapMe();
                 } else {
                     console.log(event);
                     errorMe();
                 }
             }, false)
-            window.parent.postMessage("lti-getltilaunchid", '{{ iss }}');
+            window.parent.postMessage({"subject":"lti-getVariable", "key":"state", "messageId": 3782}, '{{ iss }}');
         } else {
             errorMe();
         }
