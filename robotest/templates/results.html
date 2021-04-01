@@ -15,7 +15,11 @@
         <tr class="category"><th colspan="2">{{category.name}}</th></tr>
         {% for result in category.results %}
             <tr class="result {{ 'failed' if not result.success }} {{ 'required' if result.required }}">
-                <th>{{ result.name }}</th>
+                {%if result.link %}
+                <th><a href="{{result.link}}">{{ result.name }}</a></th>
+                {%else %}
+                <th>{{ result.name }} {{result.link}}</th>
+                {% endif %}
                 <td>{{result.comment}}<br><pre>{{ result.comment_pre}}</pre></td>
             </tr>
         {% endfor %}

@@ -207,6 +207,7 @@ def oidc_init(request: Request,
     query_params = parse_qsl(auth_url.query)
     query_params.append(('state', json.dumps(state,  separators=(',', ':'))))
     query_params.append(('redirect_uri', str(request.url.replace(path='/oidc/launch', query='', scheme='https'))))
+    query_params.append(('prompt','none'))
     query_params.append(('scope','openid'))
     query_params.append(('response_type','id_token'))
     query_params.append(('client_id', client_id))
@@ -222,7 +223,7 @@ def oidc_init(request: Request,
                              auth_url.params,
                              urlencode(query_params),
                              auth_url.fragment))
-    return RedirectResponse(url=redirect_url)
+    return RedirectResponse(url=redirect_url, status_code=302)
 
 @app.post("/oidc/init")
 def oidc_init_post(request: Request,
@@ -303,6 +304,13 @@ def testdl(request: Request):
         "return_url": '',
         "jwt_single": ''})
 
+@app.get('/allnrps')
+def nrps(request: Request, nrps: str,reg: str):
+    reg = ToolRegistration(**json.loads(reg))
+    members = ltiservice_get(reg, Members, nrps)
+    return members
+
+
 def test_deeplinking(request: Request, message: LTIMessage) -> TestCategory:
     res = TestCategory(name='Deep Linking')
     res.results.append(TestResult('Target link present and with param',
@@ -340,7 +348,7 @@ def test_nrps(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                                      True,
                                      message.membership_service.context_memberships_url))
         try:
-            # we linit to 5 to test limit and paging
+            # we limit to 5 to test limit and paging
             nrps_url = urlparse(message.membership_service.context_memberships_url)
             query_params = parse_qsl(nrps_url.query)
             query_params.append(('limit', 5))
@@ -352,10 +360,15 @@ def test_nrps(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
             members = ltiservice_get(reg, Members, nrps_limited_url)
             # members = ltiservice_get(reg, Members, message.membership_service.context_memberships_url)
             # instructors = list(filter(lambda m: )) util to get role from enum
+            nrps_link_csv=''
+            if len(members.members)>0:
+                nrps_link_csv=urlunparse(('','','/allnrps','',urlencode([('nrps', message.membership_service.context_memberships_url), ('reg', json.dumps(reg.__dict__,  separators=(',', ':')))]),''))
+            print(nrps_link_csv)
             res.results.append(TestResult('Members loaded',
                                     len(members.members)>0 and not len(members.members) == 5,
                                     True,
-                                    '{m} members - 5 is paging boundary so ideally have more than 5 members'.format(m=len(members.members))))
+                                    '{m} members - 5 is paging boundary so ideally have more than 5 members'.format(m=len(members.members)),
+                                    link = nrps_link_csv))
         except Exception as e:
             print(traceback.format_exc())
             res.results.append(TestResult('Members loaded',
