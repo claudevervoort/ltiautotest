@@ -16,7 +16,7 @@
         {% for result in category.results %}
             <tr class="result {{ 'failed' if not result.success }} {{ 'required' if result.required }}">
                 {%if result.link %}
-                <th><a href="{{result.link}}">{{ result.name }}</a></th>
+                <th><a href="{{result.link}}" target="_blank">{{ result.name }}</a></th>
                 {%else %}
                 <th>{{ result.name }} {{result.link}}</th>
                 {% endif %}

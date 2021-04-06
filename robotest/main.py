@@ -1,6 +1,8 @@
 #
 import sys
 import os
+import io
+import csv
 sys.path.extend([
         os.path.abspath('../')])
 base_url = os.environ['ROBOTEST_WWW'] if 'ROBOTEST_WWW' in os.environ else 'https://robotest.theedtech.dev'
@@ -304,11 +306,16 @@ def testdl(request: Request):
         "return_url": '',
         "jwt_single": ''})
 
-@app.get('/allnrps')
+@app.get('/allnrps', response_class=PlainTextResponse)
 def nrps(request: Request, nrps: str,reg: str):
     reg = ToolRegistration(**json.loads(reg))
     members = ltiservice_get(reg, Members, nrps)
-    return members
+    rows = list(map( lambda m: [m['user_id'], m['given_name'], m['family_name'], m.get('email'), " ".join(m.get('roles',[]))], members.members))
+    with io.StringIO() as output:
+        writer = csv.writer(output)
+        writer.writerow(['user_id', 'given_name', 'family_name', 'email', 'roles'])
+        writer.writerows(rows)
+        return output.getvalue()
 
 
 def test_deeplinking(request: Request, message: LTIMessage) -> TestCategory:
@@ -355,19 +362,16 @@ def test_nrps(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
             nrps_limited_url=urlunparse((*nrps_url[0:4],
                                     urlencode(query_params),
                                     nrps_url.fragment))
-            print(message.membership_service.context_memberships_url)
-            print(nrps_limited_url)
             members = ltiservice_get(reg, Members, nrps_limited_url)
             # members = ltiservice_get(reg, Members, message.membership_service.context_memberships_url)
             # instructors = list(filter(lambda m: )) util to get role from enum
             nrps_link_csv=''
             if len(members.members)>0:
                 nrps_link_csv=urlunparse(('','','/allnrps','',urlencode([('nrps', message.membership_service.context_memberships_url), ('reg', json.dumps(reg.__dict__,  separators=(',', ':')))]),''))
-            print(nrps_link_csv)
             res.results.append(TestResult('Members loaded',
-                                    len(members.members)>0 and not len(members.members) == 5,
+                                    len(members.members)>0,
                                     True,
-                                    '{m} members - 5 is paging boundary so ideally have more than 5 members'.format(m=len(members.members)),
+                                    '{m} members in context - 5 is paging boundary'.format(m=len(members.members)),
                                     link = nrps_link_csv))
         except Exception as e:
             print(traceback.format_exc())

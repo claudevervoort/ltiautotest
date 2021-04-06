@@ -27,15 +27,14 @@ def next(headers: Dict):
     return None
 
 def access_token(registration: ToolRegistration, scope: str, force: bool = False):
-    assertion = registration.encode({
-        "sub": registration.client_id
-    })
+    assertion = registration.encode({}, for_token=True)
     r = requests.post(registration.token_uri, data = {
         "grant_type": "client_credentials",
         "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
         "scope": scope,
         "client_assertion": assertion
     })
+    r.raise_for_status()
     t = json.loads(r.text)
     return t['access_token']
 
