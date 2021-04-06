@@ -7,17 +7,19 @@ import requests
 import json
 import hashlib
 from .const import const
+import uuid
 
 TOKEN_TTL = 300
 
 class ToolRegistration(object):
 
-    def __init__(self, iss: str, client_id: str, auth_endpoint:str, token_uri: str, jwks_uri: str):
+    def __init__(self, iss: str, client_id: str, auth_endpoint:str, token_uri: str, jwks_uri: str, audience: str = None):
         self.iss = iss
         self.client_id = client_id
         self.auth_endpoint = auth_endpoint
         self.token_uri = token_uri
         self.jwks_uri = jwks_uri
+        self.audience = audience
         log("Registration: {0}", str(self.__dict__))
 
     def decode(self, token:str) -> dict:
@@ -26,9 +28,17 @@ class ToolRegistration(object):
                           audience = self.client_id,
                           issuer = self.iss)
 
-    def encode(self, claims: dict, from_client: bool = True) -> str:
+    def encode(self, claims: dict, from_client: bool = True, for_token: bool = False) -> str:
         if from_client:
             claims['iss'] = self.client_id
+            claims['sub'] = self.client_id
+            claims['jti'] = str(uuid.uuid4())
+            if for_token:
+                claims['aud'] = self.audience if self.audience else self.iss
+            else:
+                claims['nonce'] = str(uuid.uuid4())
+                claims['aud'] = self.iss
+                claims['nonce'] = claims['jti']
         else:
             claims['iss'] = self.iss
             claims['aud'] = self.client_id
@@ -42,6 +52,8 @@ class ToolRegistration(object):
 def registration( lms: str, iss: str, client_id: str) -> ToolRegistration:
     if (lms.lower() == 'moodle'):
         return ToolRegistration(iss, client_id, iss+'/mod/lti/auth.php', iss+'/mod/lti/token.php', iss+'/mod/lti/certs.php')
+    if (lms.lower() == 'd2l'):
+        return ToolRegistration(iss, client_id, iss+'/d2l/lti/authenticate', 'https://auth.brightspace.com/core/connect/token', iss+'/d2l/.well-known/jwks', audience="https://api.brightspace.com/auth/token")
     return None
 
 def get_platform_config( url: str) -> PlatformOIDCConfig:

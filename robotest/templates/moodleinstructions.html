@@ -18,7 +18,7 @@
                 <li>Select <em>configure a tool manually</em></li>
                 <li><bold>Tool url</bold> {{ base_url }}</li>
                 <li><bold>LTI Version</bold>1.3</li>
-                <li><bold>Inititiation Login URL</bold> {{ base_url }}/oidc/init</li>
+                <li><bold>Initiation Login URL</bold> {{ base_url }}/oidc/init</li>
                 <li><bold>Redirect URI</bold> {{ base_url }}/oidc/launch</li>
                 <li><bold>enable <em>Deep Linking (Content-Item Message)</em></bold></li>
                 <li><bold>Public Key</bold> <em>Use JWKS URI unless not supported by youur moodle version</em>
@@ -55,6 +55,48 @@
                 </li>
 
             </ul>
+            
+            <h2>Brightspace instructions - manual configuration</h2>
+            <h3>Step 1: Register the LTI Advantage tool</h3>
+            <ul>
+                <li>In Admin Tools navigate to Manage Extensibility</li>
+                <li>Select <em>LTI Advantage / Register Tool / Standard</em>
+                    <ul> 
+                    <li><bold>Target Link uri</bold> {{ base_url }}</li>
+                    <li><bold>LTI Version</bold>1.3</li>
+                    <li><bold>OpenId Connect Login URL</bold> {{ base_url }}/oidc/init</li>
+                    <li><bold>Redirect URL</bold> {{ base_url }}/oidc/launch</li>
+                    <li><bold>Keyset URL</bold>{{ base_url }}/.well-known/jwks.json</li>
+                    <li><bold>Extensions</bold> Select all extensions</li>
+                    <li><bold>Send Institution Role</bold> Checked</li>
+                    <li><bold>Subsitution Parameters</bold>
+                        {% for k in custom_params %}
+                        <ul>
+                            <li>{{ k }}={{ custom_params[k] }}</li>
+                        </ul>
+                        {% endfor %}
+                    </li>
+                    </ul>
+                </li>
+            </ul>
+            <h3>Step 2: Create a tool deployment</h3>
+            <ul>
+                <li>In Admin Tools navigate to External Learning Tools</li>
+                <li>LTI Advantage > New deployment </li>
+                <li><bold>Tool</bold> Select the tool created in the 1st step</li>
+                <li><bold>Extensions</bold> Select all extensions</li>
+                <li><bold>Security</bold> Select all EXCEPT Anonymous and Open as Extern Resource</li>
+                <li>Make the tool available to the courses/orgs as desired</li>
+            </ul>
+        <h3>Step 3: Create a deep linking placement</h3>
+            <ul>
+                <li>Once the deployment completed, select Links to create a new placement</li>
+                <li><bold>Name</bold> Add Robotest</li>
+                <li><bold>URL</bold> {{ base_url }}</li>
+                <li><bold>Type</bold> Deep Linking Quicklink</li>
+                <li>Save and Close</li>
+            </ul>
+        <p>And now you can bring the test course links using deeplinking in your course: Course Content > Add existing activities > Add Robotest</p>
         </div>
         <img style="max-width: 40%;" src="/assets/box_cropped.png" >
     </div>
