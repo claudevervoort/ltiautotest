@@ -315,7 +315,7 @@ def testdl(request: Request):
 def nrps(request: Request, nrps: str,reg: str):
     reg = ToolRegistration(**json.loads(reg))
     members = ltiservice_get(reg, Members, nrps)
-    rows = list(map( lambda m: [m['user_id'], m['given_name'], m['family_name'], m.get('email'), " ".join(m.get('roles',[]))], members.members))
+    rows = list(map( lambda m: [m.get('user_id'), m.get('given_name'), m.get('family_name'), m.get('email'), " ".join(m.get('roles',[]))] if isinstance(m, dict) else m, members.members))
     with io.StringIO() as output:
         writer = csv.writer(output)
         writer.writerow(['user_id', 'given_name', 'family_name', 'email', 'roles'])
