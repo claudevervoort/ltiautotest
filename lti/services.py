@@ -54,6 +54,6 @@ def ltiservice_get(registration: ToolRegistration, resource_class: Type[T], url:
             if type(response) is list:
                 response.extend(remaining)
             else:
-                response[resource_class.collection_attribute].extend(remaining)
+                response[resource_class.collection_attribute].extend(remaining[resource_class.collection_attribute])
         return response
     raise ValueError("No scope defined for read")
