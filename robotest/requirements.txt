@@ -31,7 +31,7 @@ rsa==4.1
 six==1.14.0
 starlette==0.13.2
 typed-ast==1.4.1
-urllib3==1.25.6
+urllib3==1.25.8
 uvicorn==0.11.7
 uvloop==0.15.2
 websockets==8.0.2
