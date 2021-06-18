@@ -6,6 +6,7 @@ from lti.gen_model import PlatformOIDCConfig, ToolOIDCConfig, MessageDef, Oauth1
 import requests
 import json
 import hashlib
+from .const import const
 
 TOKEN_TTL = 300
 
@@ -142,6 +143,18 @@ def base_tool_oidc_conf(*,name:str,
         scopes.append('https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly')
     tool_conf.scope = " ".join(scopes)
     return tool_conf
+
+def add_coursenav_message(registration: ToolOIDCConfig, label: str, 
+                          url: str = None, allowLearners: bool = True, params: dict = {}):
+    coursenav = MessageDef()
+    coursenav.type = const.cnav.msg_type
+    coursenav.label = label
+    if url:
+        coursenav.target_link_uri = url
+    if not allowLearners:
+        coursenav.roles = ['http://purl.imsglobal.org/vocab/lis/v2/membership#Instructor']
+    coursenav.custom_parameters = params
+    registration.lti_config.messages.append(coursenav)
 
 def verify_11_oauth(consumer:Oauth11Consumer, secret:str) -> bool:
     s = hashlib.sha256()

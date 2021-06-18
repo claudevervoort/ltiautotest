@@ -9,5 +9,7 @@ const = _const()
 const.dl = _const()
 const.dl.request_msg_type = 'LtiDeepLinkingRequest'
 const.dl.response_msg_type = 'LtiDeepLinkingResponse'
-const.dl.content_items = ''
-
+const.rl = _const()
+const.rl.msg_type = 'LtiResourceLinkRequest'
+const.cnav = _const()
+const.cnav.msg_type = 'ContextLaunchRequest'

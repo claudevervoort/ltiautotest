@@ -1,7 +1,14 @@
 models = {
     'Context': {
+        'id': [],
+        'title': [],
+        'label': [],
+        'type': ['', 'List[str]']
     },
     'ResourceLink': {
+        'id': [],
+        'title': [],
+        'description':[]
     },
     'ToolPlatform': {
     },
@@ -170,7 +177,9 @@ models = {
         "type": [],
         "target_link_uri": [],
         "label": [],
-        "placements": ['', 'List[str]']
+        "custom_parameters": ['', 'Custom'],
+        "placements": ['', 'List[str]'],
+        "roles": ['', 'List[str]']
     },
     'Oauth11Consumer': {
         "key": [],

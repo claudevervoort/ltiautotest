@@ -6,6 +6,7 @@ certifi==2019.9.11
 cffi==1.12.3
 chardet==3.0.4
 Click==7.0
+cryptography==3.4.7
 ecdsa==0.13.3
 fastapi==0.54.0
 future==0.17.1
@@ -17,14 +18,13 @@ Jinja2==2.11.3
 lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
-pkg-resources==0.0.0
 pyasn1==0.4.7
 pycodestyle==2.5.0
 pycparser==2.19
 pycrypto==2.6.1
 pydantic==1.4
 pylint==2.4.4
-python-jose==3.0.1
+python-jose==3.3.0
 python-multipart==0.0.5
 requests==2.22.0
 rsa==4.1

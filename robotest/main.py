@@ -19,7 +19,7 @@ from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List, Dict
 from datetime import datetime
 
-from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow
+from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, add_coursenav_message
 from lti import Members, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get
 from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration, verify_11_oauth
 
@@ -130,6 +130,11 @@ def register(request: Request, openid_configuration: str, registration_token: st
                 tool_conf.logo_uri =  str(request.url.replace(path='/assets/robotest_logo.png', query='', scheme='https'))
                 tool_conf.lti_config.custom_parameters.update({**context_sub_variables, **link_sub_variables})
 
+                add_coursenav_message(tool_conf, 'RoboCourse For All')
+                add_coursenav_message(tool_conf, 'RoboCourse For Ins', 
+                                      url=str(request.url.replace(path='/instructor_dashboard', query='', scheme='https')),
+                                      allowLearners = False,
+                                      params = {'custom1': 'val1'})
                 res.results.append(TestResult('Tool Config to Register',
                                    True,
                                    True,
@@ -304,7 +309,7 @@ def testdl(request: Request):
         "jwt_single": ''})
 
 def test_deeplinking(request: Request, message: LTIMessage) -> TestCategory:
-    res = TestCategory(name='Deep Linking')
+    res = TestCategory(name='Resource Link launch (imported through DeepLinking)')
     res.results.append(TestResult('Target link present and with param',
                                     message.target_link_uri and "p1=" in message.target_link_uri,
                                     True,
@@ -446,9 +451,22 @@ def test_substitution_variables(category: str, sub_variables: Dict[str, str], cu
     return res
 
 
-def test_and_show_results(request: Request, reg: ToolRegistration, message: dict):
+def test_and_show_results(request: Request, reg: ToolRegistration, message: LTIMessage()):
     results = []
-    results.append(test_deeplinking(request, message))
+    if message.message_type == const.rl.msg_type:
+        results.append(test_deeplinking(request, message))
+    elif message.message_type == const.cnav.msg_type:
+        res = TestCategory(name='Non Resource Link launch')
+        res.results.append(TestResult('Message type is present',
+                                    message.message_type,
+                                    True,
+                                    message.message_type))
+        res.results.append(TestResult('Target link present',
+                                    message.target_link_uri,
+                                    True,
+                                    message.target_link_uri))
+        results.append(res)
+
     results.append(test_ags(reg, message))
     results.append(test_nrps(reg, message))
     results.append(test_substitution_variables('Subsitution Variables (resourcelink)', {**context_sub_variables, **link_sub_variables}, message.custom))

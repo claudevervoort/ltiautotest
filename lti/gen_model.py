@@ -1,16 +1,145 @@
 
-# generated file! see gen_model.py
+# generated file! see codegen.py
 from typing import List, Set, Dict, Tuple, Optional
 from enum import Enum
 from datetime import datetime
 
         
 class Context(dict):
-    pass
+
+    @property
+    def id(self) -> str:
+        val = self.get('id')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['id'] = typed_val
+            return typed_val
+        return val
+
+
+    @id.setter
+    def id(self, value: str):
+        if isinstance(value, Enum):
+            self['id'] = value.value
+        else:
+            self['id'] = value
+
+
+    @property
+    def title(self) -> str:
+        val = self.get('title')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['title'] = typed_val
+            return typed_val
+        return val
+
+
+    @title.setter
+    def title(self, value: str):
+        if isinstance(value, Enum):
+            self['title'] = value.value
+        else:
+            self['title'] = value
+
+
+    @property
+    def label(self) -> str:
+        val = self.get('label')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['label'] = typed_val
+            return typed_val
+        return val
+
+
+    @label.setter
+    def label(self, value: str):
+        if isinstance(value, Enum):
+            self['label'] = value.value
+        else:
+            self['label'] = value
+
+
+    @property
+    def type(self) -> List[str]:
+        if not 'type' in self:
+            self['type'] = []
+        return self.get('type')
+
+    @type.setter
+    def type(self, value: List[str]):
+        self['type'] = value
+
 
 
 class ResourceLink(dict):
-    pass
+
+    @property
+    def id(self) -> str:
+        val = self.get('id')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['id'] = typed_val
+            return typed_val
+        return val
+
+
+    @id.setter
+    def id(self, value: str):
+        if isinstance(value, Enum):
+            self['id'] = value.value
+        else:
+            self['id'] = value
+
+
+    @property
+    def title(self) -> str:
+        val = self.get('title')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['title'] = typed_val
+            return typed_val
+        return val
+
+
+    @title.setter
+    def title(self, value: str):
+        if isinstance(value, Enum):
+            self['title'] = value.value
+        else:
+            self['title'] = value
+
+
+    @property
+    def description(self) -> str:
+        val = self.get('description')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['description'] = typed_val
+            return typed_val
+        return val
+
+
+    @description.setter
+    def description(self, value: str):
+        if isinstance(value, Enum):
+            self['description'] = value.value
+        else:
+            self['description'] = value
+
 
 
 class ToolPlatform(dict):
@@ -2080,6 +2209,26 @@ class MessageDef(dict):
 
 
     @property
+    def custom_parameters(self) -> Custom:
+        val = self.get('custom_parameters')
+        if issubclass(Custom, Enum):
+            return Custom(val)
+        if (isinstance(val, dict) and not isinstance(val, Custom)):
+            typed_val = Custom( **val )
+            self['custom_parameters'] = typed_val
+            return typed_val
+        return val
+
+
+    @custom_parameters.setter
+    def custom_parameters(self, value: Custom):
+        if isinstance(value, Enum):
+            self['custom_parameters'] = value.value
+        else:
+            self['custom_parameters'] = value
+
+
+    @property
     def placements(self) -> List[str]:
         if not 'placements' in self:
             self['placements'] = []
@@ -2088,6 +2237,17 @@ class MessageDef(dict):
     @placements.setter
     def placements(self, value: List[str]):
         self['placements'] = value
+
+
+    @property
+    def roles(self) -> List[str]:
+        if not 'roles' in self:
+            self['roles'] = []
+        return self.get('roles')
+
+    @roles.setter
+    def roles(self, value: List[str]):
+        self['roles'] = value
 
 
 
