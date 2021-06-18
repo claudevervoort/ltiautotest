@@ -15,7 +15,7 @@ MarkupSafe==1.1.1
 pkg-resources==0.0.0
 pyasn1==0.4.7
 pycparser==2.19
-pydantic==0.32.2
+pydantic==1.6.2
 python-jose==3.3.0
 python-multipart==0.0.5
 requests==2.22.0
