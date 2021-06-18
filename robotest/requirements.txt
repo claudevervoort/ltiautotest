@@ -8,7 +8,7 @@ chardet==3.0.4
 Click==7.0
 cryptography==3.4.7
 ecdsa==0.13.3
-fastapi==0.54.0
+fastapi==0.65.2
 future==0.17.1
 h11==0.8.1
 httptools==0.0.13
