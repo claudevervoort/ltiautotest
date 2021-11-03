@@ -1,48 +1,53 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <script>
-            function post(form_id) {
-                document.getElementById(form_id).submit();
-            }
-        </script>
-        <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="/static/robottest.css">
-    </head>
-    <body>
-        <div class="centered">
-            <video autoplay loop muted playsinline>
-                <source src="/assets/deeplinking.mp4" type="video/mp4">
-            </video>
-        </div>
-        <div class="centered">
-            <h4>{{name}}, what do you want in your basket?</h4>
-        </div>
-        <div class="centered" id="dlchoices">
-            <a href="#" onclick="post('empty')" class="secondary">Nothing! (Cancel)</a> 
-            <a href="#" onclick="post('single')" class="secondary">A single not graded LTI Link</a> 
-            <a href="#" onclick="post('single_graded')" class="secondary">A single <b>graded</b> LTI Link</a> 
-            <a href="#" onclick="post('multiple')" class="primary"
-            {% if not multiple %} style="text-decoration: line-through;" {% endif %}> One of each please!</a>
-        </div>
-        <div class="centered">
-            {% if multiple %}
-            <span class="note">Your platform supports multiple items to be returned :)</span>
-            {% else %}
-            <span class="note">Your platform does not seem to support multiple items to be returned (accept_multiple is false) :(</span>
-            {% endif %}
-        </div>
-        <form id="empty" action="{{ return_url }}" method="post">
-            <input type="hidden" name="JWT" value="{{ empty }}">
-        </form>
-        <form id="single" action="{{ return_url }}" method="post">
-            <input type="hidden" name="JWT" value="{{ jwt_single }}">
-        </form>
-        <form id="single_graded" action="{{ return_url }}" method="post">
-            <input type="hidden" name="JWT" value="{{ jwt_single_graded }}">
-        </form>
-        <form id="multiple" action="{{ return_url }}" method="post">
-            <input type="hidden" name="JWT" value="{{ jwt_multiple }}">
-        </form>
-    </body>
+
+<head>
+    <script>
+        function post(form_id) {
+            document.getElementById(form_id).submit();
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/robottest.css">
+</head>
+
+<body>
+    <div class="centered">
+        <video autoplay loop muted playsinline>
+            <source src="/assets/deeplinking.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="centered">
+        <h4>{{name}}, what do you want in your basket?</h4>
+    </div>
+    <div class="centered" id="dlchoices">
+        <a href="#" onclick="post('empty')" class="secondary">Nothing! (Cancel)</a>
+        <a href="#" onclick="post('single')" class="secondary">A single not graded LTI Link</a>
+        <a href="#" onclick="post('single_graded')" class="secondary" {% if not gradable %}
+            style="text-decoration: line-through;" {% endif %}>A single <b>graded</b> LTI Link</a>
+        <a href="#" onclick="post('multiple')" class="primary" {% if not multiple %}
+            style="text-decoration: line-through;" {% endif %}> One of each please!</a>
+    </div>
+    <div class="centered">
+        {% if multiple %}
+        <span class="note">Your platform supports multiple items to be returned :)</span>
+        {% else %}
+        <span class="note">Your platform does not seem to support multiple items to be returned (accept_multiple is
+            false) :(</span>
+        {% endif %}
+    </div>
+    <form id="empty" action="{{ return_url }}" method="post">
+        <input type="hidden" name="JWT" value="{{ empty }}">
+    </form>
+    <form id="single" action="{{ return_url }}" method="post">
+        <input type="hidden" name="JWT" value="{{ jwt_single }}">
+    </form>
+    <form id="single_graded" action="{{ return_url }}" method="post">
+        <input type="hidden" name="JWT" value="{{ jwt_single_graded }}">
+    </form>
+    <form id="multiple" action="{{ return_url }}" method="post">
+        <input type="hidden" name="JWT" value="{{ jwt_multiple }}">
+    </form>
+</body>
+
 </html>

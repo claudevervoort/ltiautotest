@@ -138,7 +138,7 @@ def base_tool_oidc_conf(*,name:str,
                     "type": "LtiDeepLinkingRequest",
                     "target_link_uri": "{dl_url}",
                     "label": "{dl_label}",
-                    "placements": []
+                    "placements": ["ContentArea", "RichTextEditor"]
                 }}
         '''.format(dl_label=dl_label, dl_url=dl_url)
         tool_conf.lti_config.messages.append(MessageDef(**json.loads(dl_message)))

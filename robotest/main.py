@@ -300,7 +300,8 @@ def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
         "jwt_single_graded": reg.encode(dlresp2),
         "jwt_multiple": reg.encode(dlresp3),
         "name": message.name or 'No name!',
-        'multiple': message.deep_linking_settings.accept_multiple
+        'multiple': message.deep_linking_settings.accept_multiple,
+        'gradable': message.deep_linking_settings.accept_lineitem == None or message.deep_linking_settings.accept_lineitem
     })
 
 @app.get('/dl')

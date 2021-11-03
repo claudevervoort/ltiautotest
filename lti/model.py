@@ -21,6 +21,7 @@ models = {
         "accept_media_types": ['', 'List[str]'],
         "accept_presentation_document_targets": ['', 'List[str]'],
         "accept_multiple": ['', 'bool'],
+        "accept_lineitem": ['', 'bool'],
         "auto_create": ['', 'bool'],
         "title": [],
         "text": [],

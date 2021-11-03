@@ -59,7 +59,7 @@ template_bool_property = """
     @property
     def {short}(self) -> bool:
         val = self.get('{long}')
-        if (val):
+        if (val != None):
             if type(val) is bool:
                 return val
             # Moodle error encoded a string

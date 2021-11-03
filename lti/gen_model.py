@@ -212,7 +212,7 @@ class DeeplinkSettings(dict):
     @property
     def accept_multiple(self) -> bool:
         val = self.get('accept_multiple')
-        if (val):
+        if (val != None):
             if type(val) is bool:
                 return val
             # Moodle error encoded a string
@@ -227,9 +227,26 @@ class DeeplinkSettings(dict):
 
 
     @property
+    def accept_lineitem(self) -> bool:
+        val = self.get('accept_lineitem')
+        if (val != None):
+            if type(val) is bool:
+                return val
+            # Moodle error encoded a string
+            if type(val) is str:
+                return val.lower() == 'true'
+            return False
+        return None
+
+    @accept_lineitem.setter
+    def accept_lineitem(self, value: bool):
+        self['accept_lineitem'] = value
+
+
+    @property
     def auto_create(self) -> bool:
         val = self.get('auto_create')
-        if (val):
+        if (val != None):
             if type(val) is bool:
                 return val
             # Moodle error encoded a string
