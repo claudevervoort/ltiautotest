@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Moodle 2 Common Cartridge generator-->
+<manifest xmlns="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1" xmlns:lomimscc="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest" xmlns:lom="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" identifier="M_6C4CB7E3" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lommanifest_v1p0.xsd http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd">
+  <metadata>
+    <schema>IMS Common Cartridge</schema>
+    <schemaversion>1.1.0</schemaversion>
+    <lomimscc:lom>
+      <lomimscc:general>
+        <lomimscc:title>
+          <lomimscc:string language="en">Robotest in a Box</lomimscc:string>
+        </lomimscc:title>
+        <lomimscc:language>en</lomimscc:language>
+        <lomimscc:description>
+          <lomimscc:string language="en" />
+        </lomimscc:description>
+        <lomimscc:identifier>
+          <lomimscc:catalog>category</lomimscc:catalog>
+          <lomimscc:entry>Miscellaneous</lomimscc:entry>
+        </lomimscc:identifier>
+      </lomimscc:general>
+    </lomimscc:lom>
+  </metadata>
+  <organizations>
+    <organization identifier="O_12001239" structure="rooted-hierarchy">
+      <item identifier="root">
+        <item identifier="I_F4DD9704">
+          <title>3</title>
+          <item identifier="I_C090629A" identifierref="I_823E205C_R">
+            <title>Not graded Robotest</title>
+          </item>
+          <item identifier="I_C090629Adev" identifierref="I_823E205Cdev_R">
+            <title>Not graded Robotest - dev server - usually off!</title>
+          </item>
+        </item>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="I_823E205C_R" type="imsbasiclti_xmlv1p0">
+      <file href="i_384733d0/basiclti.xml" />
+    </resource>
+    <resource identifier="I_823E205Cdev_R" type="imsbasiclti_xmlv1p0">
+      <file href="i_384733d0dev/basiclti.xml" />
+    </resource>
+  </resources>
+</manifest>

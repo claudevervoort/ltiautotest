@@ -1,14 +1,16 @@
 <html>
-    <head>
-        <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="/static/robottest.css">
-    </head>
-    <body class="results">
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/robottest.css">
+</head>
+
+<body class="results">
     <div class="centered">
         <div>
             <h1>LTI™ Robotest</h1>
             <em>An easy way to test your platform for its support for LTI Advantage.</em>
-            <br/>
+            <br />
             <em>For more info and resources on LTI visit <a href="https://imsglobal.org">IMS Global</a></em>
             <h2>Moodle instructions - automatic configuration (3.10+)</h2>
             <p>The registration URL is {{base_url}}/register. Paste it as the Tool URL and click Add LTI Advantage</p>
@@ -16,36 +18,59 @@
             <ul>
                 <li>As admin got to Site Admin to add an external tool</li>
                 <li>Select <em>configure a tool manually</em></li>
-                <li><bold>Tool url</bold> {{ base_url }}</li>
-                <li><bold>LTI Version</bold>1.3</li>
-                <li><bold>Initiation Login URL</bold> {{ base_url }}/oidc/init</li>
-                <li><bold>Redirect URI</bold> {{ base_url }}/oidc/launch</li>
-                <li><bold>enable <em>Deep Linking (Content-Item Message)</em></bold></li>
-                <li><bold>Public Key</bold> <em>Use JWKS URI unless not supported by youur moodle version</em>
+                <li>
+                    <bold>Tool url</bold> {{ base_url }}
+                </li>
+                <li>
+                    <bold>LTI Version</bold>1.3
+                </li>
+                <li>
+                    <bold>Initiation Login URL</bold> {{ base_url }}/oidc/init
+                </li>
+                <li>
+                    <bold>Redirect URI</bold> {{ base_url }}/oidc/launch
+                </li>
+                <li>
+                    <bold>enable <em>Deep Linking (Content-Item Message)</em></bold>
+                </li>
+                <li>
+                    <bold>Public Key</bold> <em>Use JWKS URI unless not supported by youur moodle version</em>
                     <ul>
                         <li>JWKS URI: {{ base_url }}/.well-known/jwks.json</li>
-                        <li>Public key if 3.8 or earlier: copy from <a href="{{ base_url }}/.well-known/publickey.pem">public key</a>
+                        <li>Public key if 3.8 or earlier: copy from <a
+                                href="{{ base_url }}/.well-known/publickey.pem">public key</a>
                     </ul>
                 </li>
-                <li><bold>Services</bold>
+                <li>
+                    <bold>Services</bold>
                     <ul>
-                        <li><bold>AGS</bold> for grade sync and column management</li>
-                        <li><bold>Names and Roles</bold> retrieve members as per privacy settings</li>
+                        <li>
+                            <bold>AGS</bold> for grade sync and column management
+                        </li>
+                        <li>
+                            <bold>Names and Roles</bold> retrieve members as per privacy settings
+                        </li>
                     </ul>
                 </li>
-                <li><bold>Custom Parameters</bold>
+                <li>
+                    <bold>Custom Parameters</bold>
                     {% for k in custom_params %}
                     <ul>
                         <li>{{ k }}={{ custom_params[k] }}</li>
                     </ul>
                     {% endfor %}
                 </li>
-                <li><bold>Privacy</bold>
+                <li>
+                    <bold>Privacy</bold>
                     <ul>
-                        <li><bold>Accept grades</bold>Based on Tool Item definition or Delegates to Teacher</li>
+                        <li>
+                            <bold>Accept grades</bold>Based on Tool Item definition or Delegates to Teacher
+                        </li>
                     </ul>
                 </li>
-                <li><bold>Save</bold></li>
+                <li>
+                    <bold>Save</bold>
+                </li>
                 <li>If previous to MDL-67072 (3.8 or before) you need to add the client id to the init login
                     <ul>
                         <li>Edit the newly created tool</li>
@@ -55,27 +80,42 @@
                 </li>
 
             </ul>
-            
+
             <h2>Brightspace instructions - manual configuration</h2>
             <h3>Step 1: Register the LTI Advantage tool</h3>
             <ul>
                 <li>In Admin Tools navigate to Manage Extensibility</li>
                 <li>Select <em>LTI Advantage / Register Tool / Standard</em>
-                    <ul> 
-                    <li><bold>Target Link uri</bold> {{ base_url }}</li>
-                    <li><bold>LTI Version</bold>1.3</li>
-                    <li><bold>OpenId Connect Login URL</bold> {{ base_url }}/oidc/init?lms=d2l</li>
-                    <li><bold>Redirect URL</bold> {{ base_url }}/oidc/launch</li>
-                    <li><bold>Keyset URL</bold>{{ base_url }}/.well-known/jwks.json</li>
-                    <li><bold>Extensions</bold> Select all extensions</li>
-                    <li><bold>Send Institution Role</bold> Checked</li>
-                    <li><bold>Subsitution Parameters</bold>
-                        {% for k in custom_params %}
-                        <ul>
-                            <li>{{ k }}={{ custom_params[k] }}</li>
-                        </ul>
-                        {% endfor %}
-                    </li>
+                    <ul>
+                        <li>
+                            <bold>Target Link uri</bold> {{ base_url }}
+                        </li>
+                        <li>
+                            <bold>LTI Version</bold>1.3
+                        </li>
+                        <li>
+                            <bold>OpenId Connect Login URL</bold> {{ base_url }}/oidc/init?lms=d2l
+                        </li>
+                        <li>
+                            <bold>Redirect URL</bold> {{ base_url }}/oidc/launch
+                        </li>
+                        <li>
+                            <bold>Keyset URL</bold>{{ base_url }}/.well-known/jwks.json
+                        </li>
+                        <li>
+                            <bold>Extensions</bold> Select all extensions
+                        </li>
+                        <li>
+                            <bold>Send Institution Role</bold> Checked
+                        </li>
+                        <li>
+                            <bold>Subsitution Parameters</bold>
+                            {% for k in custom_params %}
+                            <ul>
+                                <li>{{ k }}={{ custom_params[k] }}</li>
+                            </ul>
+                            {% endfor %}
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -83,22 +123,39 @@
             <ul>
                 <li>In Admin Tools navigate to External Learning Tools</li>
                 <li>LTI Advantage > New deployment </li>
-                <li><bold>Tool</bold> Select the tool created in the 1st step</li>
-                <li><bold>Extensions</bold> Select all extensions</li>
-                <li><bold>Security</bold> Select all EXCEPT Anonymous and Open as Extern Resource</li>
+                <li>
+                    <bold>Tool</bold> Select the tool created in the 1st step
+                </li>
+                <li>
+                    <bold>Extensions</bold> Select all extensions
+                </li>
+                <li>
+                    <bold>Security</bold> Select all EXCEPT Anonymous and Open as Extern Resource
+                </li>
                 <li>Make the tool available to the courses/orgs as desired</li>
             </ul>
-        <h3>Step 3: Create a deep linking placement</h3>
+            <h3>Step 3: Create a deep linking placement</h3>
             <ul>
                 <li>Once the deployment completed, select Links to create a new placement</li>
-                <li><bold>Name</bold> Add Robotest</li>
-                <li><bold>URL</bold> {{ base_url }}</li>
-                <li><bold>Type</bold> Deep Linking Quicklink</li>
+                <li>
+                    <bold>Name</bold> Add Robotest
+                </li>
+                <li>
+                    <bold>URL</bold> {{ base_url }}
+                </li>
+                <li>
+                    <bold>Type</bold> Deep Linking Quicklink
+                </li>
                 <li>Save and Close</li>
             </ul>
-        <p>And now you can bring the test course links using deeplinking in your course: Course Content > Add existing activities > Add Robotest</p>
+            <p>And now you can bring the test course links using deeplinking in your course: Course Content > Add
+                existing activities > Add Robotest</p>
+            <h2>Common Cartridge</h2>
+            This <a href="/assets/robotest_in_a_box.imscc" target="_blank">IMS Common Cartridge 1.1</a> contains 2 LTI
+            links, one for the test server, one for the official endpoint.</a>
         </div>
-        <img style="max-width: 40%;" src="/assets/box_cropped.png" >
+        <img style="max-width: 40%;" src="/assets/box_cropped.png">
     </div>
-    </body>
+</body>
+
 </html>
