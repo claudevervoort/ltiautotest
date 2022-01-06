@@ -22,7 +22,7 @@ from typing import List, Dict
 from datetime import datetime
 
 from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, add_coursenav_message
-from lti import Members, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get
+from lti import Score, ActivityProgress, GradingProgress, Members, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get, ltiservice_mut
 from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration, verify_11_oauth
 
 from robotest.test_results import TestCategory, TestResult
@@ -431,7 +431,23 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                                      lineitem.tag == 'zetag',
                                      True,
                                      'lineitem tag found: {tag}'.format(tag=lineitem.tag)))
-
+            if [r for r in message.role if 'learner' in r.lower()]:
+                score = Score()
+                score.userId = message.sub
+                score.scoreGiven = random.randint(40,80)
+                score.scoreMaximum = 80
+                score.activityProgress = ActivityProgress.COMPLETED
+                score.gradingProgress = GradingProgress.FULLYGRADED
+                score.timestamp = datetime.now()
+                error = ''
+                try:
+                    ltiservice_mut(reg, message.grade_service.lineitem, score)
+                except Exception as e:
+                    error = str(e)
+                res.results.append(TestResult('Score Post without error',
+                                     error == '',
+                                     True,
+                                     '{e} Score {p} out of {m}'.format(e=error, p=score.scoreGiven, m=score.scoreMaximum)))
         except Exception as e:
             print(traceback.format_exc())
             res.results.append(TestResult('Line item loaded',
