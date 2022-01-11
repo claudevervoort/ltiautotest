@@ -39,8 +39,8 @@ def access_token(registration: ToolRegistration, scope: str, force: bool = False
     return t['access_token']
 
 def ltiservice_get(registration: ToolRegistration, resource_class: Type[T], url: str, params: Dict = {}, load_all: bool = True) -> T:
-    if resource_class.read_scope:
-        mime = resource_class.mime if resource_class.mime else 'application/json'
+    if hasattr(resource_class, 'read_scope'):
+        mime = resource_class.mime if hasattr(resource_class, 'mime') else 'application/json'
         token = access_token( registration, resource_class.read_scope )
         headers = {
             'Authorization': 'Bearer {token}'.format(token=token),
@@ -57,3 +57,26 @@ def ltiservice_get(registration: ToolRegistration, resource_class: Type[T], url:
                 response[resource_class.collection_attribute].extend(remaining[resource_class.collection_attribute])
         return response
     raise ValueError("No scope defined for read")
+
+def ltiservice_mut(registration: ToolRegistration, url: str, payload: T, isput: bool = False) -> T:
+    resource_class = payload.__class__
+    if hasattr(resource_class, 'path_suffix'):
+        suffix = resource_class.path_suffix
+        parts = url.split("?", 1)
+        url = '{p}/{s}'.format(p=parts[0].rstrip('/'), s=suffix) if len(parts) == 1 else '/{s}?'.format(s=suffix).join([parts[0].rstrip('/'), parts[1]])
+    if hasattr(resource_class, 'write_scope'):
+        mime = resource_class.mime if hasattr(resource_class, 'mime') else 'application/json'
+        token = access_token( registration, resource_class.write_scope )
+        headers = {
+            'Authorization': 'Bearer {token}'.format(token=token),
+            'Content-Type': mime
+        }
+        r = (requests.put if isput else requests.post)(url, headers=headers, data=json.dumps(payload))
+        r.raise_for_status()
+        if r.text and r.headers['Content-Type'] == mime:
+            response = resource_class(json.loads(r.text))
+        else:
+            response = None
+        return response
+    raise ValueError("No scope defined for write")
+

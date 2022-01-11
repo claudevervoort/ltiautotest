@@ -1137,6 +1137,15 @@ class ActivityProgress(Enum):
 
 class Score(dict):
 
+    mime = 'application/vnd.ims.lis.v1.score+json'
+
+
+    write_scope = 'https://purl.imsglobal.org/spec/lti-ags/scope/score'
+
+
+    path_suffix = 'scores'
+
+
     @property
     def userId(self) -> str:
         val = self.get('userId')
@@ -1271,6 +1280,15 @@ class Score(dict):
 
 
 class Result(dict):
+
+    mime = 'application/vnd.ims.lis.v2.resultcontainer+json'
+
+
+    read_scope = 'https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly'
+
+
+    path_suffix = 'results'
+
 
     @property
     def userId(self) -> str:

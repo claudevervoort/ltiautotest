@@ -96,6 +96,11 @@ models = {
         'Completed'
     ),
     'Score': {
+        'cls_const': {
+            'mime': 'application/vnd.ims.lis.v1.score+json',
+            'write_scope': 'https://purl.imsglobal.org/spec/lti-ags/scope/score',
+            'path_suffix': 'scores'
+        },
         'userId': [],
         'scoreGiven': ['', 'float'],
         'scoreMaximum': ['', 'float'],
@@ -105,6 +110,11 @@ models = {
         'gradingProgress': ['', 'GradingProgress']
     },
     'Result': {
+        'cls_const': {
+            'mime': 'application/vnd.ims.lis.v2.resultcontainer+json',
+            'read_scope': 'https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly',
+            'path_suffix': 'results'
+        },
         'userId': [],
         'resultScore': ['', 'float'],
         'resultMaximum': ['', 'float'],
