@@ -71,10 +71,13 @@ class Context(dict):
     def type(self) -> List[str]:
         if not 'type' in self:
             self['type'] = []
+        l = self['type']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['type'] = list(map(lambda d: str(d), l))
         return self.get('type')
 
     @type.setter
-    def type(self, value: List[str]):
+    def type(self, value: str):
         self['type'] = value
 
 
@@ -180,10 +183,13 @@ class DeeplinkSettings(dict):
     def accept_types(self) -> List[str]:
         if not 'accept_types' in self:
             self['accept_types'] = []
+        l = self['accept_types']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['accept_types'] = list(map(lambda d: str(d), l))
         return self.get('accept_types')
 
     @accept_types.setter
-    def accept_types(self, value: List[str]):
+    def accept_types(self, value: str):
         self['accept_types'] = value
 
 
@@ -191,10 +197,13 @@ class DeeplinkSettings(dict):
     def accept_media_types(self) -> List[str]:
         if not 'accept_media_types' in self:
             self['accept_media_types'] = []
+        l = self['accept_media_types']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['accept_media_types'] = list(map(lambda d: str(d), l))
         return self.get('accept_media_types')
 
     @accept_media_types.setter
-    def accept_media_types(self, value: List[str]):
+    def accept_media_types(self, value: str):
         self['accept_media_types'] = value
 
 
@@ -202,10 +211,13 @@ class DeeplinkSettings(dict):
     def accept_presentation_document_targets(self) -> List[str]:
         if not 'accept_presentation_document_targets' in self:
             self['accept_presentation_document_targets'] = []
+        l = self['accept_presentation_document_targets']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['accept_presentation_document_targets'] = list(map(lambda d: str(d), l))
         return self.get('accept_presentation_document_targets')
 
     @accept_presentation_document_targets.setter
-    def accept_presentation_document_targets(self, value: List[str]):
+    def accept_presentation_document_targets(self, value: str):
         self['accept_presentation_document_targets'] = value
 
 
@@ -367,10 +379,13 @@ class GradeService(dict):
     def scope(self) -> List[str]:
         if not 'scope' in self:
             self['scope'] = []
+        l = self['scope']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['scope'] = list(map(lambda d: str(d), l))
         return self.get('scope')
 
     @scope.setter
-    def scope(self, value: List[str]):
+    def scope(self, value: str):
         self['scope'] = value
 
 
@@ -644,10 +659,13 @@ class LTIMessage(dict):
     def role(self) -> List[str]:
         if not 'https://purl.imsglobal.org/spec/lti/claim/roles' in self:
             self['https://purl.imsglobal.org/spec/lti/claim/roles'] = []
+        l = self['https://purl.imsglobal.org/spec/lti/claim/roles']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['https://purl.imsglobal.org/spec/lti/claim/roles'] = list(map(lambda d: str(d), l))
         return self.get('https://purl.imsglobal.org/spec/lti/claim/roles')
 
     @role.setter
-    def role(self, value: List[str]):
+    def role(self, value: str):
         self['https://purl.imsglobal.org/spec/lti/claim/roles'] = value
 
 
@@ -1896,10 +1914,13 @@ class Member(dict):
     def roles(self) -> List[str]:
         if not 'roles' in self:
             self['roles'] = []
+        l = self['roles']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['roles'] = list(map(lambda d: str(d), l))
         return self.get('roles')
 
     @roles.setter
-    def roles(self, value: List[str]):
+    def roles(self, value: str):
         self['roles'] = value
 
 
@@ -1939,11 +1960,51 @@ class Members(dict):
     def members(self) -> List[Member]:
         if not 'members' in self:
             self['members'] = []
+        l = self['members']
+        if len(l)>0 and not type(l[0]) is Member and type(l[0]) is dict:
+            self['members'] = list(map(lambda d: Member(d), l))
         return self.get('members')
 
     @members.setter
-    def members(self, value: List[Member]):
+    def members(self, value: Member):
         self['members'] = value
+
+
+
+class SupportedMessage(dict):
+
+    @property
+    def type(self) -> str:
+        val = self.get('type')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['type'] = typed_val
+            return typed_val
+        return val
+
+
+    @type.setter
+    def type(self, value: str):
+        if isinstance(value, Enum):
+            self['type'] = value.value
+        else:
+            self['type'] = value
+
+
+    @property
+    def placements(self) -> List[str]:
+        if not 'placements' in self:
+            self['placements'] = []
+        l = self['placements']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['placements'] = list(map(lambda d: str(d), l))
+        return self.get('placements')
+
+    @placements.setter
+    def placements(self, value: str):
+        self['placements'] = value
 
 
 
@@ -1973,11 +2034,28 @@ class PlatformConfig(dict):
     def variables(self) -> List[str]:
         if not 'variables' in self:
             self['variables'] = []
+        l = self['variables']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['variables'] = list(map(lambda d: str(d), l))
         return self.get('variables')
 
     @variables.setter
-    def variables(self, value: List[str]):
+    def variables(self, value: str):
         self['variables'] = value
+
+
+    @property
+    def messages_supported(self) -> List[SupportedMessage]:
+        if not 'messages_supported' in self:
+            self['messages_supported'] = []
+        l = self['messages_supported']
+        if len(l)>0 and not type(l[0]) is SupportedMessage and type(l[0]) is dict:
+            self['messages_supported'] = list(map(lambda d: SupportedMessage(d), l))
+        return self.get('messages_supported')
+
+    @messages_supported.setter
+    def messages_supported(self, value: SupportedMessage):
+        self['messages_supported'] = value
 
 
 
@@ -2047,10 +2125,13 @@ class PlatformOIDCConfig(dict):
     def token_endpoint_auth_methods_supported(self) -> List[str]:
         if not 'token_endpoint_auth_methods_supported' in self:
             self['token_endpoint_auth_methods_supported'] = []
+        l = self['token_endpoint_auth_methods_supported']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['token_endpoint_auth_methods_supported'] = list(map(lambda d: str(d), l))
         return self.get('token_endpoint_auth_methods_supported')
 
     @token_endpoint_auth_methods_supported.setter
-    def token_endpoint_auth_methods_supported(self, value: List[str]):
+    def token_endpoint_auth_methods_supported(self, value: str):
         self['token_endpoint_auth_methods_supported'] = value
 
 
@@ -2058,10 +2139,13 @@ class PlatformOIDCConfig(dict):
     def token_endpoint_auth_signing_alg_values_supported(self) -> List[str]:
         if not 'token_endpoint_auth_signing_alg_values_supported' in self:
             self['token_endpoint_auth_signing_alg_values_supported'] = []
+        l = self['token_endpoint_auth_signing_alg_values_supported']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['token_endpoint_auth_signing_alg_values_supported'] = list(map(lambda d: str(d), l))
         return self.get('token_endpoint_auth_signing_alg_values_supported')
 
     @token_endpoint_auth_signing_alg_values_supported.setter
-    def token_endpoint_auth_signing_alg_values_supported(self, value: List[str]):
+    def token_endpoint_auth_signing_alg_values_supported(self, value: str):
         self['token_endpoint_auth_signing_alg_values_supported'] = value
 
 
@@ -2109,10 +2193,13 @@ class PlatformOIDCConfig(dict):
     def scopes_supported(self) -> List[str]:
         if not 'scopes_supported' in self:
             self['scopes_supported'] = []
+        l = self['scopes_supported']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['scopes_supported'] = list(map(lambda d: str(d), l))
         return self.get('scopes_supported')
 
     @scopes_supported.setter
-    def scopes_supported(self, value: List[str]):
+    def scopes_supported(self, value: str):
         self['scopes_supported'] = value
 
 
@@ -2120,10 +2207,13 @@ class PlatformOIDCConfig(dict):
     def response_types_supported(self) -> List[str]:
         if not 'response_types_supported' in self:
             self['response_types_supported'] = []
+        l = self['response_types_supported']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['response_types_supported'] = list(map(lambda d: str(d), l))
         return self.get('response_types_supported')
 
     @response_types_supported.setter
-    def response_types_supported(self, value: List[str]):
+    def response_types_supported(self, value: str):
         self['response_types_supported'] = value
 
 
@@ -2131,10 +2221,13 @@ class PlatformOIDCConfig(dict):
     def subject_types_supported(self) -> List[str]:
         if not 'subject_types_supported' in self:
             self['subject_types_supported'] = []
+        l = self['subject_types_supported']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['subject_types_supported'] = list(map(lambda d: str(d), l))
         return self.get('subject_types_supported')
 
     @subject_types_supported.setter
-    def subject_types_supported(self, value: List[str]):
+    def subject_types_supported(self, value: str):
         self['subject_types_supported'] = value
 
 
@@ -2142,10 +2235,13 @@ class PlatformOIDCConfig(dict):
     def id_token_signing_alg_values_supported(self) -> List[str]:
         if not 'id_token_signing_alg_values_supported' in self:
             self['id_token_signing_alg_values_supported'] = []
+        l = self['id_token_signing_alg_values_supported']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['id_token_signing_alg_values_supported'] = list(map(lambda d: str(d), l))
         return self.get('id_token_signing_alg_values_supported')
 
     @id_token_signing_alg_values_supported.setter
-    def id_token_signing_alg_values_supported(self, value: List[str]):
+    def id_token_signing_alg_values_supported(self, value: str):
         self['id_token_signing_alg_values_supported'] = value
 
 
@@ -2153,10 +2249,13 @@ class PlatformOIDCConfig(dict):
     def claims_supported(self) -> List[str]:
         if not 'claims_supported' in self:
             self['claims_supported'] = []
+        l = self['claims_supported']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['claims_supported'] = list(map(lambda d: str(d), l))
         return self.get('claims_supported')
 
     @claims_supported.setter
-    def claims_supported(self, value: List[str]):
+    def claims_supported(self, value: str):
         self['claims_supported'] = value
 
 
@@ -2267,10 +2366,13 @@ class MessageDef(dict):
     def placements(self) -> List[str]:
         if not 'placements' in self:
             self['placements'] = []
+        l = self['placements']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['placements'] = list(map(lambda d: str(d), l))
         return self.get('placements')
 
     @placements.setter
-    def placements(self, value: List[str]):
+    def placements(self, value: str):
         self['placements'] = value
 
 
@@ -2278,10 +2380,13 @@ class MessageDef(dict):
     def roles(self) -> List[str]:
         if not 'roles' in self:
             self['roles'] = []
+        l = self['roles']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['roles'] = list(map(lambda d: str(d), l))
         return self.get('roles')
 
     @roles.setter
-    def roles(self, value: List[str]):
+    def roles(self, value: str):
         self['roles'] = value
 
 
@@ -2475,10 +2580,13 @@ class ToolConfig(dict):
     def scopes(self) -> List[str]:
         if not 'scopes' in self:
             self['scopes'] = []
+        l = self['scopes']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['scopes'] = list(map(lambda d: str(d), l))
         return self.get('scopes')
 
     @scopes.setter
-    def scopes(self, value: List[str]):
+    def scopes(self, value: str):
         self['scopes'] = value
 
 
@@ -2486,10 +2594,13 @@ class ToolConfig(dict):
     def claims(self) -> List[str]:
         if not 'claims' in self:
             self['claims'] = []
+        l = self['claims']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['claims'] = list(map(lambda d: str(d), l))
         return self.get('claims')
 
     @claims.setter
-    def claims(self, value: List[str]):
+    def claims(self, value: str):
         self['claims'] = value
 
 
@@ -2497,10 +2608,13 @@ class ToolConfig(dict):
     def messages(self) -> List[MessageDef]:
         if not 'messages' in self:
             self['messages'] = []
+        l = self['messages']
+        if len(l)>0 and not type(l[0]) is MessageDef and type(l[0]) is dict:
+            self['messages'] = list(map(lambda d: MessageDef(d), l))
         return self.get('messages')
 
     @messages.setter
-    def messages(self, value: List[MessageDef]):
+    def messages(self, value: MessageDef):
         self['messages'] = value
 
 
@@ -2571,10 +2685,13 @@ class ToolOIDCConfig(dict):
     def response_types(self) -> List[str]:
         if not 'response_types' in self:
             self['response_types'] = []
+        l = self['response_types']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['response_types'] = list(map(lambda d: str(d), l))
         return self.get('response_types')
 
     @response_types.setter
-    def response_types(self, value: List[str]):
+    def response_types(self, value: str):
         self['response_types'] = value
 
 
@@ -2582,10 +2699,13 @@ class ToolOIDCConfig(dict):
     def grant_types(self) -> List[str]:
         if not 'grant_types' in self:
             self['grant_types'] = []
+        l = self['grant_types']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['grant_types'] = list(map(lambda d: str(d), l))
         return self.get('grant_types')
 
     @grant_types.setter
-    def grant_types(self, value: List[str]):
+    def grant_types(self, value: str):
         self['grant_types'] = value
 
 
@@ -2613,10 +2733,13 @@ class ToolOIDCConfig(dict):
     def redirect_uris(self) -> List[str]:
         if not 'redirect_uris' in self:
             self['redirect_uris'] = []
+        l = self['redirect_uris']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['redirect_uris'] = list(map(lambda d: str(d), l))
         return self.get('redirect_uris')
 
     @redirect_uris.setter
-    def redirect_uris(self, value: List[str]):
+    def redirect_uris(self, value: str):
         self['redirect_uris'] = value
 
 
@@ -2704,10 +2827,13 @@ class ToolOIDCConfig(dict):
     def contacts(self) -> List[str]:
         if not 'contacts' in self:
             self['contacts'] = []
+        l = self['contacts']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['contacts'] = list(map(lambda d: str(d), l))
         return self.get('contacts')
 
     @contacts.setter
-    def contacts(self, value: List[str]):
+    def contacts(self, value: str):
         self['contacts'] = value
 
 

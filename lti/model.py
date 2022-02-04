@@ -165,9 +165,14 @@ models = {
         'id': [],
         'members': ['', 'List[Member]']
     },
+    'SupportedMessage': {
+        'type': [],
+        'placements': ['', 'List[str]']
+    },
     'PlatformConfig': {
         'product_family_code': [],
-        'variables': ['', 'List[str]']
+        'variables': ['', 'List[str]'],
+        'messages_supported': ['', 'List[SupportedMessage]'],
     },
     'PlatformOIDCConfig': {
         'issuer': [],

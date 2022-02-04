@@ -21,7 +21,7 @@ from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List, Dict
 from datetime import datetime
 
-from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, add_coursenav_message
+from lti import LineItem, SupportedMessage, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, add_coursenav_message
 from lti import Score, ActivityProgress, GradingProgress, Members, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get, ltiservice_mut
 from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration, verify_11_oauth
 
@@ -107,6 +107,24 @@ def register(request: Request, openid_configuration: str, registration_token: st
                                             lms_type or False,
                                             True,
                                             lms_type))
+                supported_messages = platform_config.lti_config.messages_supported
+                valid_sup_msgs = supported_messages and type(supported_messages) is list 
+                #valid_sup_msgs = valid_sup_msgs and len(supported_messages)>0 and type(supported_messages[0]) is SupportedMessage
+                res.results.append(TestResult('Supported Messages found',
+                                            valid_sup_msgs,
+                                            True,
+                                            str(type(supported_messages[0])) + " " + str(supported_messages)))
+                if valid_sup_msgs:
+                    supported_types = list(map(lambda msg: msg.type, supported_messages))
+                    res.results.append(TestResult('Deeplinking is supported',
+                                            'LtiDeepLinkingRequest' in supported_types,
+                                            True,
+                                            supported_types))
+                    res.results.append(TestResult('Resource Link is supported',
+                                            'LtiResourceLinkRequest' in supported_types,
+                                            True,
+                                            supported_types))
+                    
                 reg = registration(lms_type, platform_config.issuer, "no-client-id")
                 if reg:
                     # if we can statically infer the config from domain, let's verify with the actual data we got from LMS

@@ -1,4 +1,5 @@
 from model import models
+import re
 
 template_enum = """
 class {name}(Enum):
@@ -97,6 +98,21 @@ template_list_property = """
         self['{long}'] = value
 """
 
+template_typed_list_property = """
+    @property
+    def {short}(self) -> List[{type}]:
+        if not '{long}' in self:
+            self['{long}'] = []
+        l = self['{long}']
+        if len(l)>0 and not type(l[0]) is {type} and type(l[0]) is dict:
+            self['{long}'] = list(map(lambda d: {type}(d), l))
+        return self.get('{long}')
+
+    @{short}.setter
+    def {short}(self, value: {type}):
+        self['{long}'] = value
+"""
+
 template_nested_property = """
     @property
     def {short}(self) -> {type}:
@@ -117,6 +133,7 @@ def generate_enum(name: str, spec: tuple):
         gen.append(template_class_val.format(name=item.upper(), value=item))
     return gen
 
+list_match = re.compile('List\[([^\]]*)]')
 
 def generate_class(name: str, spec: dict):
     gen = []
@@ -142,8 +159,14 @@ def generate_class(name: str, spec: dict):
             gen.append(template_nested_property.format(
                 short=k, container=c, attr=a, container_class=cl, type=type))
         elif type.startswith('List'):
-            gen.append(template_list_property.format(
-                short=k, long=lk, type=type))
+            m = list_match.match(type)
+            if m and m.group(1) not in ['str, dict, list']:
+                gen.append(template_typed_list_property.format(
+                    short=k, long=lk, type=m.group(1)))
+            else:
+                gen.append(template_list_property.format(
+                    short=k, long=lk, type=type))
+
         elif type.startswith('Dict'):
             gen.append(template_dict_property.format(
                 short=k, long=lk, type=type))
