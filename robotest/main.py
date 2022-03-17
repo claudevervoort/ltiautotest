@@ -21,8 +21,8 @@ from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List, Dict
 from datetime import datetime
 
-from lti import LineItem, SupportedMessage, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, add_coursenav_message
-from lti import Score, ActivityProgress, GradingProgress, Members, DeeplinkSettings,get_public_keyset, get_publickey_pem, const, registration, ltiservice_get, ltiservice_mut
+from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, add_coursenav_message
+from lti import Score, ActivityProgress, GradingProgress, Members, get_public_keyset, get_publickey_pem, const, registration, ltiservice_get, ltiservice_get_array, ltiservice_mut
 from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration, verify_11_oauth
 
 from robotest.test_results import TestCategory, TestResult
@@ -418,7 +418,8 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                                      False,
                                      ''))
     if message.grade_service.lineitems:
-        res.results.append(TestResult('Line items present',
+        lineitems = ltiservice_get_array(reg, LineItem, message.grade_service.lineitems)
+        res.results.append(TestResult('Line items present and queriable',
                                      True,
                                      True,
                                      'Can query existing grade book columns for this tool and add new ones'))

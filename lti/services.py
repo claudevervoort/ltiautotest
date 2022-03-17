@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar, Dict, Type
+from typing import Generic, TypeVar, Dict, Type, List
 from lti.ltiregistration import ToolRegistration
 import json
 import requests
@@ -38,25 +38,40 @@ def access_token(registration: ToolRegistration, scope: str, force: bool = False
     t = json.loads(r.text)
     return t['access_token']
 
+def ltiservice_get_array(registration: ToolRegistration, resource_class: Type[T], url: str, params: Dict = {}, load_all: bool = True) -> List[T]:
+    if hasattr(resource_class, 'read_scope'):
+        mime = resource_class.mime_collection if hasattr(resource_class, 'mime_collection') else 'application/json'
+        r = ltiservice_getjson(registration, mime, resource_class.read_scope, url, params)
+        response = list(map(lambda d: resource_class(d), r["response"]))
+        if (load_all and r["next"]):
+            remaining = ltiservice_get_array(registration, resource_class, r["next"] , params)
+            response.extend(remaining)
+        return response
+    raise ValueError("No scope defined for read")
+
 def ltiservice_get(registration: ToolRegistration, resource_class: Type[T], url: str, params: Dict = {}, load_all: bool = True) -> T:
     if hasattr(resource_class, 'read_scope'):
         mime = resource_class.mime if hasattr(resource_class, 'mime') else 'application/json'
-        token = access_token( registration, resource_class.read_scope )
-        headers = {
-            'Authorization': 'Bearer {token}'.format(token=token),
-            'Accept': mime
-        }
-        r = requests.get(url, headers=headers, params=params)
-        r.raise_for_status()
-        response = resource_class(json.loads(r.text))
-        if (load_all and next(r.headers)):
-            remaining = ltiservice_get(registration, resource_class, next(r.headers), params)
-            if type(response) is list:
-                response.extend(remaining)
-            else:
-                response[resource_class.collection_attribute].extend(remaining[resource_class.collection_attribute])
+        r = ltiservice_getjson(registration, mime, resource_class.read_scope, url, params)
+        response = resource_class(r["response"])
+        if (load_all and r["next"] and hasattr(resource_class, 'collection_attribute')):
+            remaining = ltiservice_get(registration, resource_class, r["next"], params)
+            response[resource_class.collection_attribute].extend(remaining[resource_class.collection_attribute])
         return response
     raise ValueError("No scope defined for read")
+
+def ltiservice_getjson(registration: ToolRegistration, mime : str, scope: str,  url: str, params: Dict = {}):
+    token = access_token( registration, scope )
+    headers = {
+        'Authorization': 'Bearer {token}'.format(token=token),
+        'Accept': mime
+    }
+    r = requests.get(url, headers=headers, params=params)
+    r.raise_for_status()
+    return {
+        "response": json.loads(r.text),
+        "next": next(r.headers)
+    }
 
 def ltiservice_mut(registration: ToolRegistration, url: str, payload: T, isput: bool = False) -> T:
     resource_class = payload.__class__
