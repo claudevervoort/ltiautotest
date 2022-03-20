@@ -109,7 +109,7 @@ def register(request: Request, openid_configuration: str, registration_token: st
                                             lms_type))
                 supported_messages = platform_config.lti_config.messages_supported
                 valid_sup_msgs = supported_messages and type(supported_messages) is list 
-                #valid_sup_msgs = valid_sup_msgs and len(supported_messages)>0 and type(supported_messages[0]) is SupportedMessage
+                valid_sup_msgs = valid_sup_msgs and len(supported_messages)>0 and type(supported_messages[0]) is dict
                 res.results.append(TestResult('Supported Messages found',
                                             valid_sup_msgs,
                                             True,
