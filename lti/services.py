@@ -88,7 +88,7 @@ def ltiservice_mut(registration: ToolRegistration, url: str, payload: T, isput: 
         }
         r = (requests.put if isput else requests.post)(url, headers=headers, data=json.dumps(payload))
         r.raise_for_status()
-        if r.text and r.headers['Content-Type'] == mime:
+        if r.text and r.headers['Content-Type'] and r.headers['Content-Type'].startswith(mime):
             response = resource_class(json.loads(r.text))
         else:
             response = None
