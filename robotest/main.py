@@ -1,5 +1,6 @@
 import sys
 import os
+
 sys.path.extend([
     os.path.abspath('../')])
 import csv
@@ -15,8 +16,8 @@ from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List, Dict
-from datetime import datetime
-from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, add_coursenav_message
+from datetime import datetime, timedelta, timezone
+from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, TimeSpan, add_coursenav_message
 from lti import Score, ActivityProgress, GradingProgress, Members, get_public_keyset, get_publickey_pem, const, registration, ltiservice_get, ltiservice_get_array, ltiservice_mut
 from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration, verify_11_oauth
 from robotest.test_results import TestCategory, TestResult
@@ -307,10 +308,14 @@ def resource_link(name: str, message: LTIMessage, multiple: bool, iframe: bool =
     rl.custom['lineitems_dl'] = message.grade_service.lineitems
     rl.custom['membership_dl'] = message.membership_service.context_memberships_url if 'membership_service' in message and 'context_memberships_url' in message.membership_service else ''
     if points:
+        due = datetime.now() + timedelta(weeks=2)
         rl.custom['max_points'] = str(rl.max_points)
+        rl.custom['due_ts'] = f"{due.timestamp()}"
         rl.max_points = 10.0
         rl.resource_id = resource_id
         rl.tag = 'zetag'
+        rl.submission = TimeSpan()
+        rl.submission.endDateTime = due.astimezone(timezone.utc).isoformat(timespec='seconds')
     if iframe:
         rl.iframe = DLIFrame()
         rl.iframe.height = 800
@@ -568,6 +573,15 @@ def test_substitution_variables(category: str, sub_variables: Dict[str, str], cu
                                                   True,
                                                   False,
                                                   custom_params[key]))
+                    if sub_variables[key] == '$ResourceLink.submission.endDateTime' and 'due_ts' in custom_params:
+                        print(float(custom_params['due_ts'])-datetime.fromisoformat(custom_params[key]).timestamp())
+                        print(float(custom_params['due_ts']))
+                        print(datetime.fromisoformat(custom_params[key]).timestamp())
+                        res.results.append(TestResult('Due Date match',
+                                                    abs(float(custom_params['due_ts'])-datetime.fromisoformat(custom_params[key]).timestamp()) < 60.0,
+                                                    False,
+                                                    f"Green if the due date {custom_params[key]} matches the submission endDateTime passed when the link was imported"))
+
             else:
                 res.results.append(TestResult(sub_variables[key],
                                               True,
