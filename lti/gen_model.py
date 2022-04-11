@@ -1475,6 +1475,49 @@ class DLWindow(dict):
 
 
 
+class TimeSpan(dict):
+
+    @property
+    def startDateTime(self) -> str:
+        val = self.get('startDateTime')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['startDateTime'] = typed_val
+            return typed_val
+        return val
+
+
+    @startDateTime.setter
+    def startDateTime(self, value: str):
+        if isinstance(value, Enum):
+            self['startDateTime'] = value.value
+        else:
+            self['startDateTime'] = value
+
+
+    @property
+    def endDateTime(self) -> str:
+        val = self.get('endDateTime')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['endDateTime'] = typed_val
+            return typed_val
+        return val
+
+
+    @endDateTime.setter
+    def endDateTime(self, value: str):
+        if isinstance(value, Enum):
+            self['endDateTime'] = value.value
+        else:
+            self['endDateTime'] = value
+
+
+
 class LTIResourceLink(dict):
 
     def __init__(self, *args, **kwargs):
@@ -1630,6 +1673,46 @@ class LTIResourceLink(dict):
         if not self.get('lineItem'):
             self['lineItem'] = LineItem()
         self['lineItem']['tag'] = value
+
+
+    @property
+    def available(self) -> TimeSpan:
+        val = self.get('available')
+        if issubclass(TimeSpan, Enum):
+            return TimeSpan(val)
+        if (isinstance(val, dict) and not isinstance(val, TimeSpan)):
+            typed_val = TimeSpan( **val )
+            self['available'] = typed_val
+            return typed_val
+        return val
+
+
+    @available.setter
+    def available(self, value: TimeSpan):
+        if isinstance(value, Enum):
+            self['available'] = value.value
+        else:
+            self['available'] = value
+
+
+    @property
+    def submission(self) -> TimeSpan:
+        val = self.get('submission')
+        if issubclass(TimeSpan, Enum):
+            return TimeSpan(val)
+        if (isinstance(val, dict) and not isinstance(val, TimeSpan)):
+            typed_val = TimeSpan( **val )
+            self['submission'] = typed_val
+            return typed_val
+        return val
+
+
+    @submission.setter
+    def submission(self, value: TimeSpan):
+        if isinstance(value, Enum):
+            self['submission'] = value.value
+        else:
+            self['submission'] = value
 
 
     @property

@@ -128,6 +128,10 @@ models = {
     'DLWindow': {
         'targetName': []
     },
+    'TimeSpan': {
+        'startDateTime': [],
+        'endDateTime': []
+    },
     'LTIResourceLink': {
         'type': ['', 'str', 'ltiResourceLink'],
         'title': [],
@@ -138,6 +142,8 @@ models = {
         'max_points': ['lineItem:LineItem->scoreMaximum', 'float'],
         'resource_id': ['lineItem:LineItem->resourceId', 'str'],
         'tag': ['lineItem:LineItem->tag', 'str'],
+        'available': ['', 'TimeSpan'],
+        'submission': ['', 'TimeSpan'],
         'iframe': ['', 'DLIFrame'],
         'window': ['', 'DLWindow']
     },

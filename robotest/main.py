@@ -597,6 +597,21 @@ def test_substitution_variables(category: str, sub_variables: Dict[str, str], cu
 
 def test_and_show_results(request: Request, reg: ToolRegistration, message: LTIMessage()):
     results = []
+    res = TestCategory('General Stuff')
+    res.results.append(TestResult('User Id Found',
+                                    True,
+                                    message.sub,
+                                    message.sub))
+    res.results.append(TestResult('Context Id Found',
+                                    True,
+                                    message.context.id,
+                                    message.context.id))
+    res.results.append(TestResult('Role(s) Found',
+                                    True,
+                                    message.role,
+                                    message.role))
+    results.append(res)
+
     if message.message_type == const.rl.msg_type:
         results.append(test_deeplinking(request, message))
     elif message.message_type == const.cnav.msg_type:
