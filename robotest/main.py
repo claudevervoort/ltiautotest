@@ -78,7 +78,7 @@ def read_results(request: Request,
 
 
 @app.get("/register")
-def register(request: Request, openid_configuration: str, registration_token: str):
+def register(request: Request, openid_configuration: str, registration_token: str = ''):
     res = TestCategory(name='Dynamic Registration')
     res.results.append(TestResult('OpenId Config URL',
                                   openid_configuration or False,
