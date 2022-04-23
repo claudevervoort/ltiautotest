@@ -433,6 +433,89 @@ class MembershipService(dict):
 
 
 
+class User(dict):
+
+    @property
+    def id(self) -> str:
+        val = self.get('id')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['id'] = typed_val
+            return typed_val
+        return val
+
+
+    @id.setter
+    def id(self, value: str):
+        if isinstance(value, Enum):
+            self['id'] = value.value
+        else:
+            self['id'] = value
+
+
+    @property
+    def person_sourced_id(self) -> str:
+        val = self.get('person_sourced_id')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['person_sourced_id'] = typed_val
+            return typed_val
+        return val
+
+
+    @person_sourced_id.setter
+    def person_sourced_id(self, value: str):
+        if isinstance(value, Enum):
+            self['person_sourced_id'] = value.value
+        else:
+            self['person_sourced_id'] = value
+
+
+    @property
+    def family_name(self) -> str:
+        val = self.get('family_name')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['family_name'] = typed_val
+            return typed_val
+        return val
+
+
+    @family_name.setter
+    def family_name(self, value: str):
+        if isinstance(value, Enum):
+            self['family_name'] = value.value
+        else:
+            self['family_name'] = value
+
+
+    @property
+    def name(self) -> str:
+        val = self.get('name')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['name'] = typed_val
+            return typed_val
+        return val
+
+
+    @name.setter
+    def name(self, value: str):
+        if isinstance(value, Enum):
+            self['name'] = value.value
+        else:
+            self['name'] = value
+
+
+
 class LTIMessage(dict):
 
     @property
@@ -827,6 +910,26 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice'] = value.value
         else:
             self['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice'] = value
+
+
+    @property
+    def for_user(self) -> User:
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/for_user')
+        if issubclass(User, Enum):
+            return User(val)
+        if (isinstance(val, dict) and not isinstance(val, User)):
+            typed_val = User( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/for_user'] = typed_val
+            return typed_val
+        return val
+
+
+    @for_user.setter
+    def for_user(self, value: User):
+        if isinstance(value, Enum):
+            self['https://purl.imsglobal.org/spec/lti/claim/for_user'] = value.value
+        else:
+            self['https://purl.imsglobal.org/spec/lti/claim/for_user'] = value
 
 
 

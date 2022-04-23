@@ -17,7 +17,7 @@ from starlette.templating import Jinja2Templates
 from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List, Dict
 from datetime import datetime, timedelta, timezone
-from lti import LineItem, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, TimeSpan, add_coursenav_message
+from lti import LineItem, User, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, TimeSpan, add_coursenav_message
 from lti import Score, ActivityProgress, GradingProgress, Members, get_public_keyset, get_publickey_pem, const, registration, ltiservice_get, ltiservice_get_array, ltiservice_mut
 from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration, verify_11_oauth
 from robotest.test_results import TestCategory, TestResult
@@ -625,7 +625,14 @@ def test_and_show_results(request: Request, reg: ToolRegistration, message: LTIM
                                       True,
                                       message.target_link_uri))
         results.append(res)
-
+    elif message.message_type == const.subreview.msg_type:
+        print(type(message.for_user))
+        res = TestCategory(name='Submission Review launch')
+        res.results.append(TestResult('For user id is present',
+                                      type(message.for_user) is User and message.for_user.id,
+                                      True,
+                                      message.for_user.id if message.for_user else '-'))
+        results.append(res)
     results.append(test_ags(reg, message))
     results.append(test_nrps(reg, message))
     results.append(test_substitution_variables('Subsitution Variables (resourcelink)', {

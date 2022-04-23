@@ -36,6 +36,12 @@ models = {
         'context_memberships_url': [],
         'service_version': []
     },
+    'User': {
+        'id': [],
+        'person_sourced_id': [],
+        'family_name': [],
+        'name': []
+    },
     'LTIMessage': {
         "iss": [],
         "sub": [],
@@ -56,7 +62,8 @@ models = {
         "custom": ["https://purl.imsglobal.org/spec/lti/claim/custom", 'Custom'],
         "deep_linking_settings": ["https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings", 'DeeplinkSettings'],
         "grade_service": ['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint', 'GradeService'],
-        "membership_service": ["https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice", 'MembershipService']
+        "membership_service": ["https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice", 'MembershipService'],
+        "for_user": ["https://purl.imsglobal.org/spec/lti/claim/for_user", 'User']
     },
     'DeeplinkResponse': {
         "version": ["https://purl.imsglobal.org/spec/lti/claim/version", "str", "1.3.0"],
