@@ -1039,6 +1039,69 @@ class DeeplinkResponse(dict):
 
 
 
+class SubmissionReview(dict):
+
+    @property
+    def label(self) -> str:
+        val = self.get('label')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['label'] = typed_val
+            return typed_val
+        return val
+
+
+    @label.setter
+    def label(self, value: str):
+        if isinstance(value, Enum):
+            self['label'] = value.value
+        else:
+            self['label'] = value
+
+
+    @property
+    def url(self) -> str:
+        val = self.get('url')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['url'] = typed_val
+            return typed_val
+        return val
+
+
+    @url.setter
+    def url(self, value: str):
+        if isinstance(value, Enum):
+            self['url'] = value.value
+        else:
+            self['url'] = value
+
+
+    @property
+    def custom(self) -> Custom:
+        val = self.get('custom')
+        if issubclass(Custom, Enum):
+            return Custom(val)
+        if (isinstance(val, dict) and not isinstance(val, Custom)):
+            typed_val = Custom( **val )
+            self['custom'] = typed_val
+            return typed_val
+        return val
+
+
+    @custom.setter
+    def custom(self, value: Custom):
+        if isinstance(value, Enum):
+            self['custom'] = value.value
+        else:
+            self['custom'] = value
+
+
+
 class LineItem(dict):
 
     mime = 'application/vnd.ims.lis.v2.lineitem+json'
@@ -1131,6 +1194,26 @@ class LineItem(dict):
             self['tag'] = value.value
         else:
             self['tag'] = value
+
+
+    @property
+    def submissionReview(self) -> SubmissionReview:
+        val = self.get('submissionReview')
+        if issubclass(SubmissionReview, Enum):
+            return SubmissionReview(val)
+        if (isinstance(val, dict) and not isinstance(val, SubmissionReview)):
+            typed_val = SubmissionReview( **val )
+            self['submissionReview'] = typed_val
+            return typed_val
+        return val
+
+
+    @submissionReview.setter
+    def submissionReview(self, value: SubmissionReview):
+        if isinstance(value, Enum):
+            self['submissionReview'] = value.value
+        else:
+            self['submissionReview'] = value
 
 
     @property

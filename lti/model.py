@@ -72,6 +72,11 @@ models = {
         "deployment_id": ["https://purl.imsglobal.org/spec/lti/claim/deployment_id"],
         "content_items": ["https://purl.imsglobal.org/spec/lti-dl/claim/content_items", "List"]
     },
+    'SubmissionReview': {
+        'label': [],
+        'url': [],
+        'custom': ['', 'Custom']
+    },
     'LineItem': {
         'cls_const': {
             'mime': 'application/vnd.ims.lis.v2.lineitem+json',
@@ -83,6 +88,7 @@ models = {
         'label': [],
         'scoreMaximum': ['', 'float'],
         'tag': [],
+        'submissionReview': ['', 'SubmissionReview'],
         'resourceId': [],
         'resourceLinkId': [],
         'startDateTime': [],
