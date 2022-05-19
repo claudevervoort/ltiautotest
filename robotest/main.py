@@ -17,7 +17,7 @@ from starlette.templating import Jinja2Templates
 from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List, Dict
 from datetime import datetime, timedelta, timezone
-from lti import LineItem, User, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, TimeSpan, add_coursenav_message
+from lti import LineItem, SubmissionReview, User, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, TimeSpan, add_coursenav_message
 from lti import Score, ActivityProgress, GradingProgress, Members, SupportedMessage, get_public_keyset, get_publickey_pem, const, registration, ltiservice_get, ltiservice_get_array, ltiservice_mut
 from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration, verify_11_oauth
 from robotest.test_results import TestCategory, TestResult
@@ -295,7 +295,11 @@ def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(.
     return test_and_show_results(request, reg, message)
 
 
-def resource_link(name: str, message: LTIMessage, multiple: bool, iframe: bool = False, window: bool = False, points: float = None):
+def resource_link(name: str, message: LTIMessage, 
+                iframe: bool = False, 
+                window: bool = False, 
+                points: float = None,
+                subReview: SubmissionReview = None):
     rl = LTIResourceLink()
     rl.title = name
     rl.text = 'This is a description for {name}'.format(name=name)
@@ -303,61 +307,63 @@ def resource_link(name: str, message: LTIMessage, multiple: bool, iframe: bool =
     rl.url = '{base_url}/deeplink?p1={rid}'.format(
         base_url=base_url, rid=resource_id)
     rl.custom['resource_id'] = resource_id
-    rl.custom['multiple'] = str(
-        message.deep_linking_settings.accept_multiple and multiple)
+    rl.custom['multiple'] = str(False)
     rl.custom['lineitems_dl'] = message.grade_service.lineitems
     rl.custom['membership_dl'] = message.membership_service.context_memberships_url if 'membership_service' in message and 'context_memberships_url' in message.membership_service else ''
     if points:
+        rl.max_points = points
         due = datetime.now() + timedelta(weeks=2)
         rl.custom['max_points'] = str(rl.max_points)
         rl.custom['due_ts'] = f"{due.timestamp()}"
-        rl.max_points = 10.0
         rl.resource_id = resource_id
         rl.tag = 'zetag'
         rl.submission = TimeSpan()
         rl.submission.endDateTime = due.astimezone(timezone.utc).isoformat(timespec='seconds')
+        if subReview != None:
+            rl.line_item.submissionReview = subReview
+            rl.custom['subreview'] = 'Full' if subReview.url else 'Empty'
     if iframe:
         rl.iframe = DLIFrame()
         rl.iframe.height = 800
     if window:
         rl.window = DLWindow()
         rl.window.targetName = 'robotest-win'
-
     return rl
+
+def deepLinkingResponse(message, items = None):
+    dlresp = DeeplinkResponse()
+    if items:
+        dlresp.content_items+=items
+    dlresp.data = message.deep_linking_settings.data
+    dlresp.deployment_id = message.deployment_id
+    return dlresp
 
 
 def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
     today = datetime.now().strftime("%Y-%m-%d %H:%M")
-    dlresp0 = DeeplinkResponse()
-    dlresp0.data = message.deep_linking_settings.data
-    dlresp0.deployment_id = message.deployment_id
-    dlresp1 = DeeplinkResponse()
-    dlresp1.content_items.append(resource_link(
-        "Not graded (new win) " + today, message, False, False, True))
-    dlresp1.data = message.deep_linking_settings.data
-    dlresp1.deployment_id = message.deployment_id
-    dlresp2 = DeeplinkResponse()
-    dlresp2.content_items.append(resource_link(
-        "Graded (IFrame) " + today, message, False, True, True, 10.0))
-    dlresp2.deployment_id = message.deployment_id
-    dlresp3 = DeeplinkResponse()
-    dlresp3.content_items.append(resource_link(
-        "Graded (IFrame) " + today, message, True, True, True, 10.0))
-    dlresp3.content_items.append(resource_link(
-        "Not graded (new win) " + today, message, True, False, True))
-    dlresp3.deployment_id = message.deployment_id
+    notgraded_newwin = resource_link("Not graded (new win) " + today, message, False, True)
+    graded_iframe = resource_link("Graded (IFrame) " + today, message, True, True, 10.0)
+    graded_iframe_subreview_empty = resource_link("Graded with Sub. Review (IFrame) " + today, message, True, True, 10.0, SubmissionReview())
+    graded_newwin_subreview_full = resource_link("Graded with Sub. Review Full (new win) " + today, message, False, True, 20.0, SubmissionReview({'url':'{base_url}/subreview'.format(base_url=base_url), 'custom':{'action':'subreview','b':'2'}}))
 
-    return templates.TemplateResponse("deeplink_autopost.html", {
+    response = {
         "request": request,
         "return_url": message.deep_linking_settings.return_url,
-        "jwt_empty": reg.encode(dlresp0),
-        "jwt_single": reg.encode(dlresp1),
-        "jwt_single_graded": reg.encode(dlresp2),
-        "jwt_multiple": reg.encode(dlresp3),
+        "jwt_empty": reg.encode(deepLinkingResponse(message)),
+        "jwt_single": reg.encode(deepLinkingResponse(message, [notgraded_newwin])),
+        "jwt_single_graded": reg.encode(deepLinkingResponse(message, [graded_iframe])),
+        "jwt_single_graded_subreview": reg.encode(deepLinkingResponse(message, [graded_iframe_subreview_empty])),
+        "jwt_single_graded_subreview_full": reg.encode(deepLinkingResponse(message, [graded_newwin_subreview_full])),
         "name": message.name or 'No name!',
         'multiple': message.deep_linking_settings.accept_multiple,
         'gradable': message.deep_linking_settings.accept_lineitem == None or message.deep_linking_settings.accept_lineitem
-    })
+    }
+    notgraded_newwin.custom['multiple'] = str(message.deep_linking_settings.accept_multiple)
+    graded_iframe.custom['multiple'] = str(message.deep_linking_settings.accept_multiple)
+    graded_iframe_subreview_empty.custom['multiple'] = str(message.deep_linking_settings.accept_multiple)
+    graded_newwin_subreview_full.custom['multiple'] = str(message.deep_linking_settings.accept_multiple)
+    response['jwt_multiple'] = reg.encode(deepLinkingResponse(message, [notgraded_newwin, graded_iframe, graded_iframe_subreview_empty, graded_newwin_subreview_full]))
+    return templates.TemplateResponse("deeplink_autopost.html", response)
 
 
 @app.get('/dl')

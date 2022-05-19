@@ -22,11 +22,16 @@
     </div>
     <div class="centered" id="dlchoices">
         <a href="#" onclick="post('empty')" class="secondary">Nothing! (Cancel)</a>
-        <a href="#" onclick="post('single')" class="secondary">A single not graded LTI Link</a>
+        <a href="#" onclick="post('single')" class="secondary">A single not graded LTI Link (newwin)</a>
         <a href="#" onclick="post('single_graded')" class="secondary" {% if not gradable %}
             style="text-decoration: line-through;" {% endif %}>A single <b>graded</b> LTI Link</a>
+        <a href="#" onclick="post('single_graded_subreview')" class="secondary" {% if not gradable %}
+            style="text-decoration: line-through;" {% endif %}>A single <b>graded with submission review</b>LTI Link</a>
+        <a href="#" onclick="post('single_graded_subreview_full')" class="secondary" {% if not gradable %}
+            style="text-decoration: line-through;" {% endif %}>A single <b>graded with submission review full</b>LTI
+            Link</a>
         <a href="#" onclick="post('multiple')" class="primary" {% if not multiple %}
-            style="text-decoration: line-through;" {% endif %}> One of each please!</a>
+            style="text-decoration: line-through;" {% endif %}> Why choose? One of each please!</a>
     </div>
     <div class="centered">
         {% if multiple %}
@@ -44,6 +49,12 @@
     </form>
     <form id="single_graded" action="{{ return_url }}" method="post">
         <input type="hidden" name="JWT" value="{{ jwt_single_graded }}">
+    </form>
+    <form id="single_graded_subreview" action="{{ return_url }}" method="post">
+        <input type="hidden" name="JWT" value="{{ jwt_single_graded_subreview }}">
+    </form>
+    <form id="single_graded_subreview_full" action="{{ return_url }}" method="post">
+        <input type="hidden" name="JWT" value="{{ jwt_single_graded_subreview_full }}">
     </form>
     <form id="multiple" action="{{ return_url }}" method="post">
         <input type="hidden" name="JWT" value="{{ jwt_multiple }}">
