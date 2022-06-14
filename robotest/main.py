@@ -632,12 +632,21 @@ def test_and_show_results(request: Request, reg: ToolRegistration, message: LTIM
                                       message.target_link_uri))
         results.append(res)
     elif message.message_type == const.subreview.msg_type:
-        print(type(message.for_user))
         res = TestCategory(name='Submission Review launch')
         res.results.append(TestResult('For user id is present',
                                       type(message.for_user) is User and message.for_user.id,
                                       True,
                                       message.for_user.id if message.for_user else '-'))
+        if message.custom and 'subreview' in message.custom and message.custom['subreview'] == 'Full':
+            res.results.append(TestResult('Target link URI is the submission review URL',
+                                        message.target_link_uri == '{base_url}/subreview'.format(base_url=base_url), 
+                                        True,
+                                        message.target_link_uri))
+            res.results.append(TestResult('Custom parameters for subreview present',
+                                        'action' in message.custom and message.custom['action'] == 'subreview' and 'b' in message.custom and message.custom['b'] == '2',
+                                        True,
+                                        ''))
+
         results.append(res)
     results.append(test_ags(reg, message))
     results.append(test_nrps(reg, message))
