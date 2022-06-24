@@ -295,9 +295,9 @@ def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(.
     return test_and_show_results(request, reg, message)
 
 
-def resource_link(name: str, message: LTIMessage, 
-                iframe: bool = False, 
-                window: bool = False, 
+def resource_link(name: str, message: LTIMessage,
+                iframe: bool = False,
+                window: bool = False,
                 points: float = None,
                 subReview: SubmissionReview = None):
     rl = LTIResourceLink()
@@ -639,7 +639,7 @@ def test_and_show_results(request: Request, reg: ToolRegistration, message: LTIM
                                       message.for_user.id if message.for_user else '-'))
         if message.custom and 'subreview' in message.custom and message.custom['subreview'] == 'Full':
             res.results.append(TestResult('Target link URI is the submission review URL',
-                                        message.target_link_uri == '{base_url}/subreview'.format(base_url=base_url), 
+                                        message.target_link_uri == '{base_url}/subreview'.format(base_url=base_url),
                                         True,
                                         message.target_link_uri))
             res.results.append(TestResult('Custom parameters for subreview present',
