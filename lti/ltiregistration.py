@@ -54,6 +54,8 @@ def registration( lms: str, iss: str, client_id: str) -> ToolRegistration:
         return ToolRegistration(iss, client_id, iss+'/mod/lti/auth.php', iss+'/mod/lti/token.php', iss+'/mod/lti/certs.php')
     if (lms.lower() == 'd2l'):
         return ToolRegistration(iss, client_id, iss+'/d2l/lti/authenticate', 'https://auth.brightspace.com/core/connect/token', iss+'/d2l/.well-known/jwks', audience="https://api.brightspace.com/auth/token")
+    if (lms.lower() == 'sakai'):
+        return ToolRegistration(iss, client_id, iss+'/imsoidc/lti13/oidc_launch', iss+'/imsblis/lti13/token', iss+'/imsblis/lti13/keyset')
     return None
 
 def get_platform_config( url: str) -> PlatformOIDCConfig:
