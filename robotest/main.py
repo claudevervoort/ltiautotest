@@ -243,9 +243,11 @@ def oidc_init(request: Request,
               lti_message_hint: str = None,
               client_id: str = None,
               lms: str = 'moodle',
-              target_link_uri: str = None):
+              target_link_uri: str = None,
+              oidc_auth: str = None,
+              token_url: str = None):
     cookie = "LTI-" + str(random.randint(0, 9999))
-    reg = registration(lms, iss, client_id)
+    reg = registration(lms, iss, client_id, oidc_auth, token_url)
     state = {
         'r': reg.__dict__,
         'cookie': cookie
@@ -282,8 +284,10 @@ def oidc_init_post(request: Request,
                    lms: str = 'moodle',
                    target_link_uri: str = Form(...),
                    login_hint: str = Form(...),
-                   lti_message_hint: str = Form(...)):
-    return oidc_init(request, iss, login_hint, lti_message_hint, client_id or clientid, lms, target_link_uri)
+                   lti_message_hint: str = Form(...),
+                   oidc_auth = None,
+                   token_url = None):
+    return oidc_init(request, iss, login_hint, lti_message_hint, client_id or clientid, lms, target_link_uri, oidcauth, tokenurl)
 
 
 @app.post("/oidc/launch")
@@ -308,7 +312,7 @@ def resource_link(name: str, message: LTIMessage,
         base_url=base_url, rid=resource_id)
     rl.custom['resource_id'] = resource_id
     rl.custom['multiple'] = str(False)
-    rl.custom['lineitems_dl'] = message.grade_service.lineitems
+    rl.custom['lineitems_dl'] = message.grade_service.lineitems if message.grade_service else ''
     rl.custom['membership_dl'] = message.membership_service.context_memberships_url if 'membership_service' in message and 'context_memberships_url' in message.membership_service else ''
     if points:
         rl.max_points = points
@@ -634,9 +638,9 @@ def test_and_show_results(request: Request, reg: ToolRegistration, message: LTIM
     elif message.message_type == const.subreview.msg_type:
         res = TestCategory(name='Submission Review launch')
         res.results.append(TestResult('For user id is present',
-                                      type(message.for_user) is User and message.for_user.id,
+                                      type(message.for_user) is User and message.for_user.user_id,
                                       True,
-                                      message.for_user.id if message.for_user else '-'))
+                                      message.for_user.user_id if message.for_user else '-'))
         if message.custom and 'subreview' in message.custom and message.custom['subreview'] == 'Full':
             res.results.append(TestResult('Target link URI is the submission review URL',
                                         message.target_link_uri == '{base_url}/subreview'.format(base_url=base_url),

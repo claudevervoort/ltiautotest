@@ -436,43 +436,63 @@ class MembershipService(dict):
 class User(dict):
 
     @property
-    def id(self) -> str:
-        val = self.get('id')
+    def user_id(self) -> str:
+        val = self.get('user_id')
         if issubclass(str, Enum):
             return str(val)
         if (isinstance(val, dict) and not isinstance(val, str)):
             typed_val = str( **val )
-            self['id'] = typed_val
+            self['user_id'] = typed_val
             return typed_val
         return val
 
 
-    @id.setter
-    def id(self, value: str):
+    @user_id.setter
+    def user_id(self, value: str):
         if isinstance(value, Enum):
-            self['id'] = value.value
+            self['user_id'] = value.value
         else:
-            self['id'] = value
+            self['user_id'] = value
 
 
     @property
-    def person_sourced_id(self) -> str:
-        val = self.get('person_sourced_id')
+    def person_sourcedid(self) -> str:
+        val = self.get('person_sourcedid')
         if issubclass(str, Enum):
             return str(val)
         if (isinstance(val, dict) and not isinstance(val, str)):
             typed_val = str( **val )
-            self['person_sourced_id'] = typed_val
+            self['person_sourcedid'] = typed_val
             return typed_val
         return val
 
 
-    @person_sourced_id.setter
-    def person_sourced_id(self, value: str):
+    @person_sourcedid.setter
+    def person_sourcedid(self, value: str):
         if isinstance(value, Enum):
-            self['person_sourced_id'] = value.value
+            self['person_sourcedid'] = value.value
         else:
-            self['person_sourced_id'] = value
+            self['person_sourcedid'] = value
+
+
+    @property
+    def given_name(self) -> str:
+        val = self.get('given_name')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['given_name'] = typed_val
+            return typed_val
+        return val
+
+
+    @given_name.setter
+    def given_name(self, value: str):
+        if isinstance(value, Enum):
+            self['given_name'] = value.value
+        else:
+            self['given_name'] = value
 
 
     @property
@@ -513,6 +533,26 @@ class User(dict):
             self['name'] = value.value
         else:
             self['name'] = value
+
+
+    @property
+    def email(self) -> str:
+        val = self.get('email')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['email'] = typed_val
+            return typed_val
+        return val
+
+
+    @email.setter
+    def email(self, value: str):
+        if isinstance(value, Enum):
+            self['email'] = value.value
+        else:
+            self['email'] = value
 
 
 

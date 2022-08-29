@@ -37,10 +37,12 @@ models = {
         'service_version': []
     },
     'User': {
-        'id': [],
-        'person_sourced_id': [],
+        'user_id': [],
+        'person_sourcedid': [],
+        'given_name': [],
         'family_name': [],
-        'name': []
+        'name': [],
+        'email': []
     },
     'LTIMessage': {
         "iss": [],

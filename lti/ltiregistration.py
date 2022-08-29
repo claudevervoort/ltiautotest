@@ -49,13 +49,13 @@ class ToolRegistration(object):
         return jwt.encode(claims, get_webkey(), algorithm='RS256', headers={'kid': get_webkey()['kid']})
 
 
-def registration( lms: str, iss: str, client_id: str) -> ToolRegistration:
+def registration( lms: str, iss: str, client_id: str, oidc_auth : str = None, token_url: str = None) -> ToolRegistration:
     if (lms.lower() == 'moodle'):
         return ToolRegistration(iss, client_id, iss+'/mod/lti/auth.php', iss+'/mod/lti/token.php', iss+'/mod/lti/certs.php')
     if (lms.lower() == 'd2l'):
         return ToolRegistration(iss, client_id, iss+'/d2l/lti/authenticate', 'https://auth.brightspace.com/core/connect/token', iss+'/d2l/.well-known/jwks', audience="https://api.brightspace.com/auth/token")
     if (lms.lower() == 'sakai'):
-        return ToolRegistration(iss, client_id, iss+'/imsoidc/lti13/oidc_auth', iss+'/imsblis/lti13/token', iss+'/imsblis/lti13/keyset')
+        return ToolRegistration(iss, client_id, iss+'/imsoidc/lti13/oidc_auth', iss+'/imsblis/lti13/token/'+token_url, iss+'/imsblis/lti13/keyset')
     return None
 
 def get_platform_config( url: str) -> PlatformOIDCConfig:
