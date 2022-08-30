@@ -8,6 +8,7 @@ import json
 import hashlib
 from .const import const
 import uuid
+from urllib.parse import urlencode
 
 TOKEN_TTL = 300
 
@@ -48,15 +49,36 @@ class ToolRegistration(object):
             claims['exp'] = int(datetime.now().timestamp()) + TOKEN_TTL
         return jwt.encode(claims, get_webkey(), algorithm='RS256', headers={'kid': get_webkey()['kid']})
 
+def concat(base: str, path: str) -> str:
+    if path.startswith('http'):
+        return path
+    return base + path
 
-def registration( lms: str, iss: str, client_id: str, oidc_auth : str = None, token_url: str = None) -> ToolRegistration:
-    if (lms.lower() == 'moodle'):
+def registration( lms: str, iss: str, client_id: str, oidc_auth : str = None, token_url: str = None, keyset_url: str = None) -> ToolRegistration:
+    if lms.lower() == 'moodle':
         return ToolRegistration(iss, client_id, iss+'/mod/lti/auth.php', iss+'/mod/lti/token.php', iss+'/mod/lti/certs.php')
-    if (lms.lower() == 'd2l'):
+    if lms.lower() == 'd2l':
         return ToolRegistration(iss, client_id, iss+'/d2l/lti/authenticate', 'https://auth.brightspace.com/core/connect/token', iss+'/d2l/.well-known/jwks', audience="https://api.brightspace.com/auth/token")
-    if (lms.lower() == 'sakai'):
+    if lms.lower().startswith('sakai') and token_url:
         return ToolRegistration(iss, client_id, iss+'/imsoidc/lti13/oidc_auth', iss+'/imsblis/lti13/token/'+token_url, iss+'/imsblis/lti13/keyset')
+    if iss and token_url and oidc_auth and keyset_url:
+        return ToolRegistration(iss, client_id, concat(iss, oidc_auth), concat(iss, token_url), concat(iss, keyset_url))
     return None
+
+
+def trim(iss: str, url: str):
+    if url.startswith(iss):
+        return url[len(iss):]
+    return url
+
+def append_regextra( login_uri: str, lms: str, platform_config: PlatformOIDCConfig) -> str:
+    """Append bits to login reg to be able to reconstruct the registration (since this app has no db)"""
+    if lms.lower().startswith('sakai'):
+        return f"{login_uri}&lms=sakai&token_url={platform_config.token_endpoint.split('/')[-1]}"
+    elif lms.lower() == 'generic':
+        iss = platform_config.issuer
+        return f"{login_uri}&lms=generic&oidc_auth={urlencode(trim(iss, platform_config.authorization_endpoint))}&token_url={urlencode(trim(iss, platform_config.token_endpoint))}&keyset_url={urlencode(trim(iss, platform_config.jwks_uri))}"
+    return f"{login_uri}&lms={lms}"
 
 def get_platform_config( url: str) -> PlatformOIDCConfig:
     headers = {

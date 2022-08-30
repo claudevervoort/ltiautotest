@@ -19,7 +19,7 @@ from typing import List, Dict
 from datetime import datetime, timedelta, timezone
 from lti import LineItem, SubmissionReview, User, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, TimeSpan, add_coursenav_message
 from lti import Score, ActivityProgress, GradingProgress, Members, SupportedMessage, get_public_keyset, get_publickey_pem, const, registration, ltiservice_get, ltiservice_get_array, ltiservice_mut
-from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration, verify_11_oauth
+from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration, verify_11_oauth, append_regextra
 from robotest.test_results import TestCategory, TestResult
 #
 base_url = os.environ['ROBOTEST_WWW'] if 'ROBOTEST_WWW' in os.environ else 'https://robotest.theedtech.dev'
@@ -78,7 +78,7 @@ def read_results(request: Request,
 
 
 @app.get("/register")
-def register(request: Request, openid_configuration: str, registration_token: str = ''):
+def register(request: Request, openid_configuration: str, registration_token: str = '', lms: str = None):
     res = TestCategory(name='Dynamic Registration')
     res.results.append(TestResult('OpenId Config URL',
                                   openid_configuration or False,
@@ -109,7 +109,7 @@ def register(request: Request, openid_configuration: str, registration_token: st
                                               platform_config.token_endpoint or False,
                                               True,
                                               platform_config.token_endpoint))
-                lms_type = platform_config.lti_config.product_family_code
+                lms_type = lms if lms else platform_config.lti_config.product_family_code
                 res.results.append(TestResult('Platform product found',
                                               lms_type or False,
                                               True,
@@ -150,6 +150,8 @@ def register(request: Request, openid_configuration: str, registration_token: st
 
                 init_login = str(request.url.replace(
                     path='/oidc/init', query='dynreg=true', scheme='https'))
+                if lms_type:
+                    init_login = append_regextra(init_login, lms_type, platform_config)
                 redirect_uri = str(request.url.replace(
                     path='/oidc/launch', query='', scheme='https'))
                 tool_conf = base_tool_oidc_conf(name='Robotest',
@@ -245,9 +247,10 @@ def oidc_init(request: Request,
               lms: str = 'moodle',
               target_link_uri: str = None,
               oidc_auth: str = None,
-              token_url: str = None):
+              token_url: str = None,
+              jwks_url: str = None):
     cookie = "LTI-" + str(random.randint(0, 9999))
-    reg = registration(lms, iss, client_id, oidc_auth, token_url)
+    reg = registration(lms, iss, client_id, oidc_auth, token_url, jwks_url)
     state = {
         'r': reg.__dict__,
         'cookie': cookie
