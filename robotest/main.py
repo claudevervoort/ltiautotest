@@ -290,7 +290,7 @@ def oidc_init_post(request: Request,
                    lti_message_hint: str = Form(...),
                    oidc_auth = None,
                    token_url = None):
-    return oidc_init(request, iss, login_hint, lti_message_hint, client_id or clientid, lms, target_link_uri, oidcauth, tokenurl)
+    return oidc_init(request, iss, login_hint, lti_message_hint, client_id or clientid, lms, target_link_uri, oidc_auth, token_url)
 
 
 @app.post("/oidc/launch")
