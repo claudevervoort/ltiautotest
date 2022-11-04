@@ -1,5 +1,6 @@
 import sys
 import os
+from unittest import result
 
 sys.path.extend([
     os.path.abspath('../')])
@@ -20,6 +21,7 @@ from datetime import datetime, timedelta, timezone
 from lti import LineItem, SubmissionReview, User, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, TimeSpan, add_coursenav_message
 from lti import Score, ActivityProgress, GradingProgress, Members, SupportedMessage, get_public_keyset, get_publickey_pem, const, registration, ltiservice_get, ltiservice_get_array, ltiservice_mut
 from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration, verify_11_oauth, append_regextra
+from lti import DeepLinkingItem, DeepLinkingItems
 from robotest.test_results import TestCategory, TestResult
 #
 base_url = os.environ['ROBOTEST_WWW'] if 'ROBOTEST_WWW' in os.environ else 'https://robotest.theedtech.dev'
@@ -571,6 +573,15 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
     return res
 
 
+def test_dl(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
+    res = TestCategory('Deep Linking Service')
+    contextitems = ltiservice_get(reg, DeepLinkingItems, message.deeplink_service.contextitems)
+    res.results.append(TestResult('Deep Linking Items present and queriable',
+                                    True,
+                                    True,
+                                    f'Robotest is used {len(contextitems.items)} times in this course.'))
+    return res
+
 def test_substitution_variables(category: str, sub_variables: Dict[str, str], custom_params: Dict[str, str]):
     res = TestCategory(category)
     for key in sub_variables:
@@ -657,6 +668,8 @@ def test_and_show_results(request: Request, reg: ToolRegistration, message: LTIM
         results.append(res)
     results.append(test_ags(reg, message))
     results.append(test_nrps(reg, message))
+    if message.deeplink_service.contextitems:
+        results.append(test_dl(reg, message))
     results.append(test_substitution_variables('Subsitution Variables (resourcelink)', {
                    **context_sub_variables, **link_sub_variables}, message.custom))
     success = all((map(lambda r: r.success, results)))

@@ -27,6 +27,10 @@ models = {
         "text": [],
         "data": []
     },
+    'DeepLinkService': {
+        'contextitems': [],
+        'scope':['', 'List[str]']
+    },
     'GradeService': {
         'lineitem': [],
         'lineitems': [],
@@ -64,6 +68,7 @@ models = {
         "custom": ["https://purl.imsglobal.org/spec/lti/claim/custom", 'Custom'],
         "deep_linking_settings": ["https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings", 'DeeplinkSettings'],
         "grade_service": ['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint', 'GradeService'],
+        "deeplink_service": ['https://purl.imsglobal.org/spec/lti-dl/claim/endpoint', 'DeepLinkService'],
         "membership_service": ["https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice", 'MembershipService'],
         "for_user": ["https://purl.imsglobal.org/spec/lti/claim/for_user", 'User']
     },
@@ -185,6 +190,33 @@ models = {
         },
         'id': [],
         'members': ['', 'List[Member]']
+    },
+    'DeepLinkingItem': {
+        'cls_const': {
+            'mime': 'application/vnd.1edtech.lti.deeplinkingitem+json',
+            'read_scope': 'https://purl.imsglobal.org/spec/lti/scope/deeplinkingitem.readonly',
+            'write_scope': 'https://purl.imsglobal.org/spec/lti/scope/deeplinkingitem',
+        },
+        'type': [],
+        'title': [],
+        'text': [],
+        'url': [],
+        'custom': ['', 'Dict[str,str]'],
+        'line_item_id': ['lineItemId'],
+        'available': ['', 'TimeSpan'],
+        'submission': ['', 'TimeSpan'],
+        'iframe': ['', 'DLIFrame'],
+        'window': ['', 'DLWindow']
+    },
+    'DeepLinkingItems': {
+        'cls_const': {
+            'mime': 'application/vnd.1edtech.lti.deeplinkingitems+json',
+            'read_scope': 'https://purl.imsglobal.org/spec/lti/scope/deeplinkingitem.readonly',
+            'write_scope': 'https://purl.imsglobal.org/spec/lti/scope/deeplinkingitem',
+            'collection_attribute': 'items'
+        },
+        'id': [],
+        'items': ['', 'List[DeepLinkingItem]']
     },
     'SupportedMessage': {
         'type': [],
