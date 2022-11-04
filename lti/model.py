@@ -29,7 +29,10 @@ models = {
     },
     'DeepLinkService': {
         'contextitems': [],
+<<<<<<< HEAD
         'item': [],
+=======
+>>>>>>> 7c61d88 (support for deep link service)
         'scope':['', 'List[str]']
     },
     'GradeService': {
