@@ -585,7 +585,7 @@ def test_dl(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
         if item:
             colors = ['blue', 'white', 'red']
             color = item.custom.get('color', '')
-            next_color = colors[colors.index(color)%len(colors)] if color in colors else 'blue'
+            next_color = colors[(colors.index(color)+1)%len(colors)] if color in colors else 'blue'
             item.custom['color'] = next_color
             ltiservice_mut(reg, message.deeplink_service.item, item, True)
             updated_item = ltiservice_get(reg, DeepLinkingItem, message.deeplink_service.item)
