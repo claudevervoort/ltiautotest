@@ -580,6 +580,30 @@ def test_dl(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                                     True,
                                     True,
                                     f'Robotest is used {len(contextitems.items)} times in this course.'))
+    if message.deeplink_service.item:
+        item = ltiservice_get(reg, DeepLinkingItem, message.deeplink_service.item)
+        if item:
+            colors = ['blue', 'white', 'red']
+            color = item.custom.get('color', '')
+            next_color = colors[colors.index(color)%len(colors)] if color in colors else 'blue'
+            item.custom['color'] = next_color
+            ltiservice_mut(reg, message.deeplink_service.item, item, True)
+            updated_item = ltiservice_get(reg, DeepLinkingItem, message.deeplink_service.item)
+            res.results.append(TestResult('Deep Linking Item present and queriable',
+                                    True,
+                                    True,
+                                    f"The current color of this link is <span style='color: {color}'>{color}</span>"))
+            res.results.append(TestResult('Deep Linking Item updated',
+                                    updated_item.custom.get('color','') == next_color,
+                                    True,
+                                    f"The next color of this link is <span style='color: {next_color}'>{next_color}</span>"))
+        else:
+            res.results.append(TestResult('Deep Linking Item present and queriable',
+                                    False,
+                                    True,
+                                    f"No item loaded"))
+
+
     return res
 
 def test_substitution_variables(category: str, sub_variables: Dict[str, str], custom_params: Dict[str, str]):

@@ -356,6 +356,26 @@ class DeepLinkService(dict):
 
 
     @property
+    def item(self) -> str:
+        val = self.get('item')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['item'] = typed_val
+            return typed_val
+        return val
+
+
+    @item.setter
+    def item(self, value: str):
+        if isinstance(value, Enum):
+            self['item'] = value.value
+        else:
+            self['item'] = value
+
+
+    @property
     def scope(self) -> List[str]:
         if not 'scope' in self:
             self['scope'] = []
