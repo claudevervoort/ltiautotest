@@ -7,7 +7,7 @@ certifi==2019.9.11
 cffi==1.12.3
 chardet==3.0.4
 Click==7.0
-cryptography==3.4.7
+cryptography==39.0.1
 ecdsa==0.13.3
 fastapi==0.54.0
 future==0.17.1
