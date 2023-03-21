@@ -162,6 +162,20 @@ models = {
         'iframe': ['', 'DLIFrame'],
         'window': ['', 'DLWindow']
     },
+    'DLHTMLFragment': {
+        'type': ['', 'str', 'html'],
+        'title': [],
+        'text': [],
+        'html': []
+    },
+    'DLImage': {
+        'type': ['', 'str', 'image'],
+        'title': [],
+        'text': [],
+        'url': [],
+        'width': ['', 'float'],
+        'height': ['', 'float']
+    },
     'MemberStatus': ('Active', 'Inactive', 'Deleted'),
     'Member': {
         'status': ['', 'MemberStatus'],
