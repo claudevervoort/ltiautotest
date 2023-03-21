@@ -2059,6 +2059,228 @@ class LTIResourceLink(dict):
 
 
 
+class DLHTMLFragment(dict):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+        if not self.get('type'):
+            self['type'] = 'html'
+
+
+    @property
+    def type(self) -> str:
+        val = self.get('type')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['type'] = typed_val
+            return typed_val
+        return val
+
+
+    @type.setter
+    def type(self, value: str):
+        if isinstance(value, Enum):
+            self['type'] = value.value
+        else:
+            self['type'] = value
+
+
+    @property
+    def title(self) -> str:
+        val = self.get('title')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['title'] = typed_val
+            return typed_val
+        return val
+
+
+    @title.setter
+    def title(self, value: str):
+        if isinstance(value, Enum):
+            self['title'] = value.value
+        else:
+            self['title'] = value
+
+
+    @property
+    def text(self) -> str:
+        val = self.get('text')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['text'] = typed_val
+            return typed_val
+        return val
+
+
+    @text.setter
+    def text(self, value: str):
+        if isinstance(value, Enum):
+            self['text'] = value.value
+        else:
+            self['text'] = value
+
+
+    @property
+    def html(self) -> str:
+        val = self.get('html')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['html'] = typed_val
+            return typed_val
+        return val
+
+
+    @html.setter
+    def html(self, value: str):
+        if isinstance(value, Enum):
+            self['html'] = value.value
+        else:
+            self['html'] = value
+
+
+
+class DLImage(dict):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+        if not self.get('type'):
+            self['type'] = 'image'
+
+
+    @property
+    def type(self) -> str:
+        val = self.get('type')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['type'] = typed_val
+            return typed_val
+        return val
+
+
+    @type.setter
+    def type(self, value: str):
+        if isinstance(value, Enum):
+            self['type'] = value.value
+        else:
+            self['type'] = value
+
+
+    @property
+    def title(self) -> str:
+        val = self.get('title')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['title'] = typed_val
+            return typed_val
+        return val
+
+
+    @title.setter
+    def title(self, value: str):
+        if isinstance(value, Enum):
+            self['title'] = value.value
+        else:
+            self['title'] = value
+
+
+    @property
+    def text(self) -> str:
+        val = self.get('text')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['text'] = typed_val
+            return typed_val
+        return val
+
+
+    @text.setter
+    def text(self, value: str):
+        if isinstance(value, Enum):
+            self['text'] = value.value
+        else:
+            self['text'] = value
+
+
+    @property
+    def url(self) -> str:
+        val = self.get('url')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['url'] = typed_val
+            return typed_val
+        return val
+
+
+    @url.setter
+    def url(self, value: str):
+        if isinstance(value, Enum):
+            self['url'] = value.value
+        else:
+            self['url'] = value
+
+
+    @property
+    def width(self) -> float:
+        val = self.get('width')
+        if issubclass(float, Enum):
+            return float(val)
+        if (isinstance(val, dict) and not isinstance(val, float)):
+            typed_val = float( **val )
+            self['width'] = typed_val
+            return typed_val
+        return val
+
+
+    @width.setter
+    def width(self, value: float):
+        if isinstance(value, Enum):
+            self['width'] = value.value
+        else:
+            self['width'] = value
+
+
+    @property
+    def height(self) -> float:
+        val = self.get('height')
+        if issubclass(float, Enum):
+            return float(val)
+        if (isinstance(val, dict) and not isinstance(val, float)):
+            typed_val = float( **val )
+            self['height'] = typed_val
+            return typed_val
+        return val
+
+
+    @height.setter
+    def height(self, value: float):
+        if isinstance(value, Enum):
+            self['height'] = value.value
+        else:
+            self['height'] = value
+
+
+
 
 class MemberStatus(Enum):
 
