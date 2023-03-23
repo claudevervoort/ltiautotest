@@ -149,6 +149,9 @@ models = {
     'DLWindow': {
         'targetName': []
     },
+    'DLEmbed': {
+        'html': []
+    },
     'TimeSpan': {
         'startDateTime': [],
         'endDateTime': []
@@ -181,6 +184,16 @@ models = {
         'url': [],
         'width': ['', 'float'],
         'height': ['', 'float']
+    },
+    'DLLink': {
+        'type': ['', 'str', 'link'],
+        'title': [],
+        'text': [],
+        'url': [],
+        'embed': ['', 'DLEmbed'],
+        'window': ['', 'DLWindow'],
+        'embed': ['', 'DLEmbed'],
+        'iframe': ['', 'DLIFrame']
     },
     'MemberStatus': ('Active', 'Inactive', 'Deleted'),
     'Member': {

@@ -18,7 +18,7 @@ from starlette.templating import Jinja2Templates
 from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List, Dict
 from datetime import datetime, timedelta, timezone
-from lti import LineItem, SubmissionReview, User, ToolRegistration, LTIMessage, LTIResourceLink, DLImage, DLHTMLFragment, DeeplinkResponse, DLIFrame, DLWindow, TimeSpan, add_coursenav_message
+from lti import LineItem, SubmissionReview, User, ToolRegistration, LTIMessage, LTIResourceLink, DLImage, DLHTMLFragment, DeeplinkResponse, DLIFrame, DLWindow, TimeSpan, DLLink, add_coursenav_message
 from lti import Score, ActivityProgress, GradingProgress, Members, SupportedMessage, get_public_keyset, get_publickey_pem, const, registration, ltiservice_get, ltiservice_get_array, ltiservice_mut
 from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration, verify_11_oauth, append_regextra
 from lti import DeepLinkingItem, DeepLinkingItems
@@ -359,11 +359,17 @@ def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
     image.url = 'https://robotest.theedtech.dev/assets/robotest_logo.png'
     image.width = 50
     image.height = 50
+    link = DLLink()
+    link.url = 'https://robotest.theedtech.dev'
+    link.title = 'Robotest Home'
+    link.window = DLWindow()
+    link.window.targetName = 'robotest_win' 
     htmlFragment = DLHTMLFragment()
     htmlFragment.title = 'Robotest Fragment'
     htmlFragment.html = '''<script>alert('Oops! Bad Robot')</script>
-        <a href='https://robotest.cengage,com' onclick='window.open("Don't let the Bad Robot wake up")'>
-        <img src='https://robotest.theedtech.dev/assets/robotest_logo.png'> Fragment</a>'''
+        <a href='https://robotest.theedtech.dev' onclick='window.open("Don't let the Bad Robot wake up")'>
+        <img src='https://robotest.theedtech.dev/assets/robotest_logo.png'> This is an <em>HTML Fragment</em>.</a>
+        <p>It contains some JS popup code,  good if you don't see it!</p>'''
     response = {
         "request": request,
         "return_url": message.deep_linking_settings.return_url,
@@ -374,6 +380,7 @@ def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
         "jwt_single_graded_subreview_full": reg.encode(deepLinkingResponse(message, [graded_newwin_subreview_full])),
         "jwt_image": reg.encode(deepLinkingResponse(message, [image])),
         "jwt_embed": reg.encode(deepLinkingResponse(message, [htmlFragment])),
+        "jwt_link": reg.encode(deepLinkingResponse(message, [link])),
         "name": message.name or 'No name!',
         'multiple': message.deep_linking_settings.accept_multiple,
         'gradable': message.deep_linking_settings.accept_lineitem == None or message.deep_linking_settings.accept_lineitem,

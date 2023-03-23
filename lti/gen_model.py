@@ -1778,6 +1778,29 @@ class DLWindow(dict):
 
 
 
+class DLEmbed(dict):
+
+    @property
+    def html(self) -> str:
+        val = self.get('html')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['html'] = typed_val
+            return typed_val
+        return val
+
+
+    @html.setter
+    def html(self, value: str):
+        if isinstance(value, Enum):
+            self['html'] = value.value
+        else:
+            self['html'] = value
+
+
+
 class TimeSpan(dict):
 
     @property
@@ -2278,6 +2301,157 @@ class DLImage(dict):
             self['height'] = value.value
         else:
             self['height'] = value
+
+
+
+class DLLink(dict):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+        if not self.get('type'):
+            self['type'] = 'link'
+
+
+    @property
+    def type(self) -> str:
+        val = self.get('type')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['type'] = typed_val
+            return typed_val
+        return val
+
+
+    @type.setter
+    def type(self, value: str):
+        if isinstance(value, Enum):
+            self['type'] = value.value
+        else:
+            self['type'] = value
+
+
+    @property
+    def title(self) -> str:
+        val = self.get('title')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['title'] = typed_val
+            return typed_val
+        return val
+
+
+    @title.setter
+    def title(self, value: str):
+        if isinstance(value, Enum):
+            self['title'] = value.value
+        else:
+            self['title'] = value
+
+
+    @property
+    def text(self) -> str:
+        val = self.get('text')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['text'] = typed_val
+            return typed_val
+        return val
+
+
+    @text.setter
+    def text(self, value: str):
+        if isinstance(value, Enum):
+            self['text'] = value.value
+        else:
+            self['text'] = value
+
+
+    @property
+    def url(self) -> str:
+        val = self.get('url')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['url'] = typed_val
+            return typed_val
+        return val
+
+
+    @url.setter
+    def url(self, value: str):
+        if isinstance(value, Enum):
+            self['url'] = value.value
+        else:
+            self['url'] = value
+
+
+    @property
+    def embed(self) -> DLEmbed:
+        val = self.get('embed')
+        if issubclass(DLEmbed, Enum):
+            return DLEmbed(val)
+        if (isinstance(val, dict) and not isinstance(val, DLEmbed)):
+            typed_val = DLEmbed( **val )
+            self['embed'] = typed_val
+            return typed_val
+        return val
+
+
+    @embed.setter
+    def embed(self, value: DLEmbed):
+        if isinstance(value, Enum):
+            self['embed'] = value.value
+        else:
+            self['embed'] = value
+
+
+    @property
+    def window(self) -> DLWindow:
+        val = self.get('window')
+        if issubclass(DLWindow, Enum):
+            return DLWindow(val)
+        if (isinstance(val, dict) and not isinstance(val, DLWindow)):
+            typed_val = DLWindow( **val )
+            self['window'] = typed_val
+            return typed_val
+        return val
+
+
+    @window.setter
+    def window(self, value: DLWindow):
+        if isinstance(value, Enum):
+            self['window'] = value.value
+        else:
+            self['window'] = value
+
+
+    @property
+    def iframe(self) -> DLIFrame:
+        val = self.get('iframe')
+        if issubclass(DLIFrame, Enum):
+            return DLIFrame(val)
+        if (isinstance(val, dict) and not isinstance(val, DLIFrame)):
+            typed_val = DLIFrame( **val )
+            self['iframe'] = typed_val
+            return typed_val
+        return val
+
+
+    @iframe.setter
+    def iframe(self, value: DLIFrame):
+        if isinstance(value, Enum):
+            self['iframe'] = value.value
+        else:
+            self['iframe'] = value
 
 
 
