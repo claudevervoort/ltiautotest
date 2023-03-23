@@ -48,6 +48,8 @@
             style="text-decoration: line-through;" {% endif %}>HTML embed image with Bad Robot JS</a>
         <a href="#" onclick="post('image')" class="secondary" {% if not 'htmlFragment' in types %}
             style="text-decoration: line-through;" {% endif %}>The Bot icon</a>
+        <a href="#" onclick="post('link')" class="secondary" {% if not 'link' in types %}
+            style="text-decoration: line-through;" {% endif %}>Weblink</a>
     </div>
     <form id="empty" action="{{ return_url }}" method="post">
         <input type="hidden" name="JWT" value="{{ empty }}">
@@ -72,6 +74,9 @@
     </form>
     <form id="image" action="{{ return_url }}" method="post">
         <input type="hidden" name="JWT" value="{{ jwt_image }}">
+    </form>
+    <form id="link" action="{{ return_url }}" method="post">
+        <input type="hidden" name="JWT" value="{{ jwt_link }}">
     </form>
 
 </body>
