@@ -1,11 +1,14 @@
 aiofiles==0.4.0
+anyio==3.6.2
 asgiref==3.3.4
 asn1crypto==1.0.1
 autopep8==1.4.4
 certifi==2019.9.11
 chardet==3.0.4
+charset-normalizer==2.1.1
 Click==7.0
 cryptography==3.4.7
+dill==0.3.6
 ecdsa==0.13.3
 future==0.17.1
 h11==0.8.1
@@ -16,6 +19,7 @@ Jinja2==2.11.3
 lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
+platformdirs==2.5.2
 pyasn1==0.4.7
 pycodestyle==2.5.0
 pycparser==2.19
