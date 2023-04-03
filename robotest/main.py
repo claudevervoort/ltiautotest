@@ -16,8 +16,7 @@ from starlette.requests import Request
 from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
-from typing import List, Dict, Union
-from typing_extensions import Annotated
+from typing import List, Dict
 from datetime import datetime, timedelta, timezone
 from lti import LineItem, SubmissionReview, User, ToolRegistration, LTIMessage, LTIResourceLink, DLImage, DLHTMLFragment, DeeplinkResponse, DLIFrame, DLWindow, TimeSpan, DLLink, add_coursenav_message
 from lti import Score, ActivityProgress, GradingProgress, Members, SupportedMessage, get_public_keyset, get_publickey_pem, const, registration, ltiservice_get, ltiservice_get_array, ltiservice_mut
