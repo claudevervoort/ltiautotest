@@ -15,7 +15,8 @@ from starlette.requests import Request
 from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
 from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
-from typing import List, Dict
+from typing import List, Dict, Union
+from typing_extensions import Annotated
 from datetime import datetime, timedelta, timezone
 from lti import LineItem, SubmissionReview, User, ToolRegistration, LTIMessage, LTIResourceLink, DLImage, DLHTMLFragment, DeeplinkResponse, DLIFrame, DLWindow, TimeSpan, DLLink, add_coursenav_message
 from lti import Score, ActivityProgress, GradingProgress, Members, SupportedMessage, get_public_keyset, get_publickey_pem, const, registration, ltiservice_get, ltiservice_get_array, ltiservice_mut
@@ -48,8 +49,17 @@ link_sub_variables = {
 
 @app.get("/")
 def read_root(request: Request):
-    return templates.TemplateResponse("moodleinstructions.html", {"request": request, "base_url": base_url, "custom_params": {**context_sub_variables, **link_sub_variables}})
-
+    res = templates.TemplateResponse("moodleinstructions.html",
+        {"request": request,
+         "base_url": base_url,
+         "custom_params": {**context_sub_variables, **link_sub_variables},
+         "cookie_fp_lax": request.cookies.get('robotest_fp_lax'),
+         "cookie_fp_none": request.cookies.get('robotest_fp_none'),
+         "cookie_tp_none": request.cookies.get('robotest_tp_none'),
+        })
+    res.set_cookie(key="robotest_fp_lax", value="firstparty_lax", secure=True, httponly=True, samesite='lax')
+    res.set_cookie(key="robotest_fp_none", value="firstparty_none", secure=True, httponly=True, samesite='none')
+    return res
 
 @app.get("/broken")
 def read_broken(request: Request):
@@ -276,8 +286,9 @@ def oidc_init(request: Request,
                                auth_url.params,
                                urlencode(query_params),
                                auth_url.fragment))
-    return RedirectResponse(url=redirect_url, status_code=302)
-
+    res = RedirectResponse(url=redirect_url, status_code=302)
+    res.set_cookie(key=cookie, value="init-oidc", secure=True, httponly=True, samesite='none')
+    return res
 
 @app.post("/oidc/init")
 def oidc_init_post(request: Request,
@@ -295,11 +306,12 @@ def oidc_init_post(request: Request,
 
 @app.post("/oidc/launch")
 def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(...)):
-    reg = ToolRegistration(**json.loads(state)['r'])
+    state_obj = json.loads(state)
+    reg = ToolRegistration(**state_obj['r'])
     message = LTIMessage(**reg.decode(id_token))
     if message.message_type == const.dl.request_msg_type:
         return deeplinking(request, reg, message)
-    return test_and_show_results(request, reg, message)
+    return test_and_show_results(request, reg, state_obj['cookie'], message)
 
 
 def resource_link(name: str, message: LTIMessage,
@@ -361,7 +373,7 @@ def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
     link.url = 'https://robotest.theedtech.dev'
     link.title = 'Robotest Home'
     link.window = DLWindow()
-    link.window.targetName = 'robotest_win' 
+    link.window.targetName = 'robotest_win'
     htmlFragment = DLHTMLFragment()
     htmlFragment.title = 'Robotest Fragment'
     htmlFragment.html = '''<script>alert('Oops! Bad Robot')</script>
@@ -627,21 +639,41 @@ def test_substitution_variables(category: str, sub_variables: Dict[str, str], cu
     return res
 
 
-def test_and_show_results(request: Request, reg: ToolRegistration, message: LTIMessage()):
+def test_and_show_results(request: Request, reg: ToolRegistration, cookie_name: str, message: LTIMessage()):
     results = []
     res = TestCategory('General Stuff')
     res.results.append(TestResult('User Id Found',
-                                    True,
                                     message.sub,
+                                    True,
                                     message.sub))
     res.results.append(TestResult('Context Id Found',
-                                    True,
                                     message.context.id,
+                                    True,
                                     message.context.id))
     res.results.append(TestResult('Role(s) Found',
-                                    True,
                                     message.role,
+                                    True,
                                     message.role))
+    results.append(res)
+    res = TestCategory('The cookie stuff')
+    res.results.append(TestResult('State validated by cookie',
+                                    request.cookies.get(cookie_name),
+                                    False,
+                                    request.cookies.get(cookie_name)))
+    res.results.append(TestResult('First Party Cookie Seen - lax?',
+                                    request.cookies.get('robotest_fp_lax'),
+                                    False,
+                                    request.cookies.get('robotest_fp_lax')))
+    res.results.append(TestResult('First Party Cookie Seen - None?',
+                                    request.cookies.get('robotest_fp_none'),
+                                    False,
+                                    request.cookies.get('robotest_fp_none', 'No cookie, set cookie by visiting robotest.theedtech.dev')))
+    res.results.append(TestResult('Local Storage access',
+                                    True,
+                                    False,
+                                    'pending', '', '', 'localstorage'))
+
+
     results.append(res)
 
     if message.message_type == const.rl.msg_type:
