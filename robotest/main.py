@@ -264,7 +264,9 @@ def oidc_init(request: Request,
     reg = registration(lms, iss, client_id, oidc_auth, token_url, jwks_url)
     state = {
         'r': reg.__dict__,
-        'cookie': cookie
+        'cookie': cookie,
+        'login_hint': login_hint,
+        'lti_message_hint': lti_message_hint
     }
     auth_url = urlparse(reg.auth_endpoint)
     query_params = parse_qsl(auth_url.query)
@@ -287,7 +289,8 @@ def oidc_init(request: Request,
                                auth_url.params,
                                urlencode(query_params),
                                auth_url.fragment))
-    res = RedirectResponse(url=redirect_url, status_code=302)
+    res = RedirectResponse(url=redirect_url, status_code=302, 
+                           headers={'Set-Cookie': f'{cookie}_part=init-oidc-part; Partitioned; SameSite=None; HttpOnly; Secure'})
     res.set_cookie(key=cookie, value="init-oidc", secure=True, httponly=True, samesite='none')
     return res
 
@@ -694,6 +697,10 @@ def test_and_show_results(request: Request, reg: ToolRegistration, cookie_name: 
                                     request.cookies.get(cookie_name),
                                     False,
                                     request.cookies.get(cookie_name)))
+    res.results.append(TestResult('State validated by partioned cookie',
+                                    request.cookies.get(cookie_name + '_part'),
+                                    False,
+                                    request.cookies.get(cookie_name + '_part')))
     res.results.append(TestResult('First Party Cookie Seen - lax?',
                                     request.cookies.get('robotest_fp_lax'),
                                     False,
