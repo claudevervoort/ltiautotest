@@ -336,57 +336,57 @@ class DeeplinkSettings(dict):
 class DeepLinkService(dict):
 
     @property
-    def contextitems(self) -> str:
-        val = self.get('contextitems')
+    def contentitems(self) -> str:
+        val = self.get('contentitems')
         if issubclass(str, Enum):
             return str(val)
         if (isinstance(val, dict) and not isinstance(val, str)):
             typed_val = str( **val )
-            self['contextitems'] = typed_val
+            self['contentitems'] = typed_val
             return typed_val
         return val
 
 
-    @contextitems.setter
-    def contextitems(self, value: str):
+    @contentitems.setter
+    def contentitems(self, value: str):
         if isinstance(value, Enum):
-            self['contextitems'] = value.value
+            self['contentitems'] = value.value
         else:
-            self['contextitems'] = value
+            self['contentitems'] = value
 
 
     @property
-    def item(self) -> str:
-        val = self.get('item')
+    def contentitem(self) -> str:
+        val = self.get('contentitem')
         if issubclass(str, Enum):
             return str(val)
         if (isinstance(val, dict) and not isinstance(val, str)):
             typed_val = str( **val )
-            self['item'] = typed_val
+            self['contentitem'] = typed_val
             return typed_val
         return val
 
 
-    @item.setter
-    def item(self, value: str):
+    @contentitem.setter
+    def contentitem(self, value: str):
         if isinstance(value, Enum):
-            self['item'] = value.value
+            self['contentitem'] = value.value
         else:
-            self['item'] = value
+            self['contentitem'] = value
 
 
     @property
-    def scope(self) -> List[str]:
-        if not 'scope' in self:
-            self['scope'] = []
-        l = self['scope']
+    def scopes(self) -> List[str]:
+        if not 'scopes' in self:
+            self['scopes'] = []
+        l = self['scopes']
         if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
-            self['scope'] = list(map(lambda d: str(d), l))
-        return self.get('scope')
+            self['scopes'] = list(map(lambda d: str(d), l))
+        return self.get('scopes')
 
-    @scope.setter
-    def scope(self, value: str):
-        self['scope'] = value
+    @scopes.setter
+    def scopes(self, value: str):
+        self['scopes'] = value
 
 
 
@@ -990,23 +990,23 @@ class LTIMessage(dict):
 
 
     @property
-    def deeplink_service(self) -> DeepLinkService:
-        val = self.get('https://purl.imsglobal.org/spec/lti-dl/claim/endpoint')
+    def deeplinking_service(self) -> DeepLinkService:
+        val = self.get('https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice')
         if issubclass(DeepLinkService, Enum):
             return DeepLinkService(val)
         if (isinstance(val, dict) and not isinstance(val, DeepLinkService)):
             typed_val = DeepLinkService( **val )
-            self['https://purl.imsglobal.org/spec/lti-dl/claim/endpoint'] = typed_val
+            self['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice'] = typed_val
             return typed_val
         return val
 
 
-    @deeplink_service.setter
-    def deeplink_service(self, value: DeepLinkService):
+    @deeplinking_service.setter
+    def deeplinking_service(self, value: DeepLinkService):
         if isinstance(value, Enum):
-            self['https://purl.imsglobal.org/spec/lti-dl/claim/endpoint'] = value.value
+            self['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice'] = value.value
         else:
-            self['https://purl.imsglobal.org/spec/lti-dl/claim/endpoint'] = value
+            self['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice'] = value
 
 
     @property
@@ -2755,13 +2755,13 @@ class Members(dict):
 
 class DeepLinkingItem(dict):
 
-    mime = 'application/vnd.1edtech.lti.deeplinkingitem+json'
+    mime = 'application/vnd.1edtech.lti.contentitem+json'
 
 
-    read_scope = 'https://purl.imsglobal.org/spec/lti/scope/deeplinkingitem.readonly'
+    read_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read'
 
 
-    write_scope = 'https://purl.imsglobal.org/spec/lti/scope/deeplinkingitem'
+    write_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update'
 
 
     @property
@@ -2845,6 +2845,26 @@ class DeepLinkingItem(dict):
 
 
     @property
+    def resource_link_id(self) -> str:
+        val = self.get('resourceLinkId')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['resourceLinkId'] = typed_val
+            return typed_val
+        return val
+
+
+    @resource_link_id.setter
+    def resource_link_id(self, value: str):
+        if isinstance(value, Enum):
+            self['resourceLinkId'] = value.value
+        else:
+            self['resourceLinkId'] = value
+
+
+    @property
     def custom(self) -> Dict[str,str]:
         if not 'custom' in self:
             self['custom'] = {}
@@ -2856,7 +2876,7 @@ class DeepLinkingItem(dict):
 
 
     @property
-    def line_item_id(self) -> str:
+    def lineitem_id(self) -> str:
         val = self.get('lineItemId')
         if issubclass(str, Enum):
             return str(val)
@@ -2867,8 +2887,8 @@ class DeepLinkingItem(dict):
         return val
 
 
-    @line_item_id.setter
-    def line_item_id(self, value: str):
+    @lineitem_id.setter
+    def lineitem_id(self, value: str):
         if isinstance(value, Enum):
             self['lineItemId'] = value.value
         else:
@@ -2958,13 +2978,13 @@ class DeepLinkingItem(dict):
 
 class DeepLinkingItems(dict):
 
-    mime = 'application/vnd.1edtech.lti.deeplinkingitems+json'
+    mime = 'application/vnd.1edtech.lti.contentitems+json'
 
 
-    read_scope = 'https://purl.imsglobal.org/spec/lti/scope/deeplinkingitem.readonly'
+    read_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read'
 
 
-    write_scope = 'https://purl.imsglobal.org/spec/lti/scope/deeplinkingitem'
+    write_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update'
 
 
     collection_attribute = 'items'

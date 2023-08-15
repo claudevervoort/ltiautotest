@@ -28,12 +28,9 @@ models = {
         "data": []
     },
     'DeepLinkService': {
-        'contextitems': [],
-<<<<<<< HEAD
-        'item': [],
-=======
->>>>>>> 7c61d88 (support for deep link service)
-        'scope':['', 'List[str]']
+        'contentitems': [],
+        'contentitem': [],
+        'scopes':['', 'List[str]']
     },
     'GradeService': {
         'lineitem': [],
@@ -72,7 +69,7 @@ models = {
         "custom": ["https://purl.imsglobal.org/spec/lti/claim/custom", 'Custom'],
         "deep_linking_settings": ["https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings", 'DeeplinkSettings'],
         "grade_service": ['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint', 'GradeService'],
-        "deeplink_service": ['https://purl.imsglobal.org/spec/lti-dl/claim/endpoint', 'DeepLinkService'],
+        "deeplinking_service": ['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice', 'DeepLinkService'],
         "membership_service": ["https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice", 'MembershipService'],
         "for_user": ["https://purl.imsglobal.org/spec/lti/claim/for_user", 'User']
     },
@@ -224,16 +221,17 @@ models = {
     },
     'DeepLinkingItem': {
         'cls_const': {
-            'mime': 'application/vnd.1edtech.lti.deeplinkingitem+json',
-            'read_scope': 'https://purl.imsglobal.org/spec/lti/scope/deeplinkingitem.readonly',
-            'write_scope': 'https://purl.imsglobal.org/spec/lti/scope/deeplinkingitem',
+            'mime': 'application/vnd.1edtech.lti.contentitem+json',
+            'read_scope': 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read',
+            'write_scope': 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update',
         },
         'type': [],
         'title': [],
         'text': [],
         'url': [],
+        'resource_link_id': ['resourceLinkId'],
         'custom': ['', 'Dict[str,str]'],
-        'line_item_id': ['lineItemId'],
+        'lineitem_id': ['lineItemId'],
         'available': ['', 'TimeSpan'],
         'submission': ['', 'TimeSpan'],
         'iframe': ['', 'DLIFrame'],
@@ -241,9 +239,9 @@ models = {
     },
     'DeepLinkingItems': {
         'cls_const': {
-            'mime': 'application/vnd.1edtech.lti.deeplinkingitems+json',
-            'read_scope': 'https://purl.imsglobal.org/spec/lti/scope/deeplinkingitem.readonly',
-            'write_scope': 'https://purl.imsglobal.org/spec/lti/scope/deeplinkingitem',
+            'mime': 'application/vnd.1edtech.lti.contentitems+json',
+            'read_scope': 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read',
+            'write_scope': 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update',
             'collection_attribute': 'items'
         },
         'id': [],

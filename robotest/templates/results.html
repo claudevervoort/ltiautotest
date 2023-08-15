@@ -25,8 +25,8 @@
                 {%else %}
                 <th>{{ result.name }} {{result.link}}</th>
                 {% endif %}
-                <td>{{result.comment}}<br>
-                    <pre>{{ result.comment_pre}}</pre>
+                <td>{{result.comment | safe}}<br>
+                    <pre>{{ result.comment_pre }}</pre>
                 </td>
             </tr>
             {% endfor %}
