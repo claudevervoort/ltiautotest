@@ -126,7 +126,8 @@ def base_tool_oidc_conf(*,name:str,
                         pii_name: bool = False, 
                         pii_email: bool = False, 
                         ags: bool = False, 
-                        nrps: bool = False) -> ToolOIDCConfig:
+                        nrps: bool = False,
+                        dls: bool = False) -> ToolOIDCConfig:
     if not jwks_uri:
         jwks_uri = 'https://{domain}/.well-known/jwks.json'.format(domain=domain)
     if not base_url:
@@ -179,6 +180,10 @@ def base_tool_oidc_conf(*,name:str,
             "https://purl.imsglobal.org/spec/lti-ags/scope/score"])
     if nrps:
         scopes.append('https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly')
+    if dls:
+        scopes.extend([
+            "https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read",
+            "https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update"])
     tool_conf.scope = " ".join(scopes)
     return tool_conf
 

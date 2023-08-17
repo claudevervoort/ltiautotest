@@ -172,6 +172,7 @@ def register(request: Request, openid_configuration: str, registration_token: st
                                                 redirect_uri=redirect_uri,
                                                 ags=True,
                                                 nrps=True,
+                                                dls=True,
                                                 pii_name=True,
                                                 dl_label='Add Robotest')
                 tool_conf.lti_config.description = "Less clicks, more tests, this is the LTI Robotest!"
@@ -618,7 +619,7 @@ def test_dl(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
     try:
         print(f"X{message.deeplinking_service.contentitems}X")
         contentitems = ltiservice_get(reg, DeepLinkingItems, message.deeplinking_service.contentitems)
-        gradeditems = list(filter(lambda i: len(i.lineitem_id)>0, contentitems.items))
+        gradeditems = list(filter(lambda i: i.lineitem_id and len(i.lineitem_id)>0, contentitems.items))
         res.results.append(TestResult('Deep Linking Items present and queriable',
                                         True,
                                         True,
