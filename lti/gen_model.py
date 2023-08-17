@@ -333,6 +333,63 @@ class DeeplinkSettings(dict):
 
 
 
+class DeepLinkService(dict):
+
+    @property
+    def contentitems(self) -> str:
+        val = self.get('contentitems')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['contentitems'] = typed_val
+            return typed_val
+        return val
+
+
+    @contentitems.setter
+    def contentitems(self, value: str):
+        if isinstance(value, Enum):
+            self['contentitems'] = value.value
+        else:
+            self['contentitems'] = value
+
+
+    @property
+    def contentitem(self) -> str:
+        val = self.get('contentitem')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['contentitem'] = typed_val
+            return typed_val
+        return val
+
+
+    @contentitem.setter
+    def contentitem(self, value: str):
+        if isinstance(value, Enum):
+            self['contentitem'] = value.value
+        else:
+            self['contentitem'] = value
+
+
+    @property
+    def scopes(self) -> List[str]:
+        if not 'scopes' in self:
+            self['scopes'] = []
+        l = self['scopes']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['scopes'] = list(map(lambda d: str(d), l))
+        return self.get('scopes')
+
+    @scopes.setter
+    def scopes(self, value: str):
+        self['scopes'] = value
+
+
+
 class GradeService(dict):
 
     @property
@@ -930,6 +987,26 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'] = value.value
         else:
             self['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'] = value
+
+
+    @property
+    def deeplinking_service(self) -> DeepLinkService:
+        val = self.get('https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice')
+        if issubclass(DeepLinkService, Enum):
+            return DeepLinkService(val)
+        if (isinstance(val, dict) and not isinstance(val, DeepLinkService)):
+            typed_val = DeepLinkService( **val )
+            self['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice'] = typed_val
+            return typed_val
+        return val
+
+
+    @deeplinking_service.setter
+    def deeplinking_service(self, value: DeepLinkService):
+        if isinstance(value, Enum):
+            self['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice'] = value.value
+        else:
+            self['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice'] = value
 
 
     @property
@@ -2673,6 +2750,278 @@ class Members(dict):
     @members.setter
     def members(self, value: Member):
         self['members'] = value
+
+
+
+class DeepLinkingItem(dict):
+
+    mime = 'application/vnd.1edtech.lti.contentitem+json'
+
+
+    read_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read'
+
+
+    write_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update'
+
+
+    @property
+    def type(self) -> str:
+        val = self.get('type')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['type'] = typed_val
+            return typed_val
+        return val
+
+
+    @type.setter
+    def type(self, value: str):
+        if isinstance(value, Enum):
+            self['type'] = value.value
+        else:
+            self['type'] = value
+
+
+    @property
+    def title(self) -> str:
+        val = self.get('title')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['title'] = typed_val
+            return typed_val
+        return val
+
+
+    @title.setter
+    def title(self, value: str):
+        if isinstance(value, Enum):
+            self['title'] = value.value
+        else:
+            self['title'] = value
+
+
+    @property
+    def text(self) -> str:
+        val = self.get('text')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['text'] = typed_val
+            return typed_val
+        return val
+
+
+    @text.setter
+    def text(self, value: str):
+        if isinstance(value, Enum):
+            self['text'] = value.value
+        else:
+            self['text'] = value
+
+
+    @property
+    def url(self) -> str:
+        val = self.get('url')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['url'] = typed_val
+            return typed_val
+        return val
+
+
+    @url.setter
+    def url(self, value: str):
+        if isinstance(value, Enum):
+            self['url'] = value.value
+        else:
+            self['url'] = value
+
+
+    @property
+    def resource_link_id(self) -> str:
+        val = self.get('resourceLinkId')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['resourceLinkId'] = typed_val
+            return typed_val
+        return val
+
+
+    @resource_link_id.setter
+    def resource_link_id(self, value: str):
+        if isinstance(value, Enum):
+            self['resourceLinkId'] = value.value
+        else:
+            self['resourceLinkId'] = value
+
+
+    @property
+    def custom(self) -> Dict[str,str]:
+        if not 'custom' in self:
+            self['custom'] = {}
+        return self.get('custom')
+
+    @custom.setter
+    def custom(self, value: Dict[str,str]):
+        self['custom'] = value
+
+
+    @property
+    def lineitem_id(self) -> str:
+        val = self.get('lineItemId')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['lineItemId'] = typed_val
+            return typed_val
+        return val
+
+
+    @lineitem_id.setter
+    def lineitem_id(self, value: str):
+        if isinstance(value, Enum):
+            self['lineItemId'] = value.value
+        else:
+            self['lineItemId'] = value
+
+
+    @property
+    def available(self) -> TimeSpan:
+        val = self.get('available')
+        if issubclass(TimeSpan, Enum):
+            return TimeSpan(val)
+        if (isinstance(val, dict) and not isinstance(val, TimeSpan)):
+            typed_val = TimeSpan( **val )
+            self['available'] = typed_val
+            return typed_val
+        return val
+
+
+    @available.setter
+    def available(self, value: TimeSpan):
+        if isinstance(value, Enum):
+            self['available'] = value.value
+        else:
+            self['available'] = value
+
+
+    @property
+    def submission(self) -> TimeSpan:
+        val = self.get('submission')
+        if issubclass(TimeSpan, Enum):
+            return TimeSpan(val)
+        if (isinstance(val, dict) and not isinstance(val, TimeSpan)):
+            typed_val = TimeSpan( **val )
+            self['submission'] = typed_val
+            return typed_val
+        return val
+
+
+    @submission.setter
+    def submission(self, value: TimeSpan):
+        if isinstance(value, Enum):
+            self['submission'] = value.value
+        else:
+            self['submission'] = value
+
+
+    @property
+    def iframe(self) -> DLIFrame:
+        val = self.get('iframe')
+        if issubclass(DLIFrame, Enum):
+            return DLIFrame(val)
+        if (isinstance(val, dict) and not isinstance(val, DLIFrame)):
+            typed_val = DLIFrame( **val )
+            self['iframe'] = typed_val
+            return typed_val
+        return val
+
+
+    @iframe.setter
+    def iframe(self, value: DLIFrame):
+        if isinstance(value, Enum):
+            self['iframe'] = value.value
+        else:
+            self['iframe'] = value
+
+
+    @property
+    def window(self) -> DLWindow:
+        val = self.get('window')
+        if issubclass(DLWindow, Enum):
+            return DLWindow(val)
+        if (isinstance(val, dict) and not isinstance(val, DLWindow)):
+            typed_val = DLWindow( **val )
+            self['window'] = typed_val
+            return typed_val
+        return val
+
+
+    @window.setter
+    def window(self, value: DLWindow):
+        if isinstance(value, Enum):
+            self['window'] = value.value
+        else:
+            self['window'] = value
+
+
+
+class DeepLinkingItems(dict):
+
+    mime = 'application/vnd.1edtech.lti.contentitems+json'
+
+
+    read_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read'
+
+
+    write_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update'
+
+
+    collection_attribute = 'items'
+
+
+    @property
+    def id(self) -> str:
+        val = self.get('id')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['id'] = typed_val
+            return typed_val
+        return val
+
+
+    @id.setter
+    def id(self, value: str):
+        if isinstance(value, Enum):
+            self['id'] = value.value
+        else:
+            self['id'] = value
+
+
+    @property
+    def items(self) -> List[DeepLinkingItem]:
+        if not 'items' in self:
+            self['items'] = []
+        l = self['items']
+        if len(l)>0 and not type(l[0]) is DeepLinkingItem and type(l[0]) is dict:
+            self['items'] = list(map(lambda d: DeepLinkingItem(d), l))
+        return self.get('items')
+
+    @items.setter
+    def items(self, value: DeepLinkingItem):
+        self['items'] = value
 
 
 

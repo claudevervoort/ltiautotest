@@ -1,5 +1,6 @@
 import sys
 import os
+from unittest import result
 
 sys.path.extend([
     os.path.abspath('../')])
@@ -20,7 +21,9 @@ from datetime import datetime, timedelta, timezone
 from lti import LineItem, SubmissionReview, User, ToolRegistration, LTIMessage, LTIResourceLink, DLImage, DLHTMLFragment, DeeplinkResponse, DLIFrame, DLWindow, TimeSpan, DLLink, add_coursenav_message
 from lti import Score, ActivityProgress, GradingProgress, Members, SupportedMessage, get_public_keyset, get_publickey_pem, const, registration, ltiservice_get, ltiservice_get_array, ltiservice_mut
 from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration, verify_11_oauth, append_regextra
+from lti import DeepLinkingItem, DeepLinkingItems
 from robotest.test_results import TestCategory, TestResult
+from requests.models import PreparedRequest
 #
 base_url = os.environ['ROBOTEST_WWW'] if 'ROBOTEST_WWW' in os.environ else 'https://robotest.theedtech.dev'
 
@@ -169,6 +172,7 @@ def register(request: Request, openid_configuration: str, registration_token: st
                                                 redirect_uri=redirect_uri,
                                                 ags=True,
                                                 nrps=True,
+                                                dls=True,
                                                 pii_name=True,
                                                 dl_label='Add Robotest')
                 tool_conf.lti_config.description = "Less clicks, more tests, this is the LTI Robotest!"
@@ -604,6 +608,80 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
     return res
 
 
+def test_dl(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
+    res = TestCategory('Deep Linking Service')
+    if not message.deeplinking_service.contentitems:
+        res.results.append(TestResult('Content Items must be defined',
+                                False,
+                                True,
+                                f"Not present"))
+        return res
+    try:
+        print(f"X{message.deeplinking_service.contentitems}X")
+        contentitems = ltiservice_get(reg, DeepLinkingItems, message.deeplinking_service.contentitems)
+        gradeditems = list(filter(lambda i: i.lineitem_id and len(i.lineitem_id)>0, contentitems.items))
+        res.results.append(TestResult('Deep Linking Items present and queriable',
+                                        True,
+                                        True,
+                                        f'Robotest is used {len(contentitems.items)} times in this course, {len(gradeditems)} are graded'))
+        if (len(gradeditems)>0):
+                lineitem = ltiservice_get(reg, LineItem, gradeditems[0].lineitem_id)
+                if lineitem:
+                    res.results.append(TestResult('Line Item id is queriable',
+                                            True,
+                                            True,
+                                            f'{gradeditems[0].title} is worth {lineitem.scoreMaximum}'))
+                else:
+                    res.results.append(TestResult('Line Item id is queriable',
+                                            False,
+                                            True,
+                                            f'No line item loaded for {gradeditems[0].lineitem_id}'))
+
+        if message.deeplinking_service.contentitem:
+            item = ltiservice_get(reg, DeepLinkingItem, message.deeplinking_service.contentitem)
+            if item:
+                colors = ['blue', 'white', 'red']
+                color = item.custom.get('color', '')
+                next_color = colors[(colors.index(color)+1)%len(colors)] if color in colors else 'blue'
+                item.custom['color'] = next_color
+                if (not 'updated' in item.url):
+                    item.url = item.url + "&updated=true"
+                ltiservice_mut(reg, message.deeplinking_service.contentitem, item, True)
+                updated_item = ltiservice_get(reg, DeepLinkingItem, message.deeplinking_service.contentitem)
+                res.results.append(TestResult('Deep Linking Item present and queriable',
+                                        True,
+                                        True,
+                                        f"The current color of this link is <span style='color: {color}'>{color}</span>"))
+                res.results.append(TestResult('Deep Linking Item Custom param updated',
+                                        updated_item.custom.get('color','') == next_color,
+                                        True,
+                                        f"The next color of this link is <span style='color: {next_color}'>{next_color}</span>"))
+                res.results.append(TestResult('Deep Linking Item URL updated',
+                                        'updated=true' in updated_item.url,
+                                        True,
+                                        f"The link url is marked as updated."))
+            else:
+                res.results.append(TestResult('Deep Linking Item present and queriable',
+                                        False,
+                                        True,
+                                        f"No item loaded"))
+            req = PreparedRequest()
+            req.prepare_url(message.deeplinking_service.contentitems, {'rlid': message.resource_link.id})
+            contentitem_by_rlid = ltiservice_get(reg, DeepLinkingItems, req.url)
+            res.results.append(TestResult('Can query by resource link id',
+                                    contentitem_by_rlid and len(contentitem_by_rlid.items) == 1 and contentitem_by_rlid.items[0].resource_link_id == message.resource_link.id,
+                                    True,
+                                    f"Num of item returned {len(contentitem_by_rlid.items)}"))
+
+    except Exception as e:
+        print(traceback.format_exc())
+        res.results.append(TestResult('Error interacting with deep linking service',
+                                False,
+                                True,
+                                f'{str(e)}'))
+    
+    return res
+
 def test_substitution_variables(category: str, sub_variables: Dict[str, str], custom_params: Dict[str, str]):
     res = TestCategory(category)
     for key in sub_variables:
@@ -714,6 +792,8 @@ def test_and_show_results(request: Request, reg: ToolRegistration, cookie_name: 
         results.append(res)
     results.append(test_ags(reg, message))
     results.append(test_nrps(reg, message))
+    if message.deeplinking_service:
+        results.append(test_dl(reg, message))
     results.append(test_substitution_variables('Subsitution Variables (resourcelink)', {
                    **context_sub_variables, **link_sub_variables}, message.custom))
     success = all((map(lambda r: r.success, results)))

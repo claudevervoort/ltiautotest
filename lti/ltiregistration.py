@@ -63,6 +63,8 @@ def registration( lms: str, iss: str, client_id: str, oidc_auth : str = None, to
         return ToolRegistration(iss, client_id, iss+'/imsoidc/lti13/oidc_auth', iss+'/imsblis/lti13/token/'+token_url, iss+'/imsblis/lti13/keyset')
     if iss and token_url and oidc_auth and keyset_url:
         return ToolRegistration(iss, client_id, concat(iss, oidc_auth), concat(iss, token_url), concat(iss, keyset_url))
+    if iss == 'https://schoology.schoology.com':
+        return ToolRegistration(iss, client_id, 'https://lti-service.svc.schoology.com/lti-service/authorize-redirect', 'https://lti-service.svc.schoology.com/lti-service/access-token', 'https://lti-service.svc.schoology.com/lti-service/.well-known/jwks')
     return None
 
 
@@ -124,7 +126,8 @@ def base_tool_oidc_conf(*,name:str,
                         pii_name: bool = False, 
                         pii_email: bool = False, 
                         ags: bool = False, 
-                        nrps: bool = False) -> ToolOIDCConfig:
+                        nrps: bool = False,
+                        dls: bool = False) -> ToolOIDCConfig:
     if not jwks_uri:
         jwks_uri = 'https://{domain}/.well-known/jwks.json'.format(domain=domain)
     if not base_url:
@@ -177,6 +180,10 @@ def base_tool_oidc_conf(*,name:str,
             "https://purl.imsglobal.org/spec/lti-ags/scope/score"])
     if nrps:
         scopes.append('https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly')
+    if dls:
+        scopes.extend([
+            "https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read",
+            "https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update"])
     tool_conf.scope = " ".join(scopes)
     return tool_conf
 
