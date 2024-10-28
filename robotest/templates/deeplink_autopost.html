@@ -20,8 +20,18 @@
     <div class="centered">
         <h4>{{name}}, what do you want in your basket?</h4>
     </div>
-    <div class="centered" id="dlchoices">
+    <div class="centered">
+        {% if multiple %}
+        <span class="note">Your platform supports multiple items to be returned :)</span>
+        {% else %}
+        <span class="note">Your platform does not seem to support multiple items to be returned (accept_multiple is
+            false) :(</span>
+        {% endif %}
+    </div>
+    <div class="centered spaced dlchoices">
         <a href="#" onclick="post('empty')" class="secondary">Nothing! (Cancel)</a>
+    </div>
+    <div class="centered spaced dlchoices">
         <a href="#" onclick="post('single')" class="secondary">A single not graded LTI Link (newwin)</a>
         <a href="#" onclick="post('single_graded')" class="secondary" {% if not gradable %}
             style="text-decoration: line-through;" {% endif %}>A single <b>graded</b> LTI Link</a>
@@ -33,13 +43,13 @@
         <a href="#" onclick="post('multiple')" class="primary" {% if not multiple %}
             style="text-decoration: line-through;" {% endif %}> Why choose? One of each please!</a>
     </div>
-    <div class="centered">
-        {% if multiple %}
-        <span class="note">Your platform supports multiple items to be returned :)</span>
-        {% else %}
-        <span class="note">Your platform does not seem to support multiple items to be returned (accept_multiple is
-            false) :(</span>
-        {% endif %}
+    <div class="centered spaced dlchoices">
+        <a href="#" onclick="post('embed')" class="secondary" {% if not 'image' in types %}
+            style="text-decoration: line-through;" {% endif %}>HTML embed image with Bad Robot JS</a>
+        <a href="#" onclick="post('image')" class="secondary" {% if not 'htmlFragment' in types %}
+            style="text-decoration: line-through;" {% endif %}>The Bot icon</a>
+        <a href="#" onclick="post('link')" class="secondary" {% if not 'link' in types %}
+            style="text-decoration: line-through;" {% endif %}>Weblink</a>
     </div>
     <form id="empty" action="{{ return_url }}" method="post">
         <input type="hidden" name="JWT" value="{{ empty }}">
@@ -59,6 +69,16 @@
     <form id="multiple" action="{{ return_url }}" method="post">
         <input type="hidden" name="JWT" value="{{ jwt_multiple }}">
     </form>
+    <form id="embed" action="{{ return_url }}" method="post">
+        <input type="hidden" name="JWT" value="{{ jwt_embed }}">
+    </form>
+    <form id="image" action="{{ return_url }}" method="post">
+        <input type="hidden" name="JWT" value="{{ jwt_image }}">
+    </form>
+    <form id="link" action="{{ return_url }}" method="post">
+        <input type="hidden" name="JWT" value="{{ jwt_link }}">
+    </form>
+
 </body>
 
 </html>
