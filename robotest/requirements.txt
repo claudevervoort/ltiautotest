@@ -15,7 +15,7 @@ fastapi==0.86.0
 future==0.17.1
 h11==0.8.1
 httptools==0.5.0
-idna==2.8
+idna==3.7
 isort==4.3.21
 Jinja2==3.1.4
 lazy-object-proxy==1.4.3
