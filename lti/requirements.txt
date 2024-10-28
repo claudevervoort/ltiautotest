@@ -1,10 +1,10 @@
 aiofiles==0.4.0
 asn1crypto==1.0.1
-certifi==2019.9.11
+certifi==2022.12.7
 cffi==1.12.3
 chardet==3.0.4
 Click==7.0
-cryptography==3.4.7
+cryptography==43.0.1
 dataclasses==0.6
 ecdsa==0.13.3
 future==0.17.1
@@ -15,10 +15,10 @@ MarkupSafe==1.1.1
 pkg-resources==0.0.0
 pyasn1==0.4.7
 pycparser==2.19
-pydantic==0.32.2
+pydantic==1.10.13
 python-jose==3.3.0
-python-multipart==0.0.5
+python-multipart==0.0.7
 requests==2.22.0
-rsa==4.1
+rsa==4.7
 six==1.12.0
 urllib3==1.25.6

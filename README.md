@@ -18,6 +18,13 @@ Launch:
 
 Code is using a simple code generation to create a model that is based on Dict but exposing typed parameters for the most common LTI params.
 
+Model is in `lti/model.py`.
+
+To re-generate the model:
+
+`python lti/codegen.py`
+
+
 
 ## About the robot
 
