@@ -11,8 +11,18 @@
             <h1>LTI™ Robotest</h1>
             <em>An easy way to test your platform for its support for LTI Advantage.</em>
             <br />
-            <em>For more info and resources on LTI visit <a href="https://imsglobal.org">IMS Global</a> - <a
-                    href="https://github.com/claudevervoort/ltiautotest">git repo</a></em>
+            <em>For more info and resources on LTI visit <a href="https://1edtech.org" target="_blank">1EdTech</a>.
+                And the robotest code is in that <a href=" https://github.com/claudevervoort/ltiautotest"
+                    target="_blank">git
+                    repo</a></em>
+            <h2>It's not because you're a robot you don't like cookies...</h2>
+            <p>This page sets 1st party session cookies (lax, none). To clear access as first party, you sometime need
+                to <button onclick="alert('Gling!')">interact</button> with me!</p>
+            <ul>
+                <li>First Party lax: {{ cookie_fp_lax }}</li>
+                <li>First Party none: {{ cookie_fp_none }}</li>
+                <li>Third Party none: {{ cookie_tp_none }}</li>
+            </ul>
             <h2>Moodle instructions - automatic configuration (3.10+)</h2>
             <p>The registration URL is {{base_url}}/register. Paste it as the Tool URL and click Add LTI
                 Advantage</p>

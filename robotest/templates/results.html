@@ -1,41 +1,70 @@
 <html>
-    <head>
-        <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="/static/robottest.css">
-        <script type="application/javascript">
-            function closeme() {
-                (window.opener || window.parent).postMessage({subject:'org.imsglobal.lti.close'}, '*');
-            }
-        </script>
-    </head>
-    <body class="results">
+
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/robottest.css">
+    <script type="application/javascript">
+        function closeme() {
+            (window.opener || window.parent).postMessage({ subject: 'org.imsglobal.lti.close' }, '*');
+        }
+    </script>
+</head>
+
+<body class="results">
     <div class="centered">
-    <table class="results">
-    {% for category in results %}
-        <tr class="category"><th colspan="2">{{category.name}}</th></tr>
-        {% for result in category.results %}
-            <tr class="result {{ 'failed' if not result.success }} {{ 'required' if result.required }}">
+        <table class="results">
+            {% for category in results %}
+            <tr class="category">
+                <th colspan="2">{{category.name}}</th>
+            </tr>
+            {% for result in category.results %}
+            <tr class="result {{ 'failed' if not result.success }} {{ 'required' if result.required }}" {% if
+                result.dom_id %} id='{{ result.dom_id }}' {% endif %}>
                 {%if result.link %}
                 <th><a href="{{result.link}}" target="_blank">{{ result.name }}</a></th>
                 {%else %}
                 <th>{{ result.name }} {{result.link}}</th>
                 {% endif %}
-                <td>{{result.comment}}<br><pre>{{ result.comment_pre}}</pre></td>
+                <td>{{result.comment | safe}}<br>
+                    <pre>{{ result.comment_pre }}</pre>
+                </td>
             </tr>
-        {% endfor %}
-    {% endfor %}
-    {%if showClose %}
+            {% endfor %}
+            {% endfor %}
+            {%if showClose %}
             <tr class="result result.success">
                 <th>Close this with Post Message</th>
                 <td><button onclick="closeme()">Close</button></td>
             </tr>
-    {%endif%}
+            {%endif%}
 
-    </table>
-            <video autoplay loop muted playsinline>
-                <source src="{{ '/assets/thumbsup.mp4'if success else '/assets/broken.mp4' }}" type="video/mp4">
-            </video>
+        </table>
+        <video autoplay loop muted playsinline>
+            <source src="{{ '/assets/thumbsup.mp4'if success else '/assets/broken.mp4' }}" type="video/mp4">
+        </video>
     </div>
-    
-    </body>
+
+</body>
+<script>
+    async function initStorage() {
+        const cell = document.querySelector('#localstorage td');
+        const hasAccess = await document.hasStorageAccess();
+        if (hasAccess) {
+            cell.innerHTML = 'Local storage granted';
+        } else {
+            cell.innerHTML = 'Local storage not granted. <button onclick=\'promptAccess()\'>prompt</button>';
+        }
+    }
+    function promptAccess() {
+        const cell = document.querySelector('#localstorage td');
+        document.requestStorageAccess().then(
+            () => { cell.innerHTML = 'Local storage granted, relaunch and check cookies'; },
+            (e) => {
+                console.log(e);
+                cell.innerHTML = 'Local storage still not granted. <button onclick=\'promptAccess()\'>prompt</button> - remember to interact with me first from <a target=\'_blank\' href=\'/\'>the main site first</a>';
+            });
+    }
+    initStorage();
+</script>
+
 </html>
