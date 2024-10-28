@@ -21,10 +21,16 @@ models = {
         "accept_media_types": ['', 'List[str]'],
         "accept_presentation_document_targets": ['', 'List[str]'],
         "accept_multiple": ['', 'bool'],
+        "accept_lineitem": ['', 'bool'],
         "auto_create": ['', 'bool'],
         "title": [],
         "text": [],
         "data": []
+    },
+    'DeepLinkService': {
+        'contentitems': [],
+        'contentitem': [],
+        'scopes':['', 'List[str]']
     },
     'GradeService': {
         'lineitem': [],
@@ -34,6 +40,14 @@ models = {
     'MembershipService': {
         'context_memberships_url': [],
         'service_version': []
+    },
+    'User': {
+        'user_id': [],
+        'person_sourcedid': [],
+        'given_name': [],
+        'family_name': [],
+        'name': [],
+        'email': []
     },
     'LTIMessage': {
         "iss": [],
@@ -55,7 +69,9 @@ models = {
         "custom": ["https://purl.imsglobal.org/spec/lti/claim/custom", 'Custom'],
         "deep_linking_settings": ["https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings", 'DeeplinkSettings'],
         "grade_service": ['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint', 'GradeService'],
-        "membership_service": ["https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice", 'MembershipService']
+        "deeplinking_service": ['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice', 'DeepLinkService'],
+        "membership_service": ["https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice", 'MembershipService'],
+        "for_user": ["https://purl.imsglobal.org/spec/lti/claim/for_user", 'User']
     },
     'DeeplinkResponse': {
         "version": ["https://purl.imsglobal.org/spec/lti/claim/version", "str", "1.3.0"],
@@ -63,6 +79,11 @@ models = {
         "data": ["https://purl.imsglobal.org/spec/lti-dl/claim/data"],
         "deployment_id": ["https://purl.imsglobal.org/spec/lti/claim/deployment_id"],
         "content_items": ["https://purl.imsglobal.org/spec/lti-dl/claim/content_items", "List"]
+    },
+    'SubmissionReview': {
+        'label': [],
+        'url': [],
+        'custom': ['', 'Custom']
     },
     'LineItem': {
         'cls_const': {
@@ -75,6 +96,7 @@ models = {
         'label': [],
         'scoreMaximum': ['', 'float'],
         'tag': [],
+        'submissionReview': ['', 'SubmissionReview'],
         'resourceId': [],
         'resourceLinkId': [],
         'startDateTime': [],
@@ -95,6 +117,11 @@ models = {
         'Completed'
     ),
     'Score': {
+        'cls_const': {
+            'mime': 'application/vnd.ims.lis.v1.score+json',
+            'write_scope': 'https://purl.imsglobal.org/spec/lti-ags/scope/score',
+            'path_suffix': 'scores'
+        },
         'userId': [],
         'scoreGiven': ['', 'float'],
         'scoreMaximum': ['', 'float'],
@@ -104,6 +131,11 @@ models = {
         'gradingProgress': ['', 'GradingProgress']
     },
     'Result': {
+        'cls_const': {
+            'mime': 'application/vnd.ims.lis.v2.resultcontainer+json',
+            'read_scope': 'https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly',
+            'path_suffix': 'results'
+        },
         'userId': [],
         'resultScore': ['', 'float'],
         'resultMaximum': ['', 'float'],
@@ -117,6 +149,13 @@ models = {
     'DLWindow': {
         'targetName': []
     },
+    'DLEmbed': {
+        'html': []
+    },
+    'TimeSpan': {
+        'startDateTime': [],
+        'endDateTime': []
+    },
     'LTIResourceLink': {
         'type': ['', 'str', 'ltiResourceLink'],
         'title': [],
@@ -127,8 +166,34 @@ models = {
         'max_points': ['lineItem:LineItem->scoreMaximum', 'float'],
         'resource_id': ['lineItem:LineItem->resourceId', 'str'],
         'tag': ['lineItem:LineItem->tag', 'str'],
+        'available': ['', 'TimeSpan'],
+        'submission': ['', 'TimeSpan'],
         'iframe': ['', 'DLIFrame'],
         'window': ['', 'DLWindow']
+    },
+    'DLHTMLFragment': {
+        'type': ['', 'str', 'html'],
+        'title': [],
+        'text': [],
+        'html': []
+    },
+    'DLImage': {
+        'type': ['', 'str', 'image'],
+        'title': [],
+        'text': [],
+        'url': [],
+        'width': ['', 'float'],
+        'height': ['', 'float']
+    },
+    'DLLink': {
+        'type': ['', 'str', 'link'],
+        'title': [],
+        'text': [],
+        'url': [],
+        'embed': ['', 'DLEmbed'],
+        'window': ['', 'DLWindow'],
+        'embed': ['', 'DLEmbed'],
+        'iframe': ['', 'DLIFrame']
     },
     'MemberStatus': ('Active', 'Inactive', 'Deleted'),
     'Member': {
@@ -154,9 +219,42 @@ models = {
         'id': [],
         'members': ['', 'List[Member]']
     },
+    'DeepLinkingItem': {
+        'cls_const': {
+            'mime': 'application/vnd.1edtech.lti.contentitem+json',
+            'read_scope': 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read',
+            'write_scope': 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update',
+        },
+        'type': [],
+        'title': [],
+        'text': [],
+        'url': [],
+        'resource_link_id': ['resourceLinkId'],
+        'custom': ['', 'Dict[str,str]'],
+        'lineitem_id': ['lineItemId'],
+        'available': ['', 'TimeSpan'],
+        'submission': ['', 'TimeSpan'],
+        'iframe': ['', 'DLIFrame'],
+        'window': ['', 'DLWindow']
+    },
+    'DeepLinkingItems': {
+        'cls_const': {
+            'mime': 'application/vnd.1edtech.lti.contentitems+json',
+            'read_scope': 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read',
+            'write_scope': 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update',
+            'collection_attribute': 'items'
+        },
+        'id': [],
+        'items': ['', 'List[DeepLinkingItem]']
+    },
+    'SupportedMessage': {
+        'type': [],
+        'placements': ['', 'List[str]']
+    },
     'PlatformConfig': {
         'product_family_code': [],
-        'variables': ['', 'List[str]']
+        'variables': ['', 'List[str]'],
+        'messages_supported': ['', 'List[SupportedMessage]'],
     },
     'PlatformOIDCConfig': {
         'issuer': [],

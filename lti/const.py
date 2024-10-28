@@ -13,3 +13,5 @@ const.rl = _const()
 const.rl.msg_type = 'LtiResourceLinkRequest'
 const.cnav = _const()
 const.cnav.msg_type = 'ContextLaunchRequest'
+const.subreview = _const()
+const.subreview.msg_type = 'LtiSubmissionReviewRequest'

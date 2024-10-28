@@ -7,17 +7,20 @@ import requests
 import json
 import hashlib
 from .const import const
+import uuid
+from urllib.parse import urlencode
 
 TOKEN_TTL = 300
 
 class ToolRegistration(object):
 
-    def __init__(self, iss: str, client_id: str, auth_endpoint:str, token_uri: str, jwks_uri: str):
+    def __init__(self, iss: str, client_id: str, auth_endpoint:str, token_uri: str, jwks_uri: str, audience: str = None):
         self.iss = iss
         self.client_id = client_id
         self.auth_endpoint = auth_endpoint
         self.token_uri = token_uri
         self.jwks_uri = jwks_uri
+        self.audience = audience
         log("Registration: {0}", str(self.__dict__))
 
     def decode(self, token:str) -> dict:
@@ -26,9 +29,17 @@ class ToolRegistration(object):
                           audience = self.client_id,
                           issuer = self.iss)
 
-    def encode(self, claims: dict, from_client: bool = True) -> str:
+    def encode(self, claims: dict, from_client: bool = True, for_token: bool = False) -> str:
         if from_client:
             claims['iss'] = self.client_id
+            claims['sub'] = self.client_id
+            claims['jti'] = str(uuid.uuid4())
+            if for_token:
+                claims['aud'] = self.audience if self.audience else self.iss
+            else:
+                claims['nonce'] = str(uuid.uuid4())
+                claims['aud'] = self.iss
+                claims['nonce'] = claims['jti']
         else:
             claims['iss'] = self.iss
             claims['aud'] = self.client_id
@@ -38,11 +49,38 @@ class ToolRegistration(object):
             claims['exp'] = int(datetime.now().timestamp()) + TOKEN_TTL
         return jwt.encode(claims, get_webkey(), algorithm='RS256', headers={'kid': get_webkey()['kid']})
 
+def concat(base: str, path: str) -> str:
+    if path.startswith('http'):
+        return path
+    return base + path
 
-def registration( lms: str, iss: str, client_id: str) -> ToolRegistration:
-    if (lms.lower() == 'moodle'):
+def registration( lms: str, iss: str, client_id: str, oidc_auth : str = None, token_url: str = None, keyset_url: str = None) -> ToolRegistration:
+    if lms.lower() == 'moodle':
         return ToolRegistration(iss, client_id, iss+'/mod/lti/auth.php', iss+'/mod/lti/token.php', iss+'/mod/lti/certs.php')
+    if lms.lower() == 'd2l':
+        return ToolRegistration(iss, client_id, iss+'/d2l/lti/authenticate', 'https://auth.brightspace.com/core/connect/token', iss+'/d2l/.well-known/jwks', audience="https://api.brightspace.com/auth/token")
+    if lms.lower().startswith('sakai') and token_url:
+        return ToolRegistration(iss, client_id, iss+'/imsoidc/lti13/oidc_auth', iss+'/imsblis/lti13/token/'+token_url, iss+'/imsblis/lti13/keyset')
+    if iss and token_url and oidc_auth and keyset_url:
+        return ToolRegistration(iss, client_id, concat(iss, oidc_auth), concat(iss, token_url), concat(iss, keyset_url))
+    if iss == 'https://schoology.schoology.com':
+        return ToolRegistration(iss, client_id, 'https://lti-service.svc.schoology.com/lti-service/authorize-redirect', 'https://lti-service.svc.schoology.com/lti-service/access-token', 'https://lti-service.svc.schoology.com/lti-service/.well-known/jwks')
     return None
+
+
+def trim(iss: str, url: str):
+    if url.startswith(iss):
+        return url[len(iss):]
+    return url
+
+def append_regextra( login_uri: str, lms: str, platform_config: PlatformOIDCConfig) -> str:
+    """Append bits to login reg to be able to reconstruct the registration (since this app has no db)"""
+    if lms.lower().startswith('sakai'):
+        return f"{login_uri}&lms=sakai&token_url={platform_config.token_endpoint.split('/')[-1]}"
+    elif lms.lower() == 'generic':
+        iss = platform_config.issuer
+        return f"{login_uri}&lms=generic&oidc_auth={urlencode(trim(iss, platform_config.authorization_endpoint))}&token_url={urlencode(trim(iss, platform_config.token_endpoint))}&keyset_url={urlencode(trim(iss, platform_config.jwks_uri))}"
+    return f"{login_uri}&lms={lms}"
 
 def get_platform_config( url: str) -> PlatformOIDCConfig:
     headers = {
@@ -88,7 +126,8 @@ def base_tool_oidc_conf(*,name:str,
                         pii_name: bool = False, 
                         pii_email: bool = False, 
                         ags: bool = False, 
-                        nrps: bool = False) -> ToolOIDCConfig:
+                        nrps: bool = False,
+                        dls: bool = False) -> ToolOIDCConfig:
     if not jwks_uri:
         jwks_uri = 'https://{domain}/.well-known/jwks.json'.format(domain=domain)
     if not base_url:
@@ -126,7 +165,7 @@ def base_tool_oidc_conf(*,name:str,
                     "type": "LtiDeepLinkingRequest",
                     "target_link_uri": "{dl_url}",
                     "label": "{dl_label}",
-                    "placements": []
+                    "placements": ["ContentArea", "RichTextEditor"]
                 }}
         '''.format(dl_label=dl_label, dl_url=dl_url)
         tool_conf.lti_config.messages.append(MessageDef(**json.loads(dl_message)))
@@ -141,6 +180,10 @@ def base_tool_oidc_conf(*,name:str,
             "https://purl.imsglobal.org/spec/lti-ags/scope/score"])
     if nrps:
         scopes.append('https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly')
+    if dls:
+        scopes.extend([
+            "https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read",
+            "https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update"])
     tool_conf.scope = " ".join(scopes)
     return tool_conf
 

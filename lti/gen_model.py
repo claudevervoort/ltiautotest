@@ -71,10 +71,13 @@ class Context(dict):
     def type(self) -> List[str]:
         if not 'type' in self:
             self['type'] = []
+        l = self['type']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['type'] = list(map(lambda d: str(d), l))
         return self.get('type')
 
     @type.setter
-    def type(self, value: List[str]):
+    def type(self, value: str):
         self['type'] = value
 
 
@@ -180,10 +183,13 @@ class DeeplinkSettings(dict):
     def accept_types(self) -> List[str]:
         if not 'accept_types' in self:
             self['accept_types'] = []
+        l = self['accept_types']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['accept_types'] = list(map(lambda d: str(d), l))
         return self.get('accept_types')
 
     @accept_types.setter
-    def accept_types(self, value: List[str]):
+    def accept_types(self, value: str):
         self['accept_types'] = value
 
 
@@ -191,10 +197,13 @@ class DeeplinkSettings(dict):
     def accept_media_types(self) -> List[str]:
         if not 'accept_media_types' in self:
             self['accept_media_types'] = []
+        l = self['accept_media_types']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['accept_media_types'] = list(map(lambda d: str(d), l))
         return self.get('accept_media_types')
 
     @accept_media_types.setter
-    def accept_media_types(self, value: List[str]):
+    def accept_media_types(self, value: str):
         self['accept_media_types'] = value
 
 
@@ -202,17 +211,20 @@ class DeeplinkSettings(dict):
     def accept_presentation_document_targets(self) -> List[str]:
         if not 'accept_presentation_document_targets' in self:
             self['accept_presentation_document_targets'] = []
+        l = self['accept_presentation_document_targets']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['accept_presentation_document_targets'] = list(map(lambda d: str(d), l))
         return self.get('accept_presentation_document_targets')
 
     @accept_presentation_document_targets.setter
-    def accept_presentation_document_targets(self, value: List[str]):
+    def accept_presentation_document_targets(self, value: str):
         self['accept_presentation_document_targets'] = value
 
 
     @property
     def accept_multiple(self) -> bool:
         val = self.get('accept_multiple')
-        if (val):
+        if (val != None):
             if type(val) is bool:
                 return val
             # Moodle error encoded a string
@@ -227,9 +239,26 @@ class DeeplinkSettings(dict):
 
 
     @property
+    def accept_lineitem(self) -> bool:
+        val = self.get('accept_lineitem')
+        if (val != None):
+            if type(val) is bool:
+                return val
+            # Moodle error encoded a string
+            if type(val) is str:
+                return val.lower() == 'true'
+            return False
+        return None
+
+    @accept_lineitem.setter
+    def accept_lineitem(self, value: bool):
+        self['accept_lineitem'] = value
+
+
+    @property
     def auto_create(self) -> bool:
         val = self.get('auto_create')
-        if (val):
+        if (val != None):
             if type(val) is bool:
                 return val
             # Moodle error encoded a string
@@ -304,6 +333,63 @@ class DeeplinkSettings(dict):
 
 
 
+class DeepLinkService(dict):
+
+    @property
+    def contentitems(self) -> str:
+        val = self.get('contentitems')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['contentitems'] = typed_val
+            return typed_val
+        return val
+
+
+    @contentitems.setter
+    def contentitems(self, value: str):
+        if isinstance(value, Enum):
+            self['contentitems'] = value.value
+        else:
+            self['contentitems'] = value
+
+
+    @property
+    def contentitem(self) -> str:
+        val = self.get('contentitem')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['contentitem'] = typed_val
+            return typed_val
+        return val
+
+
+    @contentitem.setter
+    def contentitem(self, value: str):
+        if isinstance(value, Enum):
+            self['contentitem'] = value.value
+        else:
+            self['contentitem'] = value
+
+
+    @property
+    def scopes(self) -> List[str]:
+        if not 'scopes' in self:
+            self['scopes'] = []
+        l = self['scopes']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['scopes'] = list(map(lambda d: str(d), l))
+        return self.get('scopes')
+
+    @scopes.setter
+    def scopes(self, value: str):
+        self['scopes'] = value
+
+
+
 class GradeService(dict):
 
     @property
@@ -350,10 +436,13 @@ class GradeService(dict):
     def scope(self) -> List[str]:
         if not 'scope' in self:
             self['scope'] = []
+        l = self['scope']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['scope'] = list(map(lambda d: str(d), l))
         return self.get('scope')
 
     @scope.setter
-    def scope(self, value: List[str]):
+    def scope(self, value: str):
         self['scope'] = value
 
 
@@ -398,6 +487,129 @@ class MembershipService(dict):
             self['service_version'] = value.value
         else:
             self['service_version'] = value
+
+
+
+class User(dict):
+
+    @property
+    def user_id(self) -> str:
+        val = self.get('user_id')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['user_id'] = typed_val
+            return typed_val
+        return val
+
+
+    @user_id.setter
+    def user_id(self, value: str):
+        if isinstance(value, Enum):
+            self['user_id'] = value.value
+        else:
+            self['user_id'] = value
+
+
+    @property
+    def person_sourcedid(self) -> str:
+        val = self.get('person_sourcedid')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['person_sourcedid'] = typed_val
+            return typed_val
+        return val
+
+
+    @person_sourcedid.setter
+    def person_sourcedid(self, value: str):
+        if isinstance(value, Enum):
+            self['person_sourcedid'] = value.value
+        else:
+            self['person_sourcedid'] = value
+
+
+    @property
+    def given_name(self) -> str:
+        val = self.get('given_name')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['given_name'] = typed_val
+            return typed_val
+        return val
+
+
+    @given_name.setter
+    def given_name(self, value: str):
+        if isinstance(value, Enum):
+            self['given_name'] = value.value
+        else:
+            self['given_name'] = value
+
+
+    @property
+    def family_name(self) -> str:
+        val = self.get('family_name')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['family_name'] = typed_val
+            return typed_val
+        return val
+
+
+    @family_name.setter
+    def family_name(self, value: str):
+        if isinstance(value, Enum):
+            self['family_name'] = value.value
+        else:
+            self['family_name'] = value
+
+
+    @property
+    def name(self) -> str:
+        val = self.get('name')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['name'] = typed_val
+            return typed_val
+        return val
+
+
+    @name.setter
+    def name(self, value: str):
+        if isinstance(value, Enum):
+            self['name'] = value.value
+        else:
+            self['name'] = value
+
+
+    @property
+    def email(self) -> str:
+        val = self.get('email')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['email'] = typed_val
+            return typed_val
+        return val
+
+
+    @email.setter
+    def email(self, value: str):
+        if isinstance(value, Enum):
+            self['email'] = value.value
+        else:
+            self['email'] = value
 
 
 
@@ -627,10 +839,13 @@ class LTIMessage(dict):
     def role(self) -> List[str]:
         if not 'https://purl.imsglobal.org/spec/lti/claim/roles' in self:
             self['https://purl.imsglobal.org/spec/lti/claim/roles'] = []
+        l = self['https://purl.imsglobal.org/spec/lti/claim/roles']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['https://purl.imsglobal.org/spec/lti/claim/roles'] = list(map(lambda d: str(d), l))
         return self.get('https://purl.imsglobal.org/spec/lti/claim/roles')
 
     @role.setter
-    def role(self, value: List[str]):
+    def role(self, value: str):
         self['https://purl.imsglobal.org/spec/lti/claim/roles'] = value
 
 
@@ -775,6 +990,26 @@ class LTIMessage(dict):
 
 
     @property
+    def deeplinking_service(self) -> DeepLinkService:
+        val = self.get('https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice')
+        if issubclass(DeepLinkService, Enum):
+            return DeepLinkService(val)
+        if (isinstance(val, dict) and not isinstance(val, DeepLinkService)):
+            typed_val = DeepLinkService( **val )
+            self['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice'] = typed_val
+            return typed_val
+        return val
+
+
+    @deeplinking_service.setter
+    def deeplinking_service(self, value: DeepLinkService):
+        if isinstance(value, Enum):
+            self['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice'] = value.value
+        else:
+            self['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice'] = value
+
+
+    @property
     def membership_service(self) -> MembershipService:
         val = self.get('https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice')
         if issubclass(MembershipService, Enum):
@@ -792,6 +1027,26 @@ class LTIMessage(dict):
             self['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice'] = value.value
         else:
             self['https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice'] = value
+
+
+    @property
+    def for_user(self) -> User:
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/for_user')
+        if issubclass(User, Enum):
+            return User(val)
+        if (isinstance(val, dict) and not isinstance(val, User)):
+            typed_val = User( **val )
+            self['https://purl.imsglobal.org/spec/lti/claim/for_user'] = typed_val
+            return typed_val
+        return val
+
+
+    @for_user.setter
+    def for_user(self, value: User):
+        if isinstance(value, Enum):
+            self['https://purl.imsglobal.org/spec/lti/claim/for_user'] = value.value
+        else:
+            self['https://purl.imsglobal.org/spec/lti/claim/for_user'] = value
 
 
 
@@ -901,6 +1156,69 @@ class DeeplinkResponse(dict):
 
 
 
+class SubmissionReview(dict):
+
+    @property
+    def label(self) -> str:
+        val = self.get('label')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['label'] = typed_val
+            return typed_val
+        return val
+
+
+    @label.setter
+    def label(self, value: str):
+        if isinstance(value, Enum):
+            self['label'] = value.value
+        else:
+            self['label'] = value
+
+
+    @property
+    def url(self) -> str:
+        val = self.get('url')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['url'] = typed_val
+            return typed_val
+        return val
+
+
+    @url.setter
+    def url(self, value: str):
+        if isinstance(value, Enum):
+            self['url'] = value.value
+        else:
+            self['url'] = value
+
+
+    @property
+    def custom(self) -> Custom:
+        val = self.get('custom')
+        if issubclass(Custom, Enum):
+            return Custom(val)
+        if (isinstance(val, dict) and not isinstance(val, Custom)):
+            typed_val = Custom( **val )
+            self['custom'] = typed_val
+            return typed_val
+        return val
+
+
+    @custom.setter
+    def custom(self, value: Custom):
+        if isinstance(value, Enum):
+            self['custom'] = value.value
+        else:
+            self['custom'] = value
+
+
+
 class LineItem(dict):
 
     mime = 'application/vnd.ims.lis.v2.lineitem+json'
@@ -993,6 +1311,26 @@ class LineItem(dict):
             self['tag'] = value.value
         else:
             self['tag'] = value
+
+
+    @property
+    def submissionReview(self) -> SubmissionReview:
+        val = self.get('submissionReview')
+        if issubclass(SubmissionReview, Enum):
+            return SubmissionReview(val)
+        if (isinstance(val, dict) and not isinstance(val, SubmissionReview)):
+            typed_val = SubmissionReview( **val )
+            self['submissionReview'] = typed_val
+            return typed_val
+        return val
+
+
+    @submissionReview.setter
+    def submissionReview(self, value: SubmissionReview):
+        if isinstance(value, Enum):
+            self['submissionReview'] = value.value
+        else:
+            self['submissionReview'] = value
 
 
     @property
@@ -1119,6 +1457,15 @@ class ActivityProgress(Enum):
 
 
 class Score(dict):
+
+    mime = 'application/vnd.ims.lis.v1.score+json'
+
+
+    write_scope = 'https://purl.imsglobal.org/spec/lti-ags/scope/score'
+
+
+    path_suffix = 'scores'
+
 
     @property
     def userId(self) -> str:
@@ -1254,6 +1601,15 @@ class Score(dict):
 
 
 class Result(dict):
+
+    mime = 'application/vnd.ims.lis.v2.resultcontainer+json'
+
+
+    read_scope = 'https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly'
+
+
+    path_suffix = 'results'
+
 
     @property
     def userId(self) -> str:
@@ -1422,6 +1778,72 @@ class DLWindow(dict):
 
 
 
+class DLEmbed(dict):
+
+    @property
+    def html(self) -> str:
+        val = self.get('html')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['html'] = typed_val
+            return typed_val
+        return val
+
+
+    @html.setter
+    def html(self, value: str):
+        if isinstance(value, Enum):
+            self['html'] = value.value
+        else:
+            self['html'] = value
+
+
+
+class TimeSpan(dict):
+
+    @property
+    def startDateTime(self) -> str:
+        val = self.get('startDateTime')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['startDateTime'] = typed_val
+            return typed_val
+        return val
+
+
+    @startDateTime.setter
+    def startDateTime(self, value: str):
+        if isinstance(value, Enum):
+            self['startDateTime'] = value.value
+        else:
+            self['startDateTime'] = value
+
+
+    @property
+    def endDateTime(self) -> str:
+        val = self.get('endDateTime')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['endDateTime'] = typed_val
+            return typed_val
+        return val
+
+
+    @endDateTime.setter
+    def endDateTime(self, value: str):
+        if isinstance(value, Enum):
+            self['endDateTime'] = value.value
+        else:
+            self['endDateTime'] = value
+
+
+
 class LTIResourceLink(dict):
 
     def __init__(self, *args, **kwargs):
@@ -1580,6 +2002,46 @@ class LTIResourceLink(dict):
 
 
     @property
+    def available(self) -> TimeSpan:
+        val = self.get('available')
+        if issubclass(TimeSpan, Enum):
+            return TimeSpan(val)
+        if (isinstance(val, dict) and not isinstance(val, TimeSpan)):
+            typed_val = TimeSpan( **val )
+            self['available'] = typed_val
+            return typed_val
+        return val
+
+
+    @available.setter
+    def available(self, value: TimeSpan):
+        if isinstance(value, Enum):
+            self['available'] = value.value
+        else:
+            self['available'] = value
+
+
+    @property
+    def submission(self) -> TimeSpan:
+        val = self.get('submission')
+        if issubclass(TimeSpan, Enum):
+            return TimeSpan(val)
+        if (isinstance(val, dict) and not isinstance(val, TimeSpan)):
+            typed_val = TimeSpan( **val )
+            self['submission'] = typed_val
+            return typed_val
+        return val
+
+
+    @submission.setter
+    def submission(self, value: TimeSpan):
+        if isinstance(value, Enum):
+            self['submission'] = value.value
+        else:
+            self['submission'] = value
+
+
+    @property
     def iframe(self) -> DLIFrame:
         val = self.get('iframe')
         if issubclass(DLIFrame, Enum):
@@ -1617,6 +2079,379 @@ class LTIResourceLink(dict):
             self['window'] = value.value
         else:
             self['window'] = value
+
+
+
+class DLHTMLFragment(dict):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+        if not self.get('type'):
+            self['type'] = 'html'
+
+
+    @property
+    def type(self) -> str:
+        val = self.get('type')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['type'] = typed_val
+            return typed_val
+        return val
+
+
+    @type.setter
+    def type(self, value: str):
+        if isinstance(value, Enum):
+            self['type'] = value.value
+        else:
+            self['type'] = value
+
+
+    @property
+    def title(self) -> str:
+        val = self.get('title')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['title'] = typed_val
+            return typed_val
+        return val
+
+
+    @title.setter
+    def title(self, value: str):
+        if isinstance(value, Enum):
+            self['title'] = value.value
+        else:
+            self['title'] = value
+
+
+    @property
+    def text(self) -> str:
+        val = self.get('text')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['text'] = typed_val
+            return typed_val
+        return val
+
+
+    @text.setter
+    def text(self, value: str):
+        if isinstance(value, Enum):
+            self['text'] = value.value
+        else:
+            self['text'] = value
+
+
+    @property
+    def html(self) -> str:
+        val = self.get('html')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['html'] = typed_val
+            return typed_val
+        return val
+
+
+    @html.setter
+    def html(self, value: str):
+        if isinstance(value, Enum):
+            self['html'] = value.value
+        else:
+            self['html'] = value
+
+
+
+class DLImage(dict):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+        if not self.get('type'):
+            self['type'] = 'image'
+
+
+    @property
+    def type(self) -> str:
+        val = self.get('type')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['type'] = typed_val
+            return typed_val
+        return val
+
+
+    @type.setter
+    def type(self, value: str):
+        if isinstance(value, Enum):
+            self['type'] = value.value
+        else:
+            self['type'] = value
+
+
+    @property
+    def title(self) -> str:
+        val = self.get('title')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['title'] = typed_val
+            return typed_val
+        return val
+
+
+    @title.setter
+    def title(self, value: str):
+        if isinstance(value, Enum):
+            self['title'] = value.value
+        else:
+            self['title'] = value
+
+
+    @property
+    def text(self) -> str:
+        val = self.get('text')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['text'] = typed_val
+            return typed_val
+        return val
+
+
+    @text.setter
+    def text(self, value: str):
+        if isinstance(value, Enum):
+            self['text'] = value.value
+        else:
+            self['text'] = value
+
+
+    @property
+    def url(self) -> str:
+        val = self.get('url')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['url'] = typed_val
+            return typed_val
+        return val
+
+
+    @url.setter
+    def url(self, value: str):
+        if isinstance(value, Enum):
+            self['url'] = value.value
+        else:
+            self['url'] = value
+
+
+    @property
+    def width(self) -> float:
+        val = self.get('width')
+        if issubclass(float, Enum):
+            return float(val)
+        if (isinstance(val, dict) and not isinstance(val, float)):
+            typed_val = float( **val )
+            self['width'] = typed_val
+            return typed_val
+        return val
+
+
+    @width.setter
+    def width(self, value: float):
+        if isinstance(value, Enum):
+            self['width'] = value.value
+        else:
+            self['width'] = value
+
+
+    @property
+    def height(self) -> float:
+        val = self.get('height')
+        if issubclass(float, Enum):
+            return float(val)
+        if (isinstance(val, dict) and not isinstance(val, float)):
+            typed_val = float( **val )
+            self['height'] = typed_val
+            return typed_val
+        return val
+
+
+    @height.setter
+    def height(self, value: float):
+        if isinstance(value, Enum):
+            self['height'] = value.value
+        else:
+            self['height'] = value
+
+
+
+class DLLink(dict):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+        if not self.get('type'):
+            self['type'] = 'link'
+
+
+    @property
+    def type(self) -> str:
+        val = self.get('type')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['type'] = typed_val
+            return typed_val
+        return val
+
+
+    @type.setter
+    def type(self, value: str):
+        if isinstance(value, Enum):
+            self['type'] = value.value
+        else:
+            self['type'] = value
+
+
+    @property
+    def title(self) -> str:
+        val = self.get('title')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['title'] = typed_val
+            return typed_val
+        return val
+
+
+    @title.setter
+    def title(self, value: str):
+        if isinstance(value, Enum):
+            self['title'] = value.value
+        else:
+            self['title'] = value
+
+
+    @property
+    def text(self) -> str:
+        val = self.get('text')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['text'] = typed_val
+            return typed_val
+        return val
+
+
+    @text.setter
+    def text(self, value: str):
+        if isinstance(value, Enum):
+            self['text'] = value.value
+        else:
+            self['text'] = value
+
+
+    @property
+    def url(self) -> str:
+        val = self.get('url')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['url'] = typed_val
+            return typed_val
+        return val
+
+
+    @url.setter
+    def url(self, value: str):
+        if isinstance(value, Enum):
+            self['url'] = value.value
+        else:
+            self['url'] = value
+
+
+    @property
+    def embed(self) -> DLEmbed:
+        val = self.get('embed')
+        if issubclass(DLEmbed, Enum):
+            return DLEmbed(val)
+        if (isinstance(val, dict) and not isinstance(val, DLEmbed)):
+            typed_val = DLEmbed( **val )
+            self['embed'] = typed_val
+            return typed_val
+        return val
+
+
+    @embed.setter
+    def embed(self, value: DLEmbed):
+        if isinstance(value, Enum):
+            self['embed'] = value.value
+        else:
+            self['embed'] = value
+
+
+    @property
+    def window(self) -> DLWindow:
+        val = self.get('window')
+        if issubclass(DLWindow, Enum):
+            return DLWindow(val)
+        if (isinstance(val, dict) and not isinstance(val, DLWindow)):
+            typed_val = DLWindow( **val )
+            self['window'] = typed_val
+            return typed_val
+        return val
+
+
+    @window.setter
+    def window(self, value: DLWindow):
+        if isinstance(value, Enum):
+            self['window'] = value.value
+        else:
+            self['window'] = value
+
+
+    @property
+    def iframe(self) -> DLIFrame:
+        val = self.get('iframe')
+        if issubclass(DLIFrame, Enum):
+            return DLIFrame(val)
+        if (isinstance(val, dict) and not isinstance(val, DLIFrame)):
+            typed_val = DLIFrame( **val )
+            self['iframe'] = typed_val
+            return typed_val
+        return val
+
+
+    @iframe.setter
+    def iframe(self, value: DLIFrame):
+        if isinstance(value, Enum):
+            self['iframe'] = value.value
+        else:
+            self['iframe'] = value
 
 
 
@@ -1861,10 +2696,13 @@ class Member(dict):
     def roles(self) -> List[str]:
         if not 'roles' in self:
             self['roles'] = []
+        l = self['roles']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['roles'] = list(map(lambda d: str(d), l))
         return self.get('roles')
 
     @roles.setter
-    def roles(self, value: List[str]):
+    def roles(self, value: str):
         self['roles'] = value
 
 
@@ -1904,11 +2742,323 @@ class Members(dict):
     def members(self) -> List[Member]:
         if not 'members' in self:
             self['members'] = []
+        l = self['members']
+        if len(l)>0 and not type(l[0]) is Member and type(l[0]) is dict:
+            self['members'] = list(map(lambda d: Member(d), l))
         return self.get('members')
 
     @members.setter
-    def members(self, value: List[Member]):
+    def members(self, value: Member):
         self['members'] = value
+
+
+
+class DeepLinkingItem(dict):
+
+    mime = 'application/vnd.1edtech.lti.contentitem+json'
+
+
+    read_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read'
+
+
+    write_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update'
+
+
+    @property
+    def type(self) -> str:
+        val = self.get('type')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['type'] = typed_val
+            return typed_val
+        return val
+
+
+    @type.setter
+    def type(self, value: str):
+        if isinstance(value, Enum):
+            self['type'] = value.value
+        else:
+            self['type'] = value
+
+
+    @property
+    def title(self) -> str:
+        val = self.get('title')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['title'] = typed_val
+            return typed_val
+        return val
+
+
+    @title.setter
+    def title(self, value: str):
+        if isinstance(value, Enum):
+            self['title'] = value.value
+        else:
+            self['title'] = value
+
+
+    @property
+    def text(self) -> str:
+        val = self.get('text')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['text'] = typed_val
+            return typed_val
+        return val
+
+
+    @text.setter
+    def text(self, value: str):
+        if isinstance(value, Enum):
+            self['text'] = value.value
+        else:
+            self['text'] = value
+
+
+    @property
+    def url(self) -> str:
+        val = self.get('url')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['url'] = typed_val
+            return typed_val
+        return val
+
+
+    @url.setter
+    def url(self, value: str):
+        if isinstance(value, Enum):
+            self['url'] = value.value
+        else:
+            self['url'] = value
+
+
+    @property
+    def resource_link_id(self) -> str:
+        val = self.get('resourceLinkId')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['resourceLinkId'] = typed_val
+            return typed_val
+        return val
+
+
+    @resource_link_id.setter
+    def resource_link_id(self, value: str):
+        if isinstance(value, Enum):
+            self['resourceLinkId'] = value.value
+        else:
+            self['resourceLinkId'] = value
+
+
+    @property
+    def custom(self) -> Dict[str,str]:
+        if not 'custom' in self:
+            self['custom'] = {}
+        return self.get('custom')
+
+    @custom.setter
+    def custom(self, value: Dict[str,str]):
+        self['custom'] = value
+
+
+    @property
+    def lineitem_id(self) -> str:
+        val = self.get('lineItemId')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['lineItemId'] = typed_val
+            return typed_val
+        return val
+
+
+    @lineitem_id.setter
+    def lineitem_id(self, value: str):
+        if isinstance(value, Enum):
+            self['lineItemId'] = value.value
+        else:
+            self['lineItemId'] = value
+
+
+    @property
+    def available(self) -> TimeSpan:
+        val = self.get('available')
+        if issubclass(TimeSpan, Enum):
+            return TimeSpan(val)
+        if (isinstance(val, dict) and not isinstance(val, TimeSpan)):
+            typed_val = TimeSpan( **val )
+            self['available'] = typed_val
+            return typed_val
+        return val
+
+
+    @available.setter
+    def available(self, value: TimeSpan):
+        if isinstance(value, Enum):
+            self['available'] = value.value
+        else:
+            self['available'] = value
+
+
+    @property
+    def submission(self) -> TimeSpan:
+        val = self.get('submission')
+        if issubclass(TimeSpan, Enum):
+            return TimeSpan(val)
+        if (isinstance(val, dict) and not isinstance(val, TimeSpan)):
+            typed_val = TimeSpan( **val )
+            self['submission'] = typed_val
+            return typed_val
+        return val
+
+
+    @submission.setter
+    def submission(self, value: TimeSpan):
+        if isinstance(value, Enum):
+            self['submission'] = value.value
+        else:
+            self['submission'] = value
+
+
+    @property
+    def iframe(self) -> DLIFrame:
+        val = self.get('iframe')
+        if issubclass(DLIFrame, Enum):
+            return DLIFrame(val)
+        if (isinstance(val, dict) and not isinstance(val, DLIFrame)):
+            typed_val = DLIFrame( **val )
+            self['iframe'] = typed_val
+            return typed_val
+        return val
+
+
+    @iframe.setter
+    def iframe(self, value: DLIFrame):
+        if isinstance(value, Enum):
+            self['iframe'] = value.value
+        else:
+            self['iframe'] = value
+
+
+    @property
+    def window(self) -> DLWindow:
+        val = self.get('window')
+        if issubclass(DLWindow, Enum):
+            return DLWindow(val)
+        if (isinstance(val, dict) and not isinstance(val, DLWindow)):
+            typed_val = DLWindow( **val )
+            self['window'] = typed_val
+            return typed_val
+        return val
+
+
+    @window.setter
+    def window(self, value: DLWindow):
+        if isinstance(value, Enum):
+            self['window'] = value.value
+        else:
+            self['window'] = value
+
+
+
+class DeepLinkingItems(dict):
+
+    mime = 'application/vnd.1edtech.lti.contentitems+json'
+
+
+    read_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read'
+
+
+    write_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update'
+
+
+    collection_attribute = 'items'
+
+
+    @property
+    def id(self) -> str:
+        val = self.get('id')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['id'] = typed_val
+            return typed_val
+        return val
+
+
+    @id.setter
+    def id(self, value: str):
+        if isinstance(value, Enum):
+            self['id'] = value.value
+        else:
+            self['id'] = value
+
+
+    @property
+    def items(self) -> List[DeepLinkingItem]:
+        if not 'items' in self:
+            self['items'] = []
+        l = self['items']
+        if len(l)>0 and not type(l[0]) is DeepLinkingItem and type(l[0]) is dict:
+            self['items'] = list(map(lambda d: DeepLinkingItem(d), l))
+        return self.get('items')
+
+    @items.setter
+    def items(self, value: DeepLinkingItem):
+        self['items'] = value
+
+
+
+class SupportedMessage(dict):
+
+    @property
+    def type(self) -> str:
+        val = self.get('type')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['type'] = typed_val
+            return typed_val
+        return val
+
+
+    @type.setter
+    def type(self, value: str):
+        if isinstance(value, Enum):
+            self['type'] = value.value
+        else:
+            self['type'] = value
+
+
+    @property
+    def placements(self) -> List[str]:
+        if not 'placements' in self:
+            self['placements'] = []
+        l = self['placements']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['placements'] = list(map(lambda d: str(d), l))
+        return self.get('placements')
+
+    @placements.setter
+    def placements(self, value: str):
+        self['placements'] = value
 
 
 
@@ -1938,11 +3088,28 @@ class PlatformConfig(dict):
     def variables(self) -> List[str]:
         if not 'variables' in self:
             self['variables'] = []
+        l = self['variables']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['variables'] = list(map(lambda d: str(d), l))
         return self.get('variables')
 
     @variables.setter
-    def variables(self, value: List[str]):
+    def variables(self, value: str):
         self['variables'] = value
+
+
+    @property
+    def messages_supported(self) -> List[SupportedMessage]:
+        if not 'messages_supported' in self:
+            self['messages_supported'] = []
+        l = self['messages_supported']
+        if len(l)>0 and not type(l[0]) is SupportedMessage and type(l[0]) is dict:
+            self['messages_supported'] = list(map(lambda d: SupportedMessage(d), l))
+        return self.get('messages_supported')
+
+    @messages_supported.setter
+    def messages_supported(self, value: SupportedMessage):
+        self['messages_supported'] = value
 
 
 
@@ -2012,10 +3179,13 @@ class PlatformOIDCConfig(dict):
     def token_endpoint_auth_methods_supported(self) -> List[str]:
         if not 'token_endpoint_auth_methods_supported' in self:
             self['token_endpoint_auth_methods_supported'] = []
+        l = self['token_endpoint_auth_methods_supported']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['token_endpoint_auth_methods_supported'] = list(map(lambda d: str(d), l))
         return self.get('token_endpoint_auth_methods_supported')
 
     @token_endpoint_auth_methods_supported.setter
-    def token_endpoint_auth_methods_supported(self, value: List[str]):
+    def token_endpoint_auth_methods_supported(self, value: str):
         self['token_endpoint_auth_methods_supported'] = value
 
 
@@ -2023,10 +3193,13 @@ class PlatformOIDCConfig(dict):
     def token_endpoint_auth_signing_alg_values_supported(self) -> List[str]:
         if not 'token_endpoint_auth_signing_alg_values_supported' in self:
             self['token_endpoint_auth_signing_alg_values_supported'] = []
+        l = self['token_endpoint_auth_signing_alg_values_supported']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['token_endpoint_auth_signing_alg_values_supported'] = list(map(lambda d: str(d), l))
         return self.get('token_endpoint_auth_signing_alg_values_supported')
 
     @token_endpoint_auth_signing_alg_values_supported.setter
-    def token_endpoint_auth_signing_alg_values_supported(self, value: List[str]):
+    def token_endpoint_auth_signing_alg_values_supported(self, value: str):
         self['token_endpoint_auth_signing_alg_values_supported'] = value
 
 
@@ -2074,10 +3247,13 @@ class PlatformOIDCConfig(dict):
     def scopes_supported(self) -> List[str]:
         if not 'scopes_supported' in self:
             self['scopes_supported'] = []
+        l = self['scopes_supported']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['scopes_supported'] = list(map(lambda d: str(d), l))
         return self.get('scopes_supported')
 
     @scopes_supported.setter
-    def scopes_supported(self, value: List[str]):
+    def scopes_supported(self, value: str):
         self['scopes_supported'] = value
 
 
@@ -2085,10 +3261,13 @@ class PlatformOIDCConfig(dict):
     def response_types_supported(self) -> List[str]:
         if not 'response_types_supported' in self:
             self['response_types_supported'] = []
+        l = self['response_types_supported']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['response_types_supported'] = list(map(lambda d: str(d), l))
         return self.get('response_types_supported')
 
     @response_types_supported.setter
-    def response_types_supported(self, value: List[str]):
+    def response_types_supported(self, value: str):
         self['response_types_supported'] = value
 
 
@@ -2096,10 +3275,13 @@ class PlatformOIDCConfig(dict):
     def subject_types_supported(self) -> List[str]:
         if not 'subject_types_supported' in self:
             self['subject_types_supported'] = []
+        l = self['subject_types_supported']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['subject_types_supported'] = list(map(lambda d: str(d), l))
         return self.get('subject_types_supported')
 
     @subject_types_supported.setter
-    def subject_types_supported(self, value: List[str]):
+    def subject_types_supported(self, value: str):
         self['subject_types_supported'] = value
 
 
@@ -2107,10 +3289,13 @@ class PlatformOIDCConfig(dict):
     def id_token_signing_alg_values_supported(self) -> List[str]:
         if not 'id_token_signing_alg_values_supported' in self:
             self['id_token_signing_alg_values_supported'] = []
+        l = self['id_token_signing_alg_values_supported']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['id_token_signing_alg_values_supported'] = list(map(lambda d: str(d), l))
         return self.get('id_token_signing_alg_values_supported')
 
     @id_token_signing_alg_values_supported.setter
-    def id_token_signing_alg_values_supported(self, value: List[str]):
+    def id_token_signing_alg_values_supported(self, value: str):
         self['id_token_signing_alg_values_supported'] = value
 
 
@@ -2118,10 +3303,13 @@ class PlatformOIDCConfig(dict):
     def claims_supported(self) -> List[str]:
         if not 'claims_supported' in self:
             self['claims_supported'] = []
+        l = self['claims_supported']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['claims_supported'] = list(map(lambda d: str(d), l))
         return self.get('claims_supported')
 
     @claims_supported.setter
-    def claims_supported(self, value: List[str]):
+    def claims_supported(self, value: str):
         self['claims_supported'] = value
 
 
@@ -2232,10 +3420,13 @@ class MessageDef(dict):
     def placements(self) -> List[str]:
         if not 'placements' in self:
             self['placements'] = []
+        l = self['placements']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['placements'] = list(map(lambda d: str(d), l))
         return self.get('placements')
 
     @placements.setter
-    def placements(self, value: List[str]):
+    def placements(self, value: str):
         self['placements'] = value
 
 
@@ -2243,10 +3434,13 @@ class MessageDef(dict):
     def roles(self) -> List[str]:
         if not 'roles' in self:
             self['roles'] = []
+        l = self['roles']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['roles'] = list(map(lambda d: str(d), l))
         return self.get('roles')
 
     @roles.setter
-    def roles(self, value: List[str]):
+    def roles(self, value: str):
         self['roles'] = value
 
 
@@ -2440,10 +3634,13 @@ class ToolConfig(dict):
     def scopes(self) -> List[str]:
         if not 'scopes' in self:
             self['scopes'] = []
+        l = self['scopes']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['scopes'] = list(map(lambda d: str(d), l))
         return self.get('scopes')
 
     @scopes.setter
-    def scopes(self, value: List[str]):
+    def scopes(self, value: str):
         self['scopes'] = value
 
 
@@ -2451,10 +3648,13 @@ class ToolConfig(dict):
     def claims(self) -> List[str]:
         if not 'claims' in self:
             self['claims'] = []
+        l = self['claims']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['claims'] = list(map(lambda d: str(d), l))
         return self.get('claims')
 
     @claims.setter
-    def claims(self, value: List[str]):
+    def claims(self, value: str):
         self['claims'] = value
 
 
@@ -2462,10 +3662,13 @@ class ToolConfig(dict):
     def messages(self) -> List[MessageDef]:
         if not 'messages' in self:
             self['messages'] = []
+        l = self['messages']
+        if len(l)>0 and not type(l[0]) is MessageDef and type(l[0]) is dict:
+            self['messages'] = list(map(lambda d: MessageDef(d), l))
         return self.get('messages')
 
     @messages.setter
-    def messages(self, value: List[MessageDef]):
+    def messages(self, value: MessageDef):
         self['messages'] = value
 
 
@@ -2536,10 +3739,13 @@ class ToolOIDCConfig(dict):
     def response_types(self) -> List[str]:
         if not 'response_types' in self:
             self['response_types'] = []
+        l = self['response_types']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['response_types'] = list(map(lambda d: str(d), l))
         return self.get('response_types')
 
     @response_types.setter
-    def response_types(self, value: List[str]):
+    def response_types(self, value: str):
         self['response_types'] = value
 
 
@@ -2547,10 +3753,13 @@ class ToolOIDCConfig(dict):
     def grant_types(self) -> List[str]:
         if not 'grant_types' in self:
             self['grant_types'] = []
+        l = self['grant_types']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['grant_types'] = list(map(lambda d: str(d), l))
         return self.get('grant_types')
 
     @grant_types.setter
-    def grant_types(self, value: List[str]):
+    def grant_types(self, value: str):
         self['grant_types'] = value
 
 
@@ -2578,10 +3787,13 @@ class ToolOIDCConfig(dict):
     def redirect_uris(self) -> List[str]:
         if not 'redirect_uris' in self:
             self['redirect_uris'] = []
+        l = self['redirect_uris']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['redirect_uris'] = list(map(lambda d: str(d), l))
         return self.get('redirect_uris')
 
     @redirect_uris.setter
-    def redirect_uris(self, value: List[str]):
+    def redirect_uris(self, value: str):
         self['redirect_uris'] = value
 
 
@@ -2669,10 +3881,13 @@ class ToolOIDCConfig(dict):
     def contacts(self) -> List[str]:
         if not 'contacts' in self:
             self['contacts'] = []
+        l = self['contacts']
+        if len(l)>0 and not type(l[0]) is str and type(l[0]) is dict:
+            self['contacts'] = list(map(lambda d: str(d), l))
         return self.get('contacts')
 
     @contacts.setter
-    def contacts(self, value: List[str]):
+    def contacts(self, value: str):
         self['contacts'] = value
 
 
