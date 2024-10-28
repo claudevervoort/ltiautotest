@@ -34,6 +34,7 @@ def access_token(registration: ToolRegistration, scope: str, force: bool = False
         "scope": scope,
         "client_assertion": assertion
     })
+    print(r.text)
     r.raise_for_status()
     t = json.loads(r.text)
     return t['access_token']
@@ -68,6 +69,7 @@ def ltiservice_getjson(registration: ToolRegistration, mime : str, scope: str,  
     }
     r = requests.get(url, headers=headers, params=params)
     r.raise_for_status()
+    print(r.text)
     return {
         "response": json.loads(r.text),
         "next": next(r.headers)

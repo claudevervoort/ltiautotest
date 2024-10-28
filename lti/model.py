@@ -27,6 +27,11 @@ models = {
         "text": [],
         "data": []
     },
+    'DeepLinkService': {
+        'contentitems': [],
+        'contentitem': [],
+        'scopes':['', 'List[str]']
+    },
     'GradeService': {
         'lineitem': [],
         'lineitems': [],
@@ -64,6 +69,7 @@ models = {
         "custom": ["https://purl.imsglobal.org/spec/lti/claim/custom", 'Custom'],
         "deep_linking_settings": ["https://purl.imsglobal.org/spec/lti-dl/claim/deep_linking_settings", 'DeeplinkSettings'],
         "grade_service": ['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint', 'GradeService'],
+        "deeplinking_service": ['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice', 'DeepLinkService'],
         "membership_service": ["https://purl.imsglobal.org/spec/lti-nrps/claim/namesroleservice", 'MembershipService'],
         "for_user": ["https://purl.imsglobal.org/spec/lti/claim/for_user", 'User']
     },
@@ -143,6 +149,9 @@ models = {
     'DLWindow': {
         'targetName': []
     },
+    'DLEmbed': {
+        'html': []
+    },
     'TimeSpan': {
         'startDateTime': [],
         'endDateTime': []
@@ -161,6 +170,30 @@ models = {
         'submission': ['', 'TimeSpan'],
         'iframe': ['', 'DLIFrame'],
         'window': ['', 'DLWindow']
+    },
+    'DLHTMLFragment': {
+        'type': ['', 'str', 'html'],
+        'title': [],
+        'text': [],
+        'html': []
+    },
+    'DLImage': {
+        'type': ['', 'str', 'image'],
+        'title': [],
+        'text': [],
+        'url': [],
+        'width': ['', 'float'],
+        'height': ['', 'float']
+    },
+    'DLLink': {
+        'type': ['', 'str', 'link'],
+        'title': [],
+        'text': [],
+        'url': [],
+        'embed': ['', 'DLEmbed'],
+        'window': ['', 'DLWindow'],
+        'embed': ['', 'DLEmbed'],
+        'iframe': ['', 'DLIFrame']
     },
     'MemberStatus': ('Active', 'Inactive', 'Deleted'),
     'Member': {
@@ -185,6 +218,34 @@ models = {
         },
         'id': [],
         'members': ['', 'List[Member]']
+    },
+    'DeepLinkingItem': {
+        'cls_const': {
+            'mime': 'application/vnd.1edtech.lti.contentitem+json',
+            'read_scope': 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read',
+            'write_scope': 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update',
+        },
+        'type': [],
+        'title': [],
+        'text': [],
+        'url': [],
+        'resource_link_id': ['resourceLinkId'],
+        'custom': ['', 'Dict[str,str]'],
+        'lineitem_id': ['lineItemId'],
+        'available': ['', 'TimeSpan'],
+        'submission': ['', 'TimeSpan'],
+        'iframe': ['', 'DLIFrame'],
+        'window': ['', 'DLWindow']
+    },
+    'DeepLinkingItems': {
+        'cls_const': {
+            'mime': 'application/vnd.1edtech.lti.contentitems+json',
+            'read_scope': 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read',
+            'write_scope': 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update',
+            'collection_attribute': 'items'
+        },
+        'id': [],
+        'items': ['', 'List[DeepLinkingItem]']
     },
     'SupportedMessage': {
         'type': [],

@@ -1,5 +1,6 @@
 import sys
 import os
+from unittest import result
 
 sys.path.extend([
     os.path.abspath('../')])
@@ -17,10 +18,12 @@ from starlette.templating import Jinja2Templates
 from urllib.parse import quote_plus, urlparse, urlunparse, urlencode, parse_qsl
 from typing import List, Dict
 from datetime import datetime, timedelta, timezone
-from lti import LineItem, SubmissionReview, User, ToolRegistration, LTIMessage, LTIResourceLink, DeeplinkResponse, DLIFrame, DLWindow, TimeSpan, add_coursenav_message
+from lti import LineItem, SubmissionReview, User, ToolRegistration, LTIMessage, LTIResourceLink, DLImage, DLHTMLFragment, DeeplinkResponse, DLIFrame, DLWindow, TimeSpan, DLLink, add_coursenav_message
 from lti import Score, ActivityProgress, GradingProgress, Members, SupportedMessage, get_public_keyset, get_publickey_pem, const, registration, ltiservice_get, ltiservice_get_array, ltiservice_mut
 from lti import get_platform_config, register_tool, base_tool_oidc_conf, get_tool_configuration, verify_11_oauth, append_regextra
+from lti import DeepLinkingItem, DeepLinkingItems
 from robotest.test_results import TestCategory, TestResult
+from requests.models import PreparedRequest
 #
 base_url = os.environ['ROBOTEST_WWW'] if 'ROBOTEST_WWW' in os.environ else 'https://robotest.theedtech.dev'
 
@@ -48,8 +51,17 @@ link_sub_variables = {
 
 @app.get("/")
 def read_root(request: Request):
-    return templates.TemplateResponse("moodleinstructions.html", {"request": request, "base_url": base_url, "custom_params": {**context_sub_variables, **link_sub_variables}})
-
+    res = templates.TemplateResponse("moodleinstructions.html",
+        {"request": request,
+         "base_url": base_url,
+         "custom_params": {**context_sub_variables, **link_sub_variables},
+         "cookie_fp_lax": request.cookies.get('robotest_fp_lax'),
+         "cookie_fp_none": request.cookies.get('robotest_fp_none'),
+         "cookie_tp_none": request.cookies.get('robotest_tp_none'),
+        })
+    res.set_cookie(key="robotest_fp_lax", value="firstparty_lax", secure=True, httponly=True, samesite='lax')
+    res.set_cookie(key="robotest_fp_none", value="firstparty_none", secure=True, httponly=True, samesite='none')
+    return res
 
 @app.get("/broken")
 def read_broken(request: Request):
@@ -160,6 +172,7 @@ def register(request: Request, openid_configuration: str, registration_token: st
                                                 redirect_uri=redirect_uri,
                                                 ags=True,
                                                 nrps=True,
+                                                dls=True,
                                                 pii_name=True,
                                                 dl_label='Add Robotest')
                 tool_conf.lti_config.description = "Less clicks, more tests, this is the LTI Robotest!"
@@ -253,7 +266,9 @@ def oidc_init(request: Request,
     reg = registration(lms, iss, client_id, oidc_auth, token_url, jwks_url)
     state = {
         'r': reg.__dict__,
-        'cookie': cookie
+        'cookie': cookie,
+        'login_hint': login_hint,
+        'lti_message_hint': lti_message_hint
     }
     auth_url = urlparse(reg.auth_endpoint)
     query_params = parse_qsl(auth_url.query)
@@ -276,8 +291,10 @@ def oidc_init(request: Request,
                                auth_url.params,
                                urlencode(query_params),
                                auth_url.fragment))
-    return RedirectResponse(url=redirect_url, status_code=302)
-
+    res = RedirectResponse(url=redirect_url, status_code=302, 
+                           headers={'Set-Cookie': f'{cookie}_part=init-oidc-part; Partitioned; SameSite=None; HttpOnly; Secure'})
+    res.set_cookie(key=cookie, value="init-oidc", secure=True, httponly=True, samesite='none')
+    return res
 
 @app.post("/oidc/init")
 def oidc_init_post(request: Request,
@@ -295,11 +312,12 @@ def oidc_init_post(request: Request,
 
 @app.post("/oidc/launch")
 def oidc_launch(request: Request, state: str = Form(...), id_token: str = Form(...)):
-    reg = ToolRegistration(**json.loads(state)['r'])
+    state_obj = json.loads(state)
+    reg = ToolRegistration(**state_obj['r'])
     message = LTIMessage(**reg.decode(id_token))
     if message.message_type == const.dl.request_msg_type:
         return deeplinking(request, reg, message)
-    return test_and_show_results(request, reg, message)
+    return test_and_show_results(request, reg, state_obj['cookie'], message)
 
 
 def resource_link(name: str, message: LTIMessage,
@@ -352,7 +370,22 @@ def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
     graded_iframe = resource_link("Graded (IFrame) " + today, message, True, True, 10.0)
     graded_iframe_subreview_empty = resource_link("Graded with Sub. Review (IFrame) " + today, message, True, True, 10.0, SubmissionReview())
     graded_newwin_subreview_full = resource_link("Graded with Sub. Review Full (new win) " + today, message, False, True, 20.0, SubmissionReview({'url':'{base_url}/subreview'.format(base_url=base_url), 'custom':{'action':'subreview','b':'2'}}))
-
+    image = DLImage()
+    image.title = 'Robotest icon'
+    image.url = 'https://robotest.theedtech.dev/assets/robotest_logo.png'
+    image.width = 50
+    image.height = 50
+    link = DLLink()
+    link.url = 'https://robotest.theedtech.dev'
+    link.title = 'Robotest Home'
+    link.window = DLWindow()
+    link.window.targetName = 'robotest_win'
+    htmlFragment = DLHTMLFragment()
+    htmlFragment.title = 'Robotest Fragment'
+    htmlFragment.html = '''<script>alert('Oops! Bad Robot')</script>
+        <a href='https://robotest.theedtech.dev' onclick='window.open("Don't let the Bad Robot wake up")'>
+        <img src='https://robotest.theedtech.dev/assets/robotest_logo.png'> This is an <em>HTML Fragment</em>.</a>
+        <p>It contains some JS popup code,  good if you don't see it!</p>'''
     response = {
         "request": request,
         "return_url": message.deep_linking_settings.return_url,
@@ -361,9 +394,13 @@ def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
         "jwt_single_graded": reg.encode(deepLinkingResponse(message, [graded_iframe])),
         "jwt_single_graded_subreview": reg.encode(deepLinkingResponse(message, [graded_iframe_subreview_empty])),
         "jwt_single_graded_subreview_full": reg.encode(deepLinkingResponse(message, [graded_newwin_subreview_full])),
+        "jwt_image": reg.encode(deepLinkingResponse(message, [image])),
+        "jwt_embed": reg.encode(deepLinkingResponse(message, [htmlFragment])),
+        "jwt_link": reg.encode(deepLinkingResponse(message, [link])),
         "name": message.name or 'No name!',
         'multiple': message.deep_linking_settings.accept_multiple,
-        'gradable': message.deep_linking_settings.accept_lineitem == None or message.deep_linking_settings.accept_lineitem
+        'gradable': message.deep_linking_settings.accept_lineitem == None or message.deep_linking_settings.accept_lineitem,
+        'types': message.deep_linking_settings.accept_types
     }
     notgraded_newwin.custom['multiple'] = str(message.deep_linking_settings.accept_multiple)
     graded_iframe.custom['multiple'] = str(message.deep_linking_settings.accept_multiple)
@@ -571,6 +608,80 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
     return res
 
 
+def test_dl(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
+    res = TestCategory('Deep Linking Service')
+    if not message.deeplinking_service.contentitems:
+        res.results.append(TestResult('Content Items must be defined',
+                                False,
+                                True,
+                                f"Not present"))
+        return res
+    try:
+        print(f"X{message.deeplinking_service.contentitems}X")
+        contentitems = ltiservice_get(reg, DeepLinkingItems, message.deeplinking_service.contentitems)
+        gradeditems = list(filter(lambda i: i.lineitem_id and len(i.lineitem_id)>0, contentitems.items))
+        res.results.append(TestResult('Deep Linking Items present and queriable',
+                                        True,
+                                        True,
+                                        f'Robotest is used {len(contentitems.items)} times in this course, {len(gradeditems)} are graded'))
+        if (len(gradeditems)>0):
+                lineitem = ltiservice_get(reg, LineItem, gradeditems[0].lineitem_id)
+                if lineitem:
+                    res.results.append(TestResult('Line Item id is queriable',
+                                            True,
+                                            True,
+                                            f'{gradeditems[0].title} is worth {lineitem.scoreMaximum}'))
+                else:
+                    res.results.append(TestResult('Line Item id is queriable',
+                                            False,
+                                            True,
+                                            f'No line item loaded for {gradeditems[0].lineitem_id}'))
+
+        if message.deeplinking_service.contentitem:
+            item = ltiservice_get(reg, DeepLinkingItem, message.deeplinking_service.contentitem)
+            if item:
+                colors = ['blue', 'white', 'red']
+                color = item.custom.get('color', '')
+                next_color = colors[(colors.index(color)+1)%len(colors)] if color in colors else 'blue'
+                item.custom['color'] = next_color
+                if (not 'updated' in item.url):
+                    item.url = item.url + "&updated=true"
+                ltiservice_mut(reg, message.deeplinking_service.contentitem, item, True)
+                updated_item = ltiservice_get(reg, DeepLinkingItem, message.deeplinking_service.contentitem)
+                res.results.append(TestResult('Deep Linking Item present and queriable',
+                                        True,
+                                        True,
+                                        f"The current color of this link is <span style='color: {color}'>{color}</span>"))
+                res.results.append(TestResult('Deep Linking Item Custom param updated',
+                                        updated_item.custom.get('color','') == next_color,
+                                        True,
+                                        f"The next color of this link is <span style='color: {next_color}'>{next_color}</span>"))
+                res.results.append(TestResult('Deep Linking Item URL updated',
+                                        'updated=true' in updated_item.url,
+                                        True,
+                                        f"The link url is marked as updated."))
+            else:
+                res.results.append(TestResult('Deep Linking Item present and queriable',
+                                        False,
+                                        True,
+                                        f"No item loaded"))
+            req = PreparedRequest()
+            req.prepare_url(message.deeplinking_service.contentitems, {'rlid': message.resource_link.id})
+            contentitem_by_rlid = ltiservice_get(reg, DeepLinkingItems, req.url)
+            res.results.append(TestResult('Can query by resource link id',
+                                    contentitem_by_rlid and len(contentitem_by_rlid.items) == 1 and contentitem_by_rlid.items[0].resource_link_id == message.resource_link.id,
+                                    True,
+                                    f"Num of item returned {len(contentitem_by_rlid.items)}"))
+
+    except Exception as e:
+        print(traceback.format_exc())
+        res.results.append(TestResult('Error interacting with deep linking service',
+                                False,
+                                True,
+                                f'{str(e)}'))
+    
+    return res
+
 def test_substitution_variables(category: str, sub_variables: Dict[str, str], custom_params: Dict[str, str]):
     res = TestCategory(category)
     for key in sub_variables:
@@ -608,21 +719,45 @@ def test_substitution_variables(category: str, sub_variables: Dict[str, str], cu
     return res
 
 
-def test_and_show_results(request: Request, reg: ToolRegistration, message: LTIMessage()):
+def test_and_show_results(request: Request, reg: ToolRegistration, cookie_name: str, message: LTIMessage()):
     results = []
     res = TestCategory('General Stuff')
     res.results.append(TestResult('User Id Found',
-                                    True,
                                     message.sub,
+                                    True,
                                     message.sub))
     res.results.append(TestResult('Context Id Found',
-                                    True,
                                     message.context.id,
+                                    True,
                                     message.context.id))
     res.results.append(TestResult('Role(s) Found',
-                                    True,
                                     message.role,
+                                    True,
                                     message.role))
+    results.append(res)
+    res = TestCategory('The cookie stuff')
+    res.results.append(TestResult('State validated by cookie',
+                                    request.cookies.get(cookie_name),
+                                    False,
+                                    request.cookies.get(cookie_name)))
+    res.results.append(TestResult('State validated by partioned cookie',
+                                    request.cookies.get(cookie_name + '_part'),
+                                    False,
+                                    request.cookies.get(cookie_name + '_part')))
+    res.results.append(TestResult('First Party Cookie Seen - lax?',
+                                    request.cookies.get('robotest_fp_lax'),
+                                    False,
+                                    request.cookies.get('robotest_fp_lax')))
+    res.results.append(TestResult('First Party Cookie Seen - None?',
+                                    request.cookies.get('robotest_fp_none'),
+                                    False,
+                                    request.cookies.get('robotest_fp_none', 'No cookie, set cookie by visiting robotest.theedtech.dev')))
+    res.results.append(TestResult('Local Storage access',
+                                    True,
+                                    False,
+                                    'pending', '', '', 'localstorage'))
+
+
     results.append(res)
 
     if message.message_type == const.rl.msg_type:
@@ -657,6 +792,8 @@ def test_and_show_results(request: Request, reg: ToolRegistration, message: LTIM
         results.append(res)
     results.append(test_ags(reg, message))
     results.append(test_nrps(reg, message))
+    if message.deeplinking_service:
+        results.append(test_dl(reg, message))
     results.append(test_substitution_variables('Subsitution Variables (resourcelink)', {
                    **context_sub_variables, **link_sub_variables}, message.custom))
     success = all((map(lambda r: r.success, results)))
