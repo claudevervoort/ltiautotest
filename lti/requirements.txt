@@ -7,7 +7,7 @@ Click==7.0
 cryptography==43.0.1
 dataclasses==0.6
 ecdsa==0.13.3
-future==0.17.1
+future==0.18.3
 h11==0.8.1
 httptools==0.0.13
 idna==2.8
