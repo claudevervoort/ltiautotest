@@ -17,7 +17,7 @@ h11==0.8.1
 httptools==0.5.0
 idna==3.7
 isort==4.3.21
-Jinja2==3.1.4
+Jinja2==3.1.6
 lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
