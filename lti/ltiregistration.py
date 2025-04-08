@@ -65,6 +65,8 @@ def registration( lms: str, iss: str, client_id: str, oidc_auth : str = None, to
         return ToolRegistration(iss, client_id, concat(iss, oidc_auth), concat(iss, token_url), concat(iss, keyset_url))
     if iss == 'https://schoology.schoology.com':
         return ToolRegistration(iss, client_id, 'https://lti-service.svc.schoology.com/lti-service/authorize-redirect', 'https://lti-service.svc.schoology.com/lti-service/access-token', 'https://lti-service.svc.schoology.com/lti-service/.well-known/jwks')
+    if iss == 'https://schoology.schoologytest.com':
+        return ToolRegistration(iss, client_id, 'https://lti-service.svc.schoologytest.com/lti-service/authorize-redirect', 'https://lti-service.svc.schoologytest.com/lti-service/access-token', 'https://lti-service.svc.schoologytest.com/lti-service/.well-known/jwks')
     return None
 
 
