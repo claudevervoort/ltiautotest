@@ -35,7 +35,7 @@ class ToolRegistration(object):
             claims['sub'] = self.client_id
             claims['jti'] = str(uuid.uuid4())
             if for_token:
-                claims['aud'] = self.audience if self.audience else self.iss
+                claims['aud'] = self.audience if self.audience else self.token_uri
             else:
                 claims['nonce'] = str(uuid.uuid4())
                 claims['aud'] = self.iss
