@@ -7,6 +7,11 @@ import re
 T = TypeVar('T', bound=Dict)
 link_anchor_re = re.compile(r"<([^\s]*)>")
 
+def log_and_raise_for_status(res):
+    if res.status_code>=400:
+        print(res.text)
+    res.raise_for_status()
+
 def merge(a:dict, b:dict):
     m = {**a, **b}
     for attr, value in m.items():
@@ -34,8 +39,7 @@ def access_token(registration: ToolRegistration, scope: str, force: bool = False
         "scope": scope,
         "client_assertion": assertion
     })
-    print(r.text)
-    r.raise_for_status()
+    log_and_raise_for_status(r)
     t = json.loads(r.text)
     return t['access_token']
 
@@ -68,8 +72,7 @@ def ltiservice_getjson(registration: ToolRegistration, mime : str, scope: str,  
         'Accept': mime
     }
     r = requests.get(url, headers=headers, params=params)
-    r.raise_for_status()
-    print(r.text)
+    log_and_raise_for_status(r)
     return {
         "response": json.loads(r.text),
         "next": next(r.headers)
@@ -89,7 +92,7 @@ def ltiservice_mut(registration: ToolRegistration, url: str, payload: T, isput: 
             'Content-Type': mime
         }
         r = (requests.put if isput else requests.post)(url, headers=headers, data=json.dumps(payload))
-        r.raise_for_status()
+        log_and_raise_for_status(r)
         if r.text and r.headers['Content-Type'] and r.headers['Content-Type'].startswith(mime):
             response = resource_class(json.loads(r.text))
         else:

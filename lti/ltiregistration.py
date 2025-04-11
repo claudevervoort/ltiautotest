@@ -206,6 +206,4 @@ def verify_11_oauth(consumer:Oauth11Consumer, secret:str) -> bool:
     s.update(consumer.key.encode('utf-8'))
     s.update(secret.encode('utf-8'))
     s.update(consumer.nonce.encode('utf-8'))
-    print(s.hexdigest())
-    print(consumer.sign)
     return consumer.sign == s.hexdigest()
