@@ -7,8 +7,10 @@ import re
 T = TypeVar('T', bound=Dict)
 link_anchor_re = re.compile(r"<([^\s]*)>")
 
-def log_and_raise_for_status(res):
+def log_and_raise_for_status(res, payload=None):
     if res.status_code>=400:
+        if payload:
+            print(json.dumps(payload))
         print(res.text)
     res.raise_for_status()
 
@@ -92,7 +94,7 @@ def ltiservice_mut(registration: ToolRegistration, url: str, payload: T, isput: 
             'Content-Type': mime
         }
         r = (requests.put if isput else requests.post)(url, headers=headers, data=json.dumps(payload))
-        log_and_raise_for_status(r)
+        log_and_raise_for_status(r, payload=payload)
         if r.text and r.headers['Content-Type'] and r.headers['Content-Type'].startswith(mime):
             response = resource_class(json.loads(r.text))
         else:
