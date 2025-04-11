@@ -337,7 +337,7 @@ def resource_link(name: str, message: LTIMessage,
     rl.custom['membership_dl'] = message.membership_service.context_memberships_url if 'membership_service' in message and 'context_memberships_url' in message.membership_service else ''
     if points:
         rl.max_points = points
-        due = datetime.now() + timedelta(weeks=2)
+        due = datetime.now(timezone.utc) + timedelta(weeks=2)
         rl.custom['max_points'] = str(rl.max_points)
         rl.custom['due_ts'] = f"{due.timestamp()}"
         rl.resource_id = resource_id
@@ -588,7 +588,7 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                 score.scoreMaximum = 80
                 score.activityProgress = ActivityProgress.COMPLETED
                 score.gradingProgress = GradingProgress.FULLYGRADED
-                score.timestamp = datetime.now()
+                score.timestamp = datetime.now(timezone.utc)
                 error = ''
                 try:
                     ltiservice_mut(reg, message.grade_service.lineitem, score)
