@@ -1,5 +1,5 @@
 from typing import Generic, TypeVar, Dict, Type, List
-from lti.ltiregistration import ToolRegistration
+from .ltiregistration import ToolRegistration
 import json
 import requests
 import re
@@ -101,4 +101,3 @@ def ltiservice_mut(registration: ToolRegistration, url: str, payload: T, isput: 
             response = None
         return response
     raise ValueError("No scope defined for write")
-

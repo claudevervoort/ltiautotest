@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ltirobotest-lti"
+version = "0.1.0"
+description = "Framework-agnostic helpers for working with LTI Advantage messages, registrations, and services."
+readme = { file = "lti/README.md", content-type = "text/markdown" }
+requires-python = ">=3.9"
+license = "Apache-2.0"
+authors = [
+  { name = "LTI Robotest contributors" }
+]
+keywords = ["lti", "lti-advantage", "edtech", "oauth", "oidc"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Education",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+  "pycryptodome>=3.19",
+  "python-jose>=3.3.0",
+  "requests>=2.32.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/claudevervoort/ltiautotest"
+Repository = "https://github.com/claudevervoort/ltiautotest"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["lti"]
+exclude = ["lti.tests", "lti.tests.*"]
+
+[tool.pytest.ini_options]
+testpaths = ["lti/tests"]

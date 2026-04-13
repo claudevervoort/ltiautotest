@@ -1,4 +1,7 @@
-from model import models
+try:
+    from .model import models
+except ImportError:
+    from model import models
 import re
 
 template_enum = """

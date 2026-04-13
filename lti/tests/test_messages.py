@@ -31,8 +31,8 @@ class LTIPlatformTest(unittest.TestCase):
                     }
                 }]
         }
-        self.assertEqual(self.message.message_type, 'LtiResourceLinkRequest')
         self.message = LTIMessageDict(**d)
+        self.assertEqual(self.message.message_type, 'LtiResourceLinkRequest')
 
     def test_get(self):
         self.assertEqual(self.message['version'], "1.3.0")
@@ -50,4 +50,3 @@ class LTIPlatformTest(unittest.TestCase):
         self.assertEqual(self.message['version'], "changed")
         self.message['newfield']='new'
         self.assertEqual(self.message['newfield'], "new")
-

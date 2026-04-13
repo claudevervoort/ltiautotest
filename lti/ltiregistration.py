@@ -1,8 +1,8 @@
 from jose import jwt
 from datetime import datetime
-from lti.jwks import get_remote_keyset, get_webkey
-from lti.spi import log
-from lti.gen_model import PlatformOIDCConfig, ToolOIDCConfig, MessageDef, Oauth11Consumer
+from .jwks import get_remote_keyset, get_webkey
+from .spi import log
+from .gen_model import PlatformOIDCConfig, ToolOIDCConfig, MessageDef, Oauth11Consumer
 import requests
 import json
 import hashlib
