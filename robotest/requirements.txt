@@ -9,7 +9,7 @@ cffi==1.12.3
 chardet==3.0.4
 charset-normalizer==2.1.1
 Click==7.0
-cryptography==43.0.1
+cryptography==46.0.7
 ecdsa==0.19.2
 fastapi==0.135.3
 future==0.17.1
