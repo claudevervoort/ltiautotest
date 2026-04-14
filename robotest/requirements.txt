@@ -28,7 +28,7 @@ pycryptodome==3.19.1
 pylint==2.15.5
 python-dotenv==0.21.0
 python-jose==3.3.0
-python-multipart==0.0.18
+python-multipart==0.0.22
 rsa==4.7
 PyYAML==6.0.2
 requests==2.33.1
