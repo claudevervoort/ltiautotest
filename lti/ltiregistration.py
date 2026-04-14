@@ -55,6 +55,7 @@ def concat(base: str, path: str) -> str:
     return base + path
 
 def registration( lms: str, iss: str, client_id: str, oidc_auth : str = None, token_url: str = None, keyset_url: str = None) -> ToolRegistration:
+    print(f'params {locals()}')
     if lms.lower() == 'moodle':
         return ToolRegistration(iss, client_id, iss+'/mod/lti/auth.php', iss+'/mod/lti/token.php', iss+'/mod/lti/certs.php')
     if lms.lower() == 'd2l':
@@ -79,10 +80,16 @@ def append_regextra( login_uri: str, lms: str, platform_config: PlatformOIDCConf
     """Append bits to login reg to be able to reconstruct the registration (since this app has no db)"""
     if lms.lower().startswith('sakai'):
         return f"{login_uri}&lms=sakai&token_url={platform_config.token_endpoint.split('/')[-1]}"
-    elif lms.lower() == 'generic':
-        iss = platform_config.issuer
-        return f"{login_uri}&lms=generic&oidc_auth={urlencode(trim(iss, platform_config.authorization_endpoint))}&token_url={urlencode(trim(iss, platform_config.token_endpoint))}&keyset_url={urlencode(trim(iss, platform_config.jwks_uri))}"
-    return f"{login_uri}&lms={lms}"
+    elif lms.lower() in ['d2l'] or platform_config.issuer in ['https://schoology.schoology.com','https://schoology.schoologytest.com']:
+        return f"{login_uri}&lms={lms}"
+    iss = platform_config.issuer
+    extra = urlencode({
+        "oidc_auth": trim(iss, platform_config.authorization_endpoint),
+        "token_url": trim(iss, platform_config.token_endpoint),
+        "jwks_url": trim(iss, platform_config.jwks_uri),
+        "lms": lms
+    })
+    return f"{login_uri}&{extra}"
 
 def get_platform_config( url: str) -> PlatformOIDCConfig:
     headers = {
@@ -94,12 +101,17 @@ def get_platform_config( url: str) -> PlatformOIDCConfig:
 
 def register_tool( url: str, config: ToolOIDCConfig, token:str = None) -> ToolOIDCConfig:
     headers = {
-        'Accept': 'application/json',
-        'Content-type': 'application/json'
+        'Accept': 'application/json'
     }
     if token:
         headers['Authorization'] = 'Bearer {token}'.format(token=token)
     r = requests.post(url, headers=headers, json=config)
+    request = r.request
+    print(f"Request Method: {request.method}")
+    print(f"Request URL: {request.url}")
+    print(f"Request Headers: {dict(request.headers)}")
+    print(f"Request Body: {request.body}")
+    print(f"Respnse Body: {r.text}")
     r.raise_for_status()
     return ToolOIDCConfig(json.loads(r.text))
 
@@ -110,14 +122,14 @@ def get_tool_configuration( url: str, token: str = None) -> ToolOIDCConfig:
     if token:
         headers['Authorization'] = 'Bearer {token}'.format(token=token)
     r = requests.get(url, headers=headers)
-    print('Res get conf '+r.text)
     if r.status_code==404:
         return None
     r.raise_for_status()
     return ToolOIDCConfig(json.loads(r.text))
 
         
-def base_tool_oidc_conf(*,name:str, 
+def base_tool_oidc_conf(platform_config:PlatformOIDCConfig,
+                        name:str, 
                         domain:str, 
                         login_uri: str, 
                         redirect_uri: str,  
@@ -142,9 +154,9 @@ def base_tool_oidc_conf(*,name:str,
         "initiate_login_uri": "{login_uri}",
         "redirect_uris": ["{redirect_uri}"],
         "client_name": "{name}",
+        "client_uri": "https://{domain}",
         "jwks_uri": "{jwks_uri}",
         "token_endpoint_auth_method": "private_key_jwt",
-        "id_token_signed_response_alg": "RS256",
         "https://purl.imsglobal.org/spec/lti-tool-configuration": {{
             "domain": "{domain}",
             "target_link_uri": "{base_url}",
@@ -167,7 +179,7 @@ def base_tool_oidc_conf(*,name:str,
                     "type": "LtiDeepLinkingRequest",
                     "target_link_uri": "{dl_url}",
                     "label": "{dl_label}",
-                    "placements": ["ContentArea", "RichTextEditor"]
+                    "placements": ["ContentArea", "RichTextEditor", "link_selection", "course_assignments_menu", "module_index_menu_modal", "assignment_selection"]
                 }}
         '''.format(dl_label=dl_label, dl_url=dl_url)
         tool_conf.lti_config.messages.append(MessageDef(**json.loads(dl_message)))
@@ -184,9 +196,11 @@ def base_tool_oidc_conf(*,name:str,
         scopes.append('https://purl.imsglobal.org/spec/lti-nrps/scope/contextmembership.readonly')
     if dls:
         scopes.extend([
-            "https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read",
-            "https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update"])
-    tool_conf.scope = " ".join(scopes)
+            "https://purl.imsglobal.org/spec/lti/scope/contentitem.read",
+            "https://purl.imsglobal.org/spec/lti/scope/contentitem.update"])
+    common_scopes = list(set(platform_config.scopes_supported) & set(scopes))
+    tool_conf.scope = " ".join(common_scopes)
+
     return tool_conf
 
 def add_coursenav_message(registration: ToolOIDCConfig, label: str, 

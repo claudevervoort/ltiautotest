@@ -51,21 +51,25 @@ link_sub_variables = {
 
 @app.get("/")
 def read_root(request: Request):
-    res = templates.TemplateResponse("moodleinstructions.html",
-        {"request": request,
-         "base_url": base_url,
-         "custom_params": {**context_sub_variables, **link_sub_variables},
-         "cookie_fp_lax": request.cookies.get('robotest_fp_lax'),
-         "cookie_fp_none": request.cookies.get('robotest_fp_none'),
-         "cookie_tp_none": request.cookies.get('robotest_tp_none'),
-        })
+    res = templates.TemplateResponse(
+        request,
+        "moodleinstructions.html",
+        {
+            "request": request,
+            "base_url": base_url,
+            "custom_params": {**context_sub_variables, **link_sub_variables},
+            "cookie_fp_lax": request.cookies.get('robotest_fp_lax'),
+            "cookie_fp_none": request.cookies.get('robotest_fp_none'),
+            "cookie_tp_none": request.cookies.get('robotest_tp_none'),
+        },
+    )
     res.set_cookie(key="robotest_fp_lax", value="firstparty_lax", secure=True, httponly=True, samesite='lax')
     res.set_cookie(key="robotest_fp_none", value="firstparty_none", secure=True, httponly=True, samesite='none')
     return res
 
 @app.get("/broken")
 def read_broken(request: Request):
-    return templates.TemplateResponse("broken.html", {"request": request})
+    return templates.TemplateResponse(request, "broken.html", {"request": request})
 
 
 @app.get("/results")
@@ -86,7 +90,7 @@ def read_results(request: Request,
     cat2.results.append(TestResult('res3 cannot be failed even if you want', success, True,
                         'https://moodle.zeedeeyou.com/mod/lti/services.php/CourseSection/2/bindings/3/memberships'))
 
-    return templates.TemplateResponse("results.html", {"request": request, "results": [cat1, cat2], "success": cat1.success, "showClose": True})
+    return templates.TemplateResponse(request, "results.html", {"request": request, "results": [cat1, cat2], "success": cat1.success, "showClose": True})
 
 
 @app.get("/register")
@@ -166,7 +170,8 @@ def register(request: Request, openid_configuration: str, registration_token: st
                     init_login = append_regextra(init_login, lms_type, platform_config)
                 redirect_uri = str(request.url.replace(
                     path='/oidc/launch', query='', scheme='https'))
-                tool_conf = base_tool_oidc_conf(name='Robotest',
+                tool_conf = base_tool_oidc_conf(platform_config=platform_config,
+                                                name='Robotest DEV' if 'robotest-dev' in init_login else 'Robotest',
                                                 domain=request.url.hostname,
                                                 login_uri=init_login,
                                                 redirect_uri=redirect_uri,
@@ -181,12 +186,14 @@ def register(request: Request, openid_configuration: str, registration_token: st
                 tool_conf.lti_config.custom_parameters.update(
                     {**context_sub_variables, **link_sub_variables})
 
+                """
                 add_coursenav_message(tool_conf, 'RoboCourse For All')
                 add_coursenav_message(tool_conf, 'RoboCourse For Ins',
                                       url=str(request.url.replace(
                                           path='/instructor_dashboard', query='', scheme='https')),
                                       allowLearners=False,
                                       params={'custom1': 'val1'})
+                """
                 res.results.append(TestResult('Tool Config to Register',
                                    True,
                                    True,
@@ -206,12 +213,19 @@ def register(request: Request, openid_configuration: str, registration_token: st
                                               True,
                                               'Cannot register tool without registration endpoint'))
 
+        except requests.exceptions.HTTPError as err:
+            res.results.append(TestResult('Error during registration',
+                                          False,
+                                          True,
+                                          f'code: {err.response.status_code} response: {err.response.text}'))
+
         except:
+            traceback.print_exc()
             res.results.append(TestResult('Error during registration',
                                           False,
                                           True,
                                           traceback.format_exc()))
-    return templates.TemplateResponse("results.html", {"request": request, "results": [res], "success": res.success, "showClose": True})
+    return templates.TemplateResponse(request, "results.html", {"request": request, "results": [res], "success": res.success, "showClose": True})
 
 
 def check_registration_update(registration_url: str, registration_token: str, res: TestCategory):
@@ -306,8 +320,9 @@ def oidc_init_post(request: Request,
                    login_hint: str = Form(...),
                    lti_message_hint: str = Form(...),
                    oidc_auth = None,
-                   token_url = None):
-    return oidc_init(request, iss, login_hint, lti_message_hint, client_id or clientid, lms, target_link_uri, oidc_auth, token_url)
+                   token_url = None,
+                   jwks_url: str = None):
+    return oidc_init(request, iss, login_hint, lti_message_hint, client_id or clientid, lms, target_link_uri, oidc_auth, token_url, jwks_url)
 
 
 @app.post("/oidc/launch")
@@ -407,12 +422,17 @@ def deeplinking(request: Request, reg: ToolRegistration, message: LTIMessage):
     graded_iframe_subreview_empty.custom['multiple'] = str(message.deep_linking_settings.accept_multiple)
     graded_newwin_subreview_full.custom['multiple'] = str(message.deep_linking_settings.accept_multiple)
     response['jwt_multiple'] = reg.encode(deepLinkingResponse(message, [notgraded_newwin, graded_iframe, graded_iframe_subreview_empty, graded_newwin_subreview_full]))
-    return templates.TemplateResponse("deeplink_autopost.html", response)
+    response['jwt_multiple_gradedstates'] = reg.encode(deepLinkingResponse(message, [
+        resource_link("Graded - Autograded " + today, message, True, True, 10.0, SubmissionReview()),
+        resource_link("Graded - InProgress " + today, message, True, True, 10.0, SubmissionReview()),
+        resource_link("Graded - NeedsGrading " + today, message, True, True, 10.0, SubmissionReview()),
+    ]))
+    return templates.TemplateResponse(request, "deeplink_autopost.html", response)
 
 
 @app.get('/dl')
 def testdl(request: Request):
-    return templates.TemplateResponse("deeplink_autopost.html", {
+    return templates.TemplateResponse(request, "deeplink_autopost.html", {
         "request": request,
         "name": 'Saul Tigh',
         "return_url": '',
@@ -582,12 +602,15 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                                           True,
                                           'lineitem tag found: {tag}'.format(tag=lineitem.tag)))
             if [r for r in message.role if 'learner' in r.lower()]:
+                title = message.resource_link.title.lower()
+                state = (ActivityProgress.INPROGRESS, GradingProgress.NOTREADY) if 'inprogress' in title else (ActivityProgress.COMPLETED, GradingProgress.PENDINGMANUAL) if 'needsgrading' in title else (ActivityProgress.COMPLETED, GradingProgress.FULLYGRADED)
                 score = Score()
                 score.userId = message.sub
-                score.scoreGiven = random.randint(40, 80)
-                score.scoreMaximum = 80
-                score.activityProgress = ActivityProgress.COMPLETED
-                score.gradingProgress = GradingProgress.FULLYGRADED
+                if GradingProgress.FULLYGRADED == state[1]:
+                    score.scoreGiven = random.randint(40, 80)
+                    score.scoreMaximum = 80
+                score.activityProgress = state[0]
+                score.gradingProgress = state[1]
                 score.timestamp = datetime.now(timezone.utc)
                 error = ''
                 try:
@@ -597,7 +620,7 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                 res.results.append(TestResult('Score Post without error',
                                               error == '',
                                               True,
-                                              '{e} Score {p} out of {m}'.format(e=error, p=score.scoreGiven, m=score.scoreMaximum)))
+                                              f'{error} Score {score.scoreGiven} out of {score.scoreMaximum}' if score.scoreGiven else f'{error} In Progress' if state[0]==ActivityProgress.INPROGRESS else f'{error} Needs Grading'))
         except Exception as e:
             print(traceback.format_exc())
             res.results.append(TestResult('Line item loaded',
@@ -797,7 +820,7 @@ def test_and_show_results(request: Request, reg: ToolRegistration, cookie_name: 
     results.append(test_substitution_variables('Subsitution Variables (resourcelink)', {
                    **context_sub_variables, **link_sub_variables}, message.custom))
     success = all((map(lambda r: r.success, results)))
-    return templates.TemplateResponse("results.html", {"request": request, "results": results, "success": success})
+    return templates.TemplateResponse(request, "results.html", {"request": request, "results": results, "success": success})
 
 
 @app.get("/test")

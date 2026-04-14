@@ -991,12 +991,12 @@ class LTIMessage(dict):
 
     @property
     def deeplinking_service(self) -> DeepLinkService:
-        val = self.get('https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice')
+        val = self.get('https://purl.imsglobal.org/spec/lti/claim/linkcontentservice')
         if issubclass(DeepLinkService, Enum):
             return DeepLinkService(val)
         if (isinstance(val, dict) and not isinstance(val, DeepLinkService)):
             typed_val = DeepLinkService( **val )
-            self['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice'] = typed_val
+            self['https://purl.imsglobal.org/spec/lti/claim/linkcontentservice'] = typed_val
             return typed_val
         return val
 
@@ -1004,9 +1004,9 @@ class LTIMessage(dict):
     @deeplinking_service.setter
     def deeplinking_service(self, value: DeepLinkService):
         if isinstance(value, Enum):
-            self['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice'] = value.value
+            self['https://purl.imsglobal.org/spec/lti/claim/linkcontentservice'] = value.value
         else:
-            self['https://purl.imsglobal.org/spec/lti-dl/claim/deeplinkingservice'] = value
+            self['https://purl.imsglobal.org/spec/lti/claim/linkcontentservice'] = value
 
 
     @property
@@ -2755,13 +2755,13 @@ class Members(dict):
 
 class DeepLinkingItem(dict):
 
-    mime = 'application/vnd.1edtech.lti.contentitem+json'
+    mime = 'application/json'
 
 
-    read_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read'
+    read_scope = 'https://purl.imsglobal.org/spec/lti/scope/contentitem.read'
 
 
-    write_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update'
+    write_scope = 'https://purl.imsglobal.org/spec/lti/scope/contentitem.update'
 
 
     @property
@@ -2981,10 +2981,10 @@ class DeepLinkingItems(dict):
     mime = 'application/vnd.1edtech.lti.contentitems+json'
 
 
-    read_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.read'
+    read_scope = 'https://purl.imsglobal.org/spec/lti/scope/contentitem.read'
 
 
-    write_scope = 'https://purl.imsglobal.org/spec/lti-dl/scope/contentitem.update'
+    write_scope = 'https://purl.imsglobal.org/spec/lti/scope/contentitem.create'
 
 
     collection_attribute = 'items'
@@ -3815,6 +3815,26 @@ class ToolOIDCConfig(dict):
             self['client_name'] = value.value
         else:
             self['client_name'] = value
+
+
+    @property
+    def client_uri(self) -> str:
+        val = self.get('client_uri')
+        if issubclass(str, Enum):
+            return str(val)
+        if (isinstance(val, dict) and not isinstance(val, str)):
+            typed_val = str( **val )
+            self['client_uri'] = typed_val
+            return typed_val
+        return val
+
+
+    @client_uri.setter
+    def client_uri(self, value: str):
+        if isinstance(value, Enum):
+            self['client_uri'] = value.value
+        else:
+            self['client_uri'] = value
 
 
     @property

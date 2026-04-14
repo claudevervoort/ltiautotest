@@ -40,6 +40,8 @@
         <a href="#" onclick="post('single_graded_subreview_full')" class="secondary" {% if not gradable %}
             style="text-decoration: line-through;" {% endif %}>A single <b>graded with submission review full</b>LTI
             Link</a>
+        <a href="#" onclick="post('multiple_gradedstates')" class="secondary" {% if not multiple %}
+            style="text-decoration: line-through;" {% endif %}>3 activities to test in Progress, Needs Grading and Auto-graded</a>
         <a href="#" onclick="post('multiple')" class="primary" {% if not multiple %}
             style="text-decoration: line-through;" {% endif %}> Why choose? One of each please!</a>
     </div>
@@ -65,6 +67,9 @@
     </form>
     <form id="single_graded_subreview_full" action="{{ return_url }}" method="post">
         <input type="hidden" name="JWT" value="{{ jwt_single_graded_subreview_full }}">
+    </form>
+    <form id="multiple_gradedstates" action="{{ return_url }}" method="post">
+        <input type="hidden" name="JWT" value="{{ jwt_multiple_gradedstates }}">
     </form>
     <form id="multiple" action="{{ return_url }}" method="post">
         <input type="hidden" name="JWT" value="{{ jwt_multiple }}">

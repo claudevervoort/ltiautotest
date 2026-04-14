@@ -133,7 +133,7 @@ def generate_enum(name: str, spec: tuple):
         gen.append(template_class_val.format(name=item.upper(), value=item))
     return gen
 
-list_match = re.compile('List\[([^\]]*)]')
+list_match = re.compile(r'List\[([^\]]*)]')
 
 def generate_class(name: str, spec: dict):
     gen = []

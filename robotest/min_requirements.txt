@@ -1,0 +1,10 @@
+# Minimal runtime dependencies for starting the Robotest app.
+# Install from the repository root or from the robotest directory.
+
+fastapi
+uvicorn
+jinja2
+python-multipart
+requests
+python-jose
+pycryptodome
