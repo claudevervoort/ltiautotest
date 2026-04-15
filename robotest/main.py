@@ -513,6 +513,11 @@ def test_nrps(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                                           '{m} members in context - 5 is paging boundary'.format(
                                               m=len(members.members)),
                                           link=nrps_link_csv))
+        except requests.exceptions.HTTPError as err:
+            res.results.append(TestResult('Error during NRPS call',
+                                          False,
+                                          True,
+                                          f'code: {err.response.status_code} response: {err.response.text}'))
         except Exception as e:
             print(traceback.format_exc())
             res.results.append(TestResult('Members loaded',
@@ -535,12 +540,25 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                                   False,
                                   ''))
     if message.grade_service.lineitems:
-        lineitems = ltiservice_get_array(
+        lineitems = []
+        try:
+            lineitems = ltiservice_get_array(
             reg, LineItem, message.grade_service.lineitems)
-        res.results.append(TestResult('Line items present and queriable',
+            res.results.append(TestResult('Line items present and queriable',
                                       True,
                                       True,
                                       'Can query existing grade book columns for this tool'))
+        except requests.exceptions.HTTPError as err:
+            res.results.append(TestResult('Line items present and queriable',
+                                          False,
+                                          True,
+                                          f'code: {err.response.status_code} response: {err.response.text}'))
+        except Exception as e:
+                print(traceback.format_exc())
+                res.results.append(TestResult('Line items present and queriable',
+                                              False,
+                                              True,
+                                              str(e)))
         standalone = next(
             filter(lambda x: 'standalone' in x.resourceId, lineitems), None)
         if standalone:
@@ -566,6 +584,11 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                                             c and c.resourceId == standalone.resourceId,
                                               True,
                                               'A Standalone line item has been created {id}'.format(id=c.id)))
+            except requests.exceptions.HTTPError as err:
+                res.results.append(TestResult('Error during create line item',
+                                              False,
+                                              True,
+                                              f'code: {err.response.status_code} response: {err.response.text}'))
             except Exception as e:
                 print(traceback.format_exc())
                 res.results.append(TestResult('Standalone line item has been created',
@@ -615,12 +638,22 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                 error = ''
                 try:
                     ltiservice_mut(reg, message.grade_service.lineitem, score)
+                except requests.exceptions.HTTPError as err:
+                    res.results.append(TestResult('Error during post score',
+                                                  False,
+                                                  True,
+                                                  f'code: {err.response.status_code} response: {err.response.text}'))
                 except Exception as e:
                     error = str(e)
                 res.results.append(TestResult('Score Post without error',
                                               error == '',
                                               True,
                                               f'{error} Score {score.scoreGiven} out of {score.scoreMaximum}' if score.scoreGiven else f'{error} In Progress' if state[0]==ActivityProgress.INPROGRESS else f'{error} Needs Grading'))
+        except requests.exceptions.HTTPError as err:
+            res.results.append(TestResult('Line Item loaded',
+                                          False,
+                                          True,
+                                          f'code: {err.response.status_code} response: {err.response.text}'))
         except Exception as e:
             print(traceback.format_exc())
             res.results.append(TestResult('Line item loaded',

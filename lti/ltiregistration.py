@@ -189,6 +189,7 @@ def base_tool_oidc_conf(platform_config:PlatformOIDCConfig,
         tool_conf.lti_config.claims.extend(["name", "given_name", "family_name"])
     if ags:
         scopes.extend([
+            "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem.readonly",
             "https://purl.imsglobal.org/spec/lti-ags/scope/lineitem",
             "https://purl.imsglobal.org/spec/lti-ags/scope/result.readonly",
             "https://purl.imsglobal.org/spec/lti-ags/scope/score"])
