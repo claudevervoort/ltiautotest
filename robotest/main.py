@@ -27,6 +27,16 @@ from requests.models import PreparedRequest
 #
 base_url = os.environ['ROBOTEST_WWW'] if 'ROBOTEST_WWW' in os.environ else 'https://robotest.theedtech.dev'
 
+print(f"""
+Initiating
+ ____   ___  ____   ___ _____ _____ ____ _____     _   _____ ___ 
+|  _ \ / _ \| __ ) / _ \_   _| ____/ ___|_   _|   | | |_   _|_ _|
+| |_) | | | |  _ \| | | || | |  _| \___ \ | |_____| |   | |  | | 
+|  _ <| |_| | |_) | |_| || | | |___ ___) || |_____| |___| |  | | 
+|_| \_\\\\___/|____/ \___/ |_| |_____|____/ |_|     |_____|_| |___|
+
+base url: {base_url}
+""")
 
 app = FastAPI()
 

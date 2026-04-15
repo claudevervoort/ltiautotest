@@ -8,13 +8,12 @@ It's called Robotest as it aims to test a learning platform's LTI Advantage supp
 
 It's very much a work in progress. It is split in 2 parts:
 
-- **lti lib**: framework agnostic lti library, with extension points allowing customization to match the tool persistence and caching ch 
-oices.
+- **lti lib**: framework agnostic lti library, with extension points allowing customization to match the tool persistence and caching choices.
 - **Robotest app**: A fast-api app using the library to implement the actual app UI. 
 
 Launch: 
 
-`cd robotest; uvicorn main:app --reload`
+`cd robotest; ROBOTEST_WWW=https://mytestdomain.forthe.robot uvicorn main:app --reload`
 
 Code is using a simple code generation to create a model that is based on Dict but exposing typed parameters for the most common LTI params.
 
