@@ -624,7 +624,7 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                                       message.grade_service.lineitem,
                                       True,
                                       ''))
-    if message.grade_service.lineitem:
+    if message.grade_service and message.grade_service.lineitem:
         try:
             lineitem = ltiservice_get(
                 reg, LineItem, message.grade_service.lineitem)
