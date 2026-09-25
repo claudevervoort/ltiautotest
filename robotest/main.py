@@ -756,6 +756,8 @@ def test_dl(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
     return res
 
 def test_substitution_variables(category: str, sub_variables: Dict[str, str], custom_params: Dict[str, str]):
+    if not custom_params:
+        return
     res = TestCategory(category)
     for key in sub_variables:
         if key in custom_params:
