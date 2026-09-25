@@ -549,7 +549,7 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                                       message.custom['lineitems_dl']) > 6,
                                   False,
                                   ''))
-    if message.grade_service.lineitems:
+    if message.grade_service and message.grade_service.lineitems:
         lineitems = []
         try:
             lineitems = ltiservice_get_array(
@@ -590,10 +590,17 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                 standalone.scoreMaximum = 36.5
                 c = ltiservice_mut(
                     reg, message.grade_service.lineitems, standalone)
-                res.results.append(TestResult('Standalone successfully created',
-                                            c and c.resourceId == standalone.resourceId,
-                                              True,
-                                              'A Standalone line item has been created {id}'.format(id=c.id)))
+                if c:
+                    res.results.append(TestResult('Standalone successfully created',
+                                                c and c.resourceId == standalone.resourceId,
+                                                True,
+                                                'A Standalone line item has been created {id}'.format(id=c.id)))
+                else:
+                    res.results.append(TestResult('Standalone successfully created',
+                                                False,
+                                                True,
+                                                'No standalone item returned'))
+
             except requests.exceptions.HTTPError as err:
                 res.results.append(TestResult('Error during create line item',
                                               False,
@@ -636,7 +643,7 @@ def test_ags(reg: ToolRegistration, message: LTIMessage) -> TestCategory:
                                           'lineitem tag found: {tag}'.format(tag=lineitem.tag)))
             if [r for r in message.role if 'learner' in r.lower()]:
                 title = message.resource_link.title.lower()
-                state = (ActivityProgress.INPROGRESS, GradingProgress.NOTREADY) if 'inprogress' in title else (ActivityProgress.COMPLETED, GradingProgress.PENDINGMANUAL) if 'needsgrading' in title else (ActivityProgress.COMPLETED, GradingProgress.FULLYGRADED)
+                state = (ActivityProgress.INPROGRESS, GradingProgress.NOTREADY) if 'inprogress' in title else (ActivityProgress.SUBMITTED, GradingProgress.PENDINGMANUAL) if 'needsgrading' in title else (ActivityProgress.COMPLETED, GradingProgress.FULLYGRADED)
                 score = Score()
                 score.userId = message.sub
                 if GradingProgress.FULLYGRADED == state[1]:
