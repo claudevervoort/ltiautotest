@@ -16,7 +16,7 @@ pkg-resources==0.0.0
 pyasn1==0.4.7
 pycparser==2.19
 pydantic==1.10.13
-python-jose==3.3.0
+python-jose==3.4.0
 python-multipart==0.0.22
 requests==2.32.2
 rsa==4.7
