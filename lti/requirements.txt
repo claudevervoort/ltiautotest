@@ -6,7 +6,7 @@ chardet==3.0.4
 Click==7.0
 cryptography==46.0.7
 dataclasses==0.6
-ecdsa==0.13.3
+ecdsa==0.19.2
 future==0.18.3
 h11==0.8.1
 httptools==0.0.13
